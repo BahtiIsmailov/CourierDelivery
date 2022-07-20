@@ -1,15 +1,14 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import ru.wb.go.db.dao.CourierWarehouseDao
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.exceptions.NoInternetException
@@ -27,12 +26,14 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
+import ru.wb.go.utils.prefs.SharedWorker
+import ru.wb.go.utils.prefs.SharedWorker.Companion.FRAGMENT_MANAGER
 
 class CourierWarehousesViewModel(
     private val interactor: CourierWarehousesInteractor,
     private val resourceProvider: CourierWarehousesResourceProvider,
     private val errorDialogManager: ErrorDialogManager,
-    private val courierWarehouseDao: CourierWarehouseDao
+    private val sharedWorker: SharedWorker,
 ) : ServicesViewModel(interactor, resourceProvider) {
 
     private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
@@ -61,29 +62,32 @@ class CourierWarehousesViewModel(
         get() = _demoState
 
     private var warehouseEntities = mutableSetOf<CourierWarehouseLocalEntity>()
-    private var warehouseItems = mutableListOf<CourierWarehouseItem>()
-    private var mapMarkers = mutableListOf<CourierMapMarker>()
+    private var warehouseItems = mutableSetOf<CourierWarehouseItem>()
+    private var mapMarkers = mutableSetOf<CourierMapMarker>()
     private var coordinatePoints = mutableListOf<CoordinatePoint>()
     private var myLocation: CoordinatePoint? = null
-        get() = if (field == null){
-                CoordinatePoint(55.751244, 37.618423)
-            }else{
-                field
-            }
+        get() = if (field == null) {
+            CoordinatePoint(55.751244, 37.618423)
+        } else {
+            field
+        }
 
 
     private var whSelectedId: Int? = null
+    private var stringFromSms: String? = null
 
 
     fun resumeInit() {
         observeMapAction()
         checkDemoMode()
     }
+    init {
+        stringFromSms = sharedWorker.load(FRAGMENT_MANAGER,"")
+    }
 
     private fun checkDemoMode() {
         _demoState.value = interactor.isDemoMode()
     }
-
 
     private fun observeMapAction() {
         interactor.observeMapAction()
@@ -92,22 +96,16 @@ class CourierWarehousesViewModel(
                     is CourierMapAction.ItemClick -> onMapPointClick(it.point)
                     is CourierMapAction.LocationUpdate -> {
                         initMapByLocation(it.point)
-                        delay(200)
                     }
-                    is CourierMapAction.MapClick -> showManagerBar()
-                    is CourierMapAction.ShowAll -> onShowAllClick()
+                    CourierMapAction.MapClick -> showManagerBar()
+                    CourierMapAction.ShowAll -> onShowAllClick()
                     else -> {}
                 }
             }
             .catch {
-                logException(it,"observeMapAction")
-                observeMapActionError(it)
+                logException(it, "observeMapAction")
             }
             .launchIn(viewModelScope)
-    }
-
-    private fun observeMapActionError(throwable: Throwable) {
-        onTechErrorLog("observeMapActionError", throwable)
     }
 
     fun updateData() {
@@ -130,14 +128,21 @@ class CourierWarehousesViewModel(
                 val r = setDataForCourierWarehousesDataBase(response)
                 setLoader(WaitLoader.Complete)
                 getWarehousesComplete(r) // сюда пришли данные размер массива
+                if (stringFromSms == "") {
+                    interactor.clearCacheMutableSharedFlow()
+                }else{
+                    sharedWorker.saveMediate(FRAGMENT_MANAGER,"")
+                    stringFromSms = ""
+                }
             } catch (e: Exception) {
-                logException(e,"getWarehouses")
+                logException(e, "getWarehouses")
                 getWarehousesError(e)
             } finally {
                 clearFabAndWhList()
             }
         }
     }
+
 
     private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): List<CourierWarehouseLocalEntity> {
         courierWarehouseResponse.data.forEach {
@@ -148,7 +153,7 @@ class CourierWarehousesViewModel(
                     fullAddress = it.fullAddress,
                     longitude = it.long,
                     latitude = it.lat,
-                    distanceFromUser = getDistanceFromUser(it.lat,it.long)
+                    distanceFromUser = getDistanceFromUser(it.lat, it.long)
                 )
             )
         }
@@ -157,7 +162,7 @@ class CourierWarehousesViewModel(
     }
 
 
-    private fun getDistanceFromUser(lat:Double,long:Double) : Float {
+    private fun getDistanceFromUser(lat: Double, long: Double): Float {
         val loc1 = Location("")
         loc1.latitude = lat
         loc1.longitude = long
@@ -172,11 +177,11 @@ class CourierWarehousesViewModel(
         convertAndSaveItemsPointsMarkers()
         updateMyLocation()
         courierWarehouseComplete()
+
     }
 
 
     private fun getWarehousesError(it: Throwable) {
-        onTechErrorLog("courierWarehouseError", it)
         setLoader(WaitLoader.Complete)
         if (it is NoInternetException) {
             _warehouseState.value = CourierWarehouseItemState.NoInternet
@@ -192,10 +197,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun convertAndSaveItemsPointsMarkers() {
-        onTechEventLog("courierWarehouseComplete", "warehouses count " + warehouseEntities.size)
-        warehouseItems = mutableListOf()
+        warehouseItems = mutableSetOf()
         coordinatePoints = mutableListOf()
-        mapMarkers = mutableListOf()
+        mapMarkers = mutableSetOf()
         warehouseEntities.forEachIndexed { index, item ->
             val wi = CourierWarehouseItem(item.id, item.name, item.fullAddress, false)
             warehouseItems.add(wi)
@@ -216,7 +220,7 @@ class CourierWarehousesViewModel(
         _warehouseState.value =
             if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
             else CourierWarehouseItemState.InitItems(
-                warehouseItems.toMutableList()
+                warehouseItems.toMutableSet()
             )
     }
 
@@ -229,7 +233,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun initMapByLocation(location: CoordinatePoint) {
-        onTechEventLog("initMapByLocation")
         myLocation = location
         if (coordinatePoints.isEmpty()) {
             interactor.mapState(CourierMapState.NavigateToMyLocation)
@@ -242,7 +245,7 @@ class CourierWarehousesViewModel(
 
 
     private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers)) // here send for map state to update markers
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList())) // here send for map state to update markers
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
 
     }
@@ -260,7 +263,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
-        onTechEventLog("onItemPointClick")
         if (mapPoint.id != MY_LOCATION_ID) {
             val indexItemClick = mapPoint.id.toInt()
             changeSelectedMapPoint(mapPoint)
@@ -284,9 +286,9 @@ class CourierWarehousesViewModel(
     }
 
     private fun changeSelectedWarehouseItemsByMap(indexItemClick: Int, isMapSelected: Boolean) {
-        warehouseItems[indexItemClick].isSelected = isMapSelected
+        warehouseItems.toMutableList()[indexItemClick].isSelected = isMapSelected
         if (whSelectedId != null && whSelectedId != indexItemClick) {
-            warehouseItems[whSelectedId!!].isSelected = false
+            warehouseItems.toMutableList()[whSelectedId!!].isSelected = false
         }
         whSelectedId = if (isMapSelected) indexItemClick else null
     }
@@ -297,16 +299,15 @@ class CourierWarehousesViewModel(
     }
 
     private fun isMapSelected(indexItemClick: Int) =
-        mapMarkers[indexItemClick].icon == resourceProvider.getWarehouseMapSelectedIcon()
+        mapMarkers.toMutableList()[indexItemClick].icon == resourceProvider.getWarehouseMapSelectedIcon()
 
     private fun updateMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation!!))
     }
 
     fun onItemClick(index: Int) {
-        onTechEventLog("onItemClick", "index $index")
-        val isSelected = !warehouseItems[index].isSelected
+        val isSelected = !warehouseItems.toMutableList()[index].isSelected
         changeMapMarkers(index, isSelected)
         changeWarehouseItems(index, isSelected)
         changeShowDetailsOrder(isSelected)
@@ -326,7 +327,7 @@ class CourierWarehousesViewModel(
         }
         updateMarkersWithMyLocation(myLocation!!)
         if (isSelected) {
-            with(mapMarkers[clickItemIndex].point) {
+            with(mapMarkers.toMutableList()[clickItemIndex].point) {
                 val coordinatePoint = CoordinatePoint(lat, long)
                 interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
             }

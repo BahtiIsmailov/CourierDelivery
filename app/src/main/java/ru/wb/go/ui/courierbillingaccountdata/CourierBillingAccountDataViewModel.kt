@@ -13,7 +13,6 @@ import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountdata.domain.CourierBillingAccountDataInteractor
 import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
@@ -226,7 +225,7 @@ class CourierBillingAccountDataViewModel(
             }
             .catch {
                 logException(it,"onFormChanges")
-                LogUtils { logDebugApp(it.toString()) } // сразу упал когда я нажал на бик и попытался ввести первую цифру
+
             }
             .launchIn(viewModelScope)
     }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courier.CourierOrderEntity
 import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
+import ru.wb.go.network.api.app.remote.courier.TaskBoxCountResponse
 import ru.wb.go.network.token.TokenManager
 
 class AppTasksRepositoryImpl(
@@ -30,6 +31,12 @@ class AppTasksRepositoryImpl(
         }
     }
 
+    override suspend fun getBoxCountWithRouteId(ridMask: Long): TaskBoxCountResponse {
+        return withContext(Dispatchers.IO){
+            remoteRepo.boxCountWithRouteId(ridMask)
+        }
+
+    }
 
     private fun apiVersion() =
         if (tokenManager.isContains()) tokenManager.apiVersion() else tokenManager.apiDemoVersion()

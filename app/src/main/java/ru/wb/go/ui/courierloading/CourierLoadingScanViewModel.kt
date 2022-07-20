@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.ui.ServicesViewModel
@@ -91,14 +93,43 @@ class CourierLoadingScanViewModel(
         observeScanProcess()//1
         getGate()
         holdSplashScanner()
+        //sendRequestEveryFiveMinutes()
     }
 
     private fun holdSplashScanner() {
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
     }
 
+    private fun sendRequestEveryFiveMinutes() {
+        viewModelScope.launch(Dispatchers.IO) {
+             while (isActive){
+                 delay(1000 * 10)
+                 Log.e("TimerFiveMinutes","tag")
+                 try {
+                     //TODO(тут бет запрос на выгрузку коробок каждые пять минут до реализации на сервере)
+                 } catch (e: Exception) {
+
+                 }
+             }
+        }
+    }
+
+
+    fun onConfirmLoadingClick() {
+        setLoader(WaitLoader.Wait)
+        viewModelScope.launch {
+            try {
+                val response = interactor.confirmLoadingBoxes()
+                setLoader(WaitLoader.Complete)
+                confirmLoadingBoxesComplete(response)
+            } catch (e: Exception) {
+                logException(e,"onConfirmLoadingClick")
+                setLoader(WaitLoader.Complete)
+                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
+            }
+        }
+    }
     private fun getGate() {
-        Log.e("observeInitScanProcess","start1getGate")
         viewModelScope.launch {
             try {
                 val response = interactor.getGate()
@@ -119,7 +150,6 @@ class CourierLoadingScanViewModel(
             }
             .catch {
                 logException(it,"observeTimer")
-                observeTimerError(it)
             }
             .launchIn(viewModelScope)
 
@@ -129,28 +159,19 @@ class CourierLoadingScanViewModel(
         timerState.handle(this)
     }
 
-    private fun observeTimerError(throwable: Throwable) {
-        onTechErrorLog("observeTimerError", throwable)
-    }
-
-    private fun observeInitScanProcess() {// not work
-        Log.e("observeInitScanProcess","start1")
+    private fun observeInitScanProcess() {
         viewModelScope.launch {
             try {
                 val response = interactor.scannedBoxes()
-                Log.e("observeInitScanProcess","$response")
                 initScanProcessComplete(response)
             } catch (e: Exception) {
                 logException(e,"observeInitScanProcess")
-                initScanProcessError(e)
-                Log.e("observeInitScanProcess","$e")
             }
         }
     }
 
 
     private fun initScanProcessComplete(boxes: List<LocalBoxEntity>) {
-        onTechEventLog("initScanProcessComplete", "countBox " + boxes.size)
         if (boxes.isEmpty()) {
             observeTimer()
             _fragmentStateUI.value = CourierLoadingScanBoxState.InitScanner
@@ -168,12 +189,7 @@ class CourierLoadingScanViewModel(
         }
     }
 
-
-    private fun initScanProcessError(it: Throwable) {
-        onTechErrorLog("initScanProcessError", it)
-    }
-
-    private fun observeScanProcess() {//2
+    private fun observeScanProcess() {
         interactor.observeScanProcess()
             .onEach {
                 observeScanProcessComplete(it)
@@ -189,15 +205,10 @@ class CourierLoadingScanViewModel(
 
 
     private fun scanProcessError(throwable: Throwable) {
-        onTechErrorLog("observeScanProcessError", throwable)
         errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
     }
 
     private fun observeScanProcessComplete(scanResult: CourierLoadingProcessData) {
-        onTechEventLog(
-            "observeScanProcessComplete",
-            scanResult.scanBoxData.toString() + " " + scanResult.count
-        )
         val scanBoxData = scanResult.scanBoxData
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
         when (scanBoxData) {
@@ -207,6 +218,8 @@ class CourierLoadingScanViewModel(
                     with(scanBoxData) {
                         BoxInfoDataState(qrCode, address, countBoxes)
                     }
+                setLogBoxesQrCodeAddressAndCount(scanBoxData.qrCode,scanBoxData.address,countBoxes)
+                setValueToStartLog(true)
                  _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded
                 _orderTimer.value = CourierLoadingScanTimerState.Stopped
                 _completeButtonState.value = true
@@ -256,21 +269,7 @@ class CourierLoadingScanViewModel(
         _waitLoader.value = state
     }
 
-    fun onConfirmLoadingClick() {
-        setLoader(WaitLoader.Wait)
-        viewModelScope.launch {
-            try {
-                val response = interactor.confirmLoadingBoxes()
-                setLoader(WaitLoader.Complete)
-                confirmLoadingBoxesComplete(response)
-            } catch (e: Exception) {
-                logException(e,"onConfirmLoadingClick")
-                setLoader(WaitLoader.Complete)
-                onTechErrorLog("confirmLoadingBoxesError", e)
-                errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
-            }
-        }
-    }
+
 
     private fun confirmLoadingBoxesComplete(courierCompleteData: CourierCompleteData) {
         onCleared()
@@ -288,14 +287,9 @@ class CourierLoadingScanViewModel(
     }
 
     fun onCompleteLoaderClicked() {
-        //val stop = Single.just(stopScanner())
         _completeButtonState.value = false
         _navigationEvent.value = CourierLoadingScanNavAction.NavigateToConfirmDialog
         stopScanner()
-//        addSubscription(
-//            stop.subscribe()
-//        )
-
     }
 
     fun onCounterBoxClicked() {
@@ -351,7 +345,6 @@ class CourierLoadingScanViewModel(
     }
 
     override fun onTimeIsOverState() {
-        onTechEventLog("onTimeIsOverState")
         _timeOut.value = true
         stopScanner()
         _orderTimer.value =
@@ -365,7 +358,6 @@ class CourierLoadingScanViewModel(
     }
 
     fun returnToListOrderClick() {
-        onTechEventLog("returnToListOrderClick")
         deleteTask()
     }
 
@@ -375,7 +367,6 @@ class CourierLoadingScanViewModel(
             try {
                 interactor.deleteTask()
                 setLoader(WaitLoader.Complete)
-                onTechEventLog("toWarehouse")
                 toWarehouse()
                 _timeOut.value = false
             } catch (e: Exception) {

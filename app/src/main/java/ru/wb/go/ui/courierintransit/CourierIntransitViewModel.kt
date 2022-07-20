@@ -114,7 +114,7 @@ class CourierIntransitViewModel(
 
     init {
         //getSchedule()
-        onTechEventLog("initIntransit")
+        //onTechEventLog("initIntransit")
         initTime()
         observeMapAction()
     }
@@ -137,7 +137,7 @@ class CourierIntransitViewModel(
             }
             .catch {
                 logException(it,"observeOffices")
-                onTechErrorLog("Get Offices", it)
+                //onTechEventLog("Get Offices", it)
                 errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
             }
             .launchIn(viewModelScope)
@@ -169,7 +169,7 @@ class CourierIntransitViewModel(
             }
             .catch {
                 logException(it,"observeMapAction")
-                onTechErrorLog("observeMapAction", it)
+                //onTechEventLog("observeMapAction", it)
             }
 
             .launchIn(viewModelScope)
@@ -196,7 +196,7 @@ class CourierIntransitViewModel(
 
 
     private fun onMapPointClick(mapPoint: MapPoint) {
-        onTechEventLog("onItemPointClick")
+        //onTechEventLog("onItemPointClick")
         val mapPointClickId = mapPoint.id
         if (mapPointClickId != CourierMapFragment.MY_LOCATION_ID) {
             val indexItemClick = mapPointClickId.toInt()
@@ -271,7 +271,7 @@ class CourierIntransitViewModel(
 
 
     private fun initOfficesComplete(dstOffices: List<LocalOfficeEntity>) {
-        onTechEventLog("initOfficesComplete", "dstOffices count " + dstOffices.size)
+        //onTechEventLog("initOfficesComplete", "dstOffices count " + dstOffices.size)
         //val schedule = getSchedule()
         val items = mutableListOf<BaseIntransitItem>()
         coordinatePoints = mutableListOf()
@@ -385,7 +385,7 @@ class CourierIntransitViewModel(
     }
 
     fun onNavigatorClick() {
-        onTechEventLog("Button navigate to navigator")
+        //onTechEventLog("Button navigate to navigator")
         selectedItem()
     }
 
@@ -404,7 +404,7 @@ class CourierIntransitViewModel(
     }
 
     fun onScanQrPvzClick() {
-        onTechEventLog("Button scan QR Office")
+        //onTechEventLog("Button scan QR Office")
         updateMarkers()
         changeSelectedItemsByMarker(0, false)
         updateAndScrollToItems(0)
@@ -412,7 +412,7 @@ class CourierIntransitViewModel(
     }
 
     fun onCompleteDeliveryClick() {
-        onTechEventLog("Button CompleteDelivery")
+        //onTechEventLog("Button CompleteDelivery")
         viewModelScope.launch {
             try {
                 _isEnableState.value = false
@@ -425,7 +425,7 @@ class CourierIntransitViewModel(
                 completeDeliveryComplete(order.cost)
             } catch (e: Exception) {
                 logException(e,"onCompleteDeliveryClick")
-                onTechErrorLog("CompleteDelivery", e)
+                //onTechEventLog("CompleteDelivery", e)
                 setLoader(WaitLoader.Complete)
                 errorDialogManager.showErrorDialog(e, _navigateToErrorDialog)
             }
@@ -441,10 +441,10 @@ class CourierIntransitViewModel(
                 boxes.size,
                 cost
             )
-            onTechEventLog(
-                "CompleteDelivery",
-                "boxes: ${cdr.countBoxes}/${cdr.deliveredBoxes} - ${cdr.cost} руб"
-            )
+            //onTechEventLog(
+                //"CompleteDelivery",
+                //"boxes: ${cdr.countBoxes}/${cdr.deliveredBoxes} - ${cdr.cost} руб"
+            //)
 
             interactor.clearLocalTaskData()
             _navigationState.value =
@@ -463,7 +463,7 @@ class CourierIntransitViewModel(
     }
 
     fun onItemOfficeClick(index: Int) {
-        onTechEventLog("Select Office index=$index")
+        //onTechEventLog("Select Office index=$index")
         changeSelectedItems(index)
         updateItems()
         val isSelected = intransitItems[index].isSelected
@@ -489,12 +489,6 @@ class CourierIntransitViewModel(
                 CourierIntransitNavigatorUIState.Disable
             }
 
-    }
-
-    private fun getSchedule(): String {
-        val value = sharedWorker.load(SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT, "")
-        val parts = value.split(";")
-        return parts[1]
     }
 
     private fun changeSelectedItems(selectIndex: Int) {

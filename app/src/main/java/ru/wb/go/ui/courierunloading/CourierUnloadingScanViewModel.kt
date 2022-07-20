@@ -100,7 +100,7 @@ class CourierUnloadingScanViewModel(
 
             } catch (e: Exception) {
                 logException(e,"observeBoxInfoProcessInitState")
-                onTechErrorLog("observeInitScanProcessError", e)
+                //onTechEventLog("observeInitScanProcessError", e)
             }
         }
 
@@ -129,14 +129,14 @@ class CourierUnloadingScanViewModel(
                     Label(interactor.getCurrentOffice(parameters.officeId).officeName)
             } catch (e: Exception) {
                 logException(e,"initToolbar")
-                onTechErrorLog("initToolbar", e)
+                //onTechEventLog("initToolbar", e)
             }
         }
 
     }
 
     fun onCancelScoreUnloadingClick() {
-        onTechEventLog("onCancelScoreUnloadingClick")
+        //onTechEventLog("onCancelScoreUnloadingClick")
         _completeButtonEnable.value = true
         setLoader(WaitLoader.Complete)
         onStartScanner()
@@ -147,7 +147,7 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onConfirmScoreUnloadingClick() {
-        onTechEventLog("onConfirmScoreUnloadingClick")
+        //onTechEventLog("onConfirmScoreUnloadingClick")
         confirmUnloading()
     }
 
@@ -157,7 +157,7 @@ class CourierUnloadingScanViewModel(
                 interactor.completeOfficeUnload()
             } catch (e: Exception) {
                 logException(e,"confirmUnloading")
-                onTechErrorLog("confirmUnload", e)
+                //onTechEventLog("confirmUnload", e)
             }finally {
                 _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
 
@@ -178,7 +178,7 @@ class CourierUnloadingScanViewModel(
             }
             .catch {
                 logException(it,"observeScanProcess")
-                onTechErrorLog("observeScanProcessError", it)
+                //onTechEventLog("observeScanProcessError", it)
                 errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
             }
             .launchIn(viewModelScope)
@@ -192,7 +192,7 @@ class CourierUnloadingScanViewModel(
 //                .subscribe(
 //                    { observeScanProcessComplete(it) },
 //                    {
-//                        onTechErrorLog("observeScanProcessError", it)
+//                        //onTechEventLog("observeScanProcessError", it)
 //                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
 //                    }
 //                )
@@ -204,7 +204,7 @@ class CourierUnloadingScanViewModel(
     }
 
     private fun observeScanProcessComplete(scanProcess: CourierUnloadingProcessData) {
-        onTechEventLog("observeScanProcessComplete", "scanProcess $scanProcess")
+        //onTechEventLog("observeScanProcessComplete", "scanProcess $scanProcess")
         val scanBoxData = scanProcess.scanBoxData
         val accepted =
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)
@@ -305,7 +305,7 @@ class CourierUnloadingScanViewModel(
             }
             .catch {
                 logException(it,"observeScanProgress")
-                onTechErrorLog("observeScanProcessError", it)
+                //onTechEventLog("observeScanProcessError", it)
             }
             .launchIn(viewModelScope)
     }
@@ -352,7 +352,7 @@ class CourierUnloadingScanViewModel(
             } catch (e: Exception) {
                 logException(e,"onCompleteUnloadClick")
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
-                onTechErrorLog("readUnloadingBoxCounterError", e)
+                //onTechEventLog("readUnloadingBoxCounterError", e)
             }
         }
 

@@ -22,6 +22,8 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun confirmLoadingBoxes(): CourierCompleteData
 
+    suspend fun confirmLoadingBoxesEveryFiveMinutes()
+
     suspend fun getGate(): String?
 
     suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals

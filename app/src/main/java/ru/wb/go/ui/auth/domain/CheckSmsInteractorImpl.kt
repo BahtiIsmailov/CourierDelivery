@@ -23,6 +23,7 @@ class CheckSmsInteractorImpl(
         extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
+
     private var coroutineScope:CoroutineScope? = null
 
 
@@ -71,7 +72,7 @@ class CheckSmsInteractorImpl(
     override val timer: Flow<TimerState>
         get() = timerStates
 
-    override suspend fun stopTimer() {
+    override fun stopTimer() {
         timeConfirmCodeDisposable()
     }
 

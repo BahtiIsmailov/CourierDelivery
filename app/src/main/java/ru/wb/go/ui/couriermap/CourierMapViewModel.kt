@@ -9,7 +9,6 @@ import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 
@@ -117,6 +116,12 @@ class CourierMapViewModel(
     val visibleManagerBar: LiveData<CourierVisibilityManagerBar>
         get() = _visibleManagerBar
 
+
+
+//    init {
+//        subscribeMapState()
+//    }
+
     fun subscribeMapState() {
         interactor.subscribeMapState()
             .onEach {
@@ -124,17 +129,12 @@ class CourierMapViewModel(
             }
             .catch {
                 logException(it,"subscribeMapState")
-                LogUtils {
-                    logDebugApp("subscribeMapState() error $it")
-                }
+
             }
             .launchIn(viewModelScope)
 
     }
 
-    fun clearSubscription(){
-        //viewModelScope.coroutineContext.cancelChildren()
-    }
     private fun subscribeMapStateComplete(it: CourierMapState) {
         when (it) {
             is CourierMapState.NavigateToPoint -> _navigateToPoint.value =
@@ -158,7 +158,7 @@ class CourierMapViewModel(
             is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
                 NavigateToPointZoom(it.point)
 
-            is CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
+            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
                 NavigateToMyLocation
 
             is CourierMapState.UpdateMarkers -> _updateMarkers.value =
@@ -167,7 +167,7 @@ class CourierMapViewModel(
             is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =
                 UpdateMarkersWithIndex(it.points)
 
-            is CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
+            CourierMapState.UpdateMyLocation -> _updateMyLocation.value =
                 UpdateMyLocation
 
             is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.value =
@@ -185,11 +185,11 @@ class CourierMapViewModel(
                     it.offsetY
                 )
 
-            is CourierMapState.ClearMap -> _clearMap.value = ClearMap
-            is CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
+            CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Visible
 
-            is CourierMapState.HideManagerBar -> _visibleManagerBar.value =
+            CourierMapState.HideManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Hide
 
         }
@@ -204,7 +204,7 @@ class CourierMapViewModel(
     }
 
     fun onForcedLocationUpdate(point: CoordinatePoint) {
-        interactor.onForcedLocationUpdate(point)
+        interactor.onForcedLocationUpdate(point)//1
     }
 
     fun onForcedLocationUpdateDefault() {

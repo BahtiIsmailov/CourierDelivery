@@ -3,6 +3,7 @@ package ru.wb.go.ui.courierwarehouses
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.*
 import androidx.core.content.ContextCompat
@@ -25,6 +26,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
+import kotlin.math.log
 
 
 class CourierWarehousesFragment :
@@ -55,6 +57,7 @@ class CourierWarehousesFragment :
             R.color.colorPrimary
         )
     }
+
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
@@ -96,7 +99,7 @@ class CourierWarehousesFragment :
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
                 }
-                is CourierWarehouseItemState.NoInternet -> {
+                CourierWarehouseItemState.NoInternet -> {
                     binding.noInternetLayout.visibility = VISIBLE
                     binding.items.visibility = GONE
                 }
@@ -157,7 +160,7 @@ class CourierWarehousesFragment :
 
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
+                CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrders ->
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierOrdersFragment(
@@ -169,7 +172,7 @@ class CourierWarehousesFragment :
                             )
                         )
                     )
-                is CourierWarehousesNavigationState.NavigateToRegistration -> {
+                CourierWarehousesNavigationState.NavigateToRegistration -> {
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToAuthNavigation()
                     )
@@ -200,6 +203,10 @@ class CourierWarehousesFragment :
                 return SNAP_TO_START
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     override fun onResume() {

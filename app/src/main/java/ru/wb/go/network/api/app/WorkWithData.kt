@@ -36,6 +36,7 @@ fun toCourierDocumentsDocumentsRequest(courierDocumentsEntity: CourierDocumentsE
 }
 
 
+
 fun toCourierDocumentsEntity(courierDocumentsResponse: CourierDocumentsResponse): CourierDocumentsEntity {
     return with(courierDocumentsResponse) {
         CourierDocumentsEntity(
@@ -213,6 +214,7 @@ fun toCourierOrderEntity(courierOrderResponse: CourierOrderResponse,dstOffices:M
     return CourierOrderEntity (
         id = courierOrderResponse.id,
         routeID = courierOrderResponse.routeID ?: 0,
+        ridMask = courierOrderResponse.ridMask?:0,
         gate = courierOrderResponse.gate ?: "",
         minPrice = courierOrderResponse.minPrice,
         minVolume = courierOrderResponse.minVolume,

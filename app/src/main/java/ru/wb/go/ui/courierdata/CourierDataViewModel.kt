@@ -12,7 +12,6 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierdata.domain.CourierDataInteractor
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 
@@ -111,7 +110,7 @@ class UserFormViewModel(
             }
             .catch {
                 logException(it,"onFormChanges")
-                LogUtils { logDebugApp(it.toString()) }
+
             }
             .launchIn(viewModelScope)
     }
@@ -179,14 +178,14 @@ class UserFormViewModel(
     }
 
     private fun couriersFormComplete() {
-        onTechEventLog("couriersFormComplete", "NavigateToCouriersCompleteRegistration")
+        //onTechEventLog("couriersFormComplete", "NavigateToCouriersCompleteRegistration")
         _loaderState.value = CourierDataUILoaderState.Disable
         _navigationEvent.value =
             CourierDataNavAction.NavigateToCouriersCompleteRegistration(parameters.phone)
     }
 
     private fun couriersFormError(it: Throwable) {
-        onTechErrorLog("couriersFormError", it)
+        //onTechEventLog("couriersFormError", it)
         _loaderState.value = CourierDataUILoaderState.Enable
         if (it is InternalServerException) couriersFormComplete()
         else errorDialogManager.showErrorDialog(it, _navigateToMessageInfo)
@@ -201,7 +200,7 @@ class UserFormViewModel(
     }
 
     fun onShowAgreementClick() {
-        onTechEventLog("onShowAgreementClick")
+        //onTechEventLog("onShowAgreementClick")
         _navigationEvent.value = CourierDataNavAction.NavigateToAgreement
     }
 

@@ -47,7 +47,7 @@ class RefreshTokenRepositoryImpl(
                         RefreshResult.Success
                     } else {
                         val ex = UnknownException("Empty body", "")
-                        //metric.onTechErrorLog("RefreshToken", "refreshSuccessResponse", "emptyBody")
+                        //metric.//onTechEventLog("RefreshToken", "refreshSuccessResponse", "emptyBody")
                         RefreshResult.Failed(ex)
                     }
                 } else {
@@ -63,13 +63,13 @@ class RefreshTokenRepositoryImpl(
                         RefreshResult.TokenInvalid
                     } else {
                         val msg = errorResponse?.toString() ?: "-"
-                        //metric.onTechErrorLog("RefreshToken", "unknownResponse", msg)
+                        //metric.//onTechEventLog("RefreshToken", "unknownResponse", msg)
                         val ex = UnknownException("Validation error", "")
                         RefreshResult.Failed(ex)
                     }
                 }
             } catch (ex: Exception) {
-                //metric.onTechErrorLog("RefreshToken", "catchException", ex.message ?: "-")
+                //metric.//onTechEventLog("RefreshToken", "catchException", ex.message ?: "-")
                 when (ex) {
                     is TimeoutException, is SocketTimeoutException -> {
                         RefreshResult.TimeOut

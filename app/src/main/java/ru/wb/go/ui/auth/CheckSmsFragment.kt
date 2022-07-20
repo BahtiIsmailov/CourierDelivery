@@ -26,6 +26,7 @@ import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.utils.NavigateUtils
 
 class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
@@ -46,6 +47,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.saveDataToShared()
         initViews()
         initListener()
         initObserve()
@@ -57,7 +59,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
     private fun initListener() {
         binding.toolbarLayout.back.setOnClickListener {
-            findNavController().popBackStack()
+            findNavController().popBackStack(R.id.checkSmsFragment,true)
         }
 
         viewModel.onNumberObservableClicked(binding.viewKeyboard.observableListener.asFlow())
@@ -73,6 +75,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
         }
 
         viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
+
             when (state) {
                 CheckSmsNavigationState.NavigateToAppLoader -> {
                     val navBuilder = NavOptions.Builder()
@@ -97,7 +100,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
         viewModel.toolbarNetworkState.observe(viewLifecycleOwner) {
             val ic = when (it) {
-                is NetworkState.Complete -> R.drawable.ic_inet_complete
+                NetworkState.Complete -> R.drawable.ic_inet_complete
                 else -> R.drawable.ic_inet_failed
             }
             binding.toolbarLayout.noInternetImage.setImageDrawable(
@@ -185,6 +188,7 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
             }
         }
     }
+
 
     private fun timeSpannable(state: CheckSmsUIRepeatState.RepeatPasswordTimer): Spannable {
         val title = state.text

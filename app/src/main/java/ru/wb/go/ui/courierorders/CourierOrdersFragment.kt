@@ -21,11 +21,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -102,7 +105,9 @@ class CourierOrdersFragment :
     private fun onBackPressedCallback() = object : OnBackPressedCallback(true) {
         override  fun handleOnBackPressed() {
             when {
-                isOrdersExpanded() -> { viewModel.onCloseOrdersClick() }
+                isOrdersExpanded() -> {
+                    viewModel.onCloseOrdersClick()
+                }
                 isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
                 isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
             }
@@ -159,11 +164,9 @@ class CourierOrdersFragment :
         else if (isOrderDetailsExpanded()) viewModel.restoreDetails()
     }
 
-
-    override fun onDestroyView() {
-        viewModel.clearSubscription()
-        viewModel.clearMap()
-        super.onDestroyView()
+    override fun onStop(){
+        super.onStop()
+        viewModel.clearSharedFlow()
     }
 
     private fun getHalfHeightDisplay(): Int {
@@ -214,10 +217,7 @@ class CourierOrdersFragment :
 
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-        binding.takeOrder.setOnClickListener {
-            viewModel.getAddressFromOrderAddressItems()
-            viewModel.onConfirmTakeOrderClick()
-        }
+        binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
         binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
@@ -268,15 +268,17 @@ class CourierOrdersFragment :
         viewModel.navigationState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
-                is CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
-                is CourierOrdersNavigationState.NavigateToWarehouse -> { findNavController().popBackStack() }
-                is CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
+                CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
+                CourierOrdersNavigationState.NavigateToWarehouse -> {
+                    findNavController().popBackStack(R.id.courierOrdersFragment,true)
+                }
+                CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
                 is CourierOrdersNavigationState.NavigateToOrderDetails ->
                     showBottomSheetOrderDetails(it.isDemo)
-                is CourierOrdersNavigationState.NavigateToAddresses -> showAddresses()
-                is CourierOrdersNavigationState.NavigateToRegistrationDialog ->
+                CourierOrdersNavigationState.NavigateToAddresses -> showAddresses()
+                CourierOrdersNavigationState.NavigateToRegistrationDialog ->
                     showRegistrationDialogConfirmInfo()
-                is CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
+                CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
                     ResourcesCompat.getDrawable(resources, it.icon, null)
                         ?.let { binding.iconAddress.setImageDrawable(it) }
@@ -286,14 +288,14 @@ class CourierOrdersFragment :
                         fadeOut(binding.addressDetailLayout).start()
                     }
                 }
-                is CourierOrdersNavigationState.CloseAddressesDetail -> {
+                CourierOrdersNavigationState.CloseAddressesDetail -> {
                     fadeIn(binding.addressDetailLayout).start()
                 }
-                is CourierOrdersNavigationState.OnMapClick ->
+                CourierOrdersNavigationState.OnMapClick ->
                     if (isOrderDetailsExpanded()) {
                         viewModel.onMapClickWithDetail()
                     }
-                is CourierOrdersNavigationState.CourierLoader ->
+                CourierOrdersNavigationState.CourierLoader ->
                     findNavController().navigate(
                         CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierLoaderFragment()
                     )
@@ -370,7 +372,7 @@ class CourierOrdersFragment :
                     with(binding.selectedOrder) {
 
                         when (it.carNumber) {
-                            is CarNumberState.Empty -> {
+                            CarNumberState.Empty -> {
                                 binding.carNumber.visibility = GONE
                                 binding.carNumberEmpty.visibility = VISIBLE
                             }
@@ -409,7 +411,7 @@ class CourierOrdersFragment :
 
         viewModel.showOrderState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierOrderShowOrdersState.Disable -> {
+                CourierOrderShowOrdersState.Disable -> {
                     with(binding.showOrderFab){
                          isEnabled = false
                          //isClickable = false
@@ -417,15 +419,15 @@ class CourierOrdersFragment :
                     }
 
                 }
-                is CourierOrderShowOrdersState.Enable -> {
+                CourierOrderShowOrdersState.Enable -> {
                     with(binding.showOrderFab) {
                          isEnabled = true
                          //isClickable = true
                          backgroundTintList = colorFab(R.color.colorPrimary)
                     }
                 }
-                is CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
-                is CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE
+                CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
+                CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE
             }
         }
 
@@ -443,7 +445,7 @@ class CourierOrdersFragment :
                     binding.addresses.adapter =
                         CourierOrderDetailsAddressAdapter(requireContext(), it.items, callback)
                 }
-                is CourierOrderAddressesUIState.Empty -> {
+                CourierOrderAddressesUIState.Empty -> {
                     binding.emptyList.visibility = VISIBLE
                     binding.addresses.visibility = GONE
                     binding.takeOrder.isEnabled = false

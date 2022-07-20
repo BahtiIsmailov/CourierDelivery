@@ -77,7 +77,7 @@ class CourierOrderTimerViewModel(
                 startTimer(it.reservedDuration, it.reservedAt)
             } catch (e: Exception) {
                 logException(e,"initOrder")
-                onTechErrorLog("initOrder", e)
+                //onTechEventLog("initOrder", e)
             }
         }
     }
@@ -107,7 +107,7 @@ class CourierOrderTimerViewModel(
     }
 
     private fun onHandleSignUpError(throwable: Throwable) {
-        onTechErrorLog("onHandleSignUpError", throwable)
+        //onTechEventLog("onHandleSignUpError", throwable)
     }
 
     private fun timeIsOut() {
@@ -161,12 +161,12 @@ class CourierOrderTimerViewModel(
     }
 
     fun timeOutReturnToList() {
-        onTechEventLog("onReturnToListOrderClick")
+        //onTechEventLog("onReturnToListOrderClick")
         deleteTask()
     }
 
     fun onRefuseOrderConfirmClick() {
-        onTechEventLog("onRefuseOrderConfirmClick")
+        //onTechEventLog("onRefuseOrderConfirmClick")
         deleteTask()
     }
 
@@ -176,7 +176,7 @@ class CourierOrderTimerViewModel(
             try {
                 interactor.deleteTask()
                 setLoader(WaitLoader.Complete)
-                onTechEventLog("toWarehouse")
+                //onTechEventLog("toWarehouse")
                 _navigationState.value =
                     CourierOrderTimerNavigationState.NavigateToWarehouse
                 _timeOut.value = false
@@ -205,7 +205,7 @@ class CourierOrderTimerViewModel(
     }
 
     override fun onTimeIsOverState() {
-        onTechEventLog("onTimeIsOverState")
+        //onTechEventLog("onTimeIsOverState")
         timeIsOut()
     }
 

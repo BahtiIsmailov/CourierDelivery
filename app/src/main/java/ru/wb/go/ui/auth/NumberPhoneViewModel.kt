@@ -64,7 +64,7 @@ class NumberPhoneViewModel(
 
 
     fun onCheckPhone(number: String) {
-        onTechEventLog("onCheckPhone", number)
+        //onTechEventLog("onCheckPhone", number)
         fetchPhoneNumber(number)
     }
 
@@ -87,7 +87,7 @@ class NumberPhoneViewModel(
             }
             .catch {
                 logException(it,"onNumberObservableClicked")
-                onTechErrorLog("onNumberObservableClicked", it)
+                //onTechEventLog("onNumberObservableClicked", it)
             }
             .launchIn(viewModelScope)
 
@@ -122,7 +122,7 @@ class NumberPhoneViewModel(
         }
 
     private fun fetchPhoneNumber(phone: String) {
-        onTechEventLog("onCheckPhone", phone)
+        //onTechEventLog("onCheckPhone", phone)
         _stateUI.value = NumberCheckProgress
         viewModelScope.launch {
             try {
@@ -137,13 +137,13 @@ class NumberPhoneViewModel(
 
 
     private fun fetchPhoneNumberComplete(phone: String) {
-        onTechEventLog("fetchPhoneNumberComplete", phone)
+        //onTechEventLog("fetchPhoneNumberComplete", phone)
         _navigationEvent.value = NumberPhoneNavAction.NavigateToCheckPassword(phone, DEFAULT_TTL)
         _stateUI.value = NumberFormatComplete
     }
 
     private fun fetchPhoneNumberError(throwable: Throwable, phone: String) {
-        onTechErrorLog("fetchPhoneNumberError $phone", throwable)
+        //onTechEventLog("fetchPhoneNumberError $phone", throwable)
         when (throwable) {
             is NoInternetException -> _stateUI.value =
                 Error(

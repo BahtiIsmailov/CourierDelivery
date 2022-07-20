@@ -97,7 +97,7 @@ class CourierCarNumberViewModel(
             }
             .catch {
                 logException(it,"onNumberObservableClicked")
-                onTechErrorLog("onNumberObservableClicked", it)
+                //onTechEventLog("onNumberObservableClicked", it)
             }
             .launchIn(viewModelScope)
 
@@ -117,7 +117,7 @@ class CourierCarNumberViewModel(
 //                .map { carNumberFormat(CarNumberUtils(it)).invoke() }
 //                .subscribe(
 //                    { _stateUI.value = it },
-//                    { onTechErrorLog("onNumberObservableClicked", it) })
+//                    { //onTechEventLog("onNumberObservableClicked", it) })
 //        )
 //    }
 
@@ -196,7 +196,7 @@ class CourierCarNumberViewModel(
     }
 
     private fun fetchCarNumberComplete() {
-        onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
+        //onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
             result = parameters.result
         )
@@ -204,7 +204,7 @@ class CourierCarNumberViewModel(
     }
 
     private fun fetchCarNumberError(throwable: Throwable) {
-        onTechErrorLog("fetchCarNumberError", throwable)
+        //onTechEventLog("fetchCarNumberError", throwable)
         _progressState.value = CourierCarNumberProgressState.ProgressComplete
         _navigationState.value =
             CourierCarNumberNavigationState.NavigateToOrderDetails(

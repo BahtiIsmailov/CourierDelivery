@@ -17,8 +17,8 @@ class CourierOrdersResourceProvider(private val context: Context) :
         return context.getString(R.string.orderCost, coast)
     }
 
-    fun getCargo(volume: Int, boxCount: Int): String {
-        return context.getString(R.string.orderCargo, volume, boxCount)
+    fun getCargo(volume: Int): String {//, boxCount: Int
+        return context.getString(R.string.orderCargo, volume)//, boxCount
     }
 
     fun getCountPvz(pvzCount: Int): String {
@@ -52,12 +52,13 @@ class CourierOrdersResourceProvider(private val context: Context) :
     fun getConfirmTitleDialog(orderNumber: Int) =
         context.getString(R.string.courier_orders_details_dialog_title, orderNumber)
 
-    fun getConfirmMessageDialog(carNumber: String, volume: String, reserve: String) =
+    fun getConfirmMessageDialog(carNumber: String, volume: String, reserve: String,boxCountWithRouteId:Int) =
         context.getString(
             R.string.courier_orders_details_dialog_message,
             carNumber,
             volume,
-            reserve
+            reserve,
+            boxCountWithRouteId
         )
 
     fun getConfirmPositiveDialog() =
@@ -68,6 +69,7 @@ class CourierOrdersResourceProvider(private val context: Context) :
 
     fun getTaskReject() =
         context.getString(R.string.courier_orders_details_dialog_task_reject)
+
 
     @DrawableRes
     fun getTypeIcons(type: Int): Int {

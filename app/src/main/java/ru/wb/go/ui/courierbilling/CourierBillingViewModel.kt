@@ -75,7 +75,7 @@ class CourierBillingViewModel(
                 billingComplete(interactor.getBillingInfo())
             }catch (e:Exception){
                 logException(e,"initBalanceAndTransactions")
-                onTechErrorLog("billingError", e)
+                //onTechEventLog("billingError", e)
                 setLoader(WaitLoader.Complete)
                 _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
@@ -108,7 +108,7 @@ class CourierBillingViewModel(
     }
 
     fun onUpdateClick() {
-        onTechEventLog("onUpdateClick")
+        //onTechEventLog("onUpdateClick")
         initBalanceAndTransactions()
     }
 

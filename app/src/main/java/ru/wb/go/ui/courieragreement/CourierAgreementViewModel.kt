@@ -16,7 +16,7 @@ class CourierAgreementViewModel(
         get() = _navigationState
 
     fun onCompleteClick() {
-        onTechEventLog("onCompleteClick")
+        //onTechEventLog("onCompleteClick")
         _navigationState.value = CourierAgreementNavigationState.Complete
     }
 

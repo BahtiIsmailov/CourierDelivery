@@ -10,7 +10,6 @@ import ru.wb.go.network.api.app.entity.PaymentEntity
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.courierbillingaccountselector.domain.CourierBillingAccountSelectorInteractor
-import ru.wb.go.utils.LogUtils
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import java.text.DecimalFormat
@@ -101,7 +100,7 @@ class CourierBillingAccountSelectorViewModel(
 
             } catch (e: Exception) {
                 logException(e,"initAccounts")
-                onTechErrorLog("getBillingAccounts", e)
+                //onTechEventLog("getBillingAccounts", e)
                 errorDialogManager.showErrorDialog(e, _errorDialogState)
             }
         }
@@ -169,141 +168,140 @@ class CourierBillingAccountSelectorViewModel(
             .map { mapAction(it) }
             .onEach { _formUIState.value = it }
             .catch {
-                logException(it,"onFormChanges")
-                LogUtils { logDebugApp(it.toString()) } }
-            .launchIn(viewModelScope)
-    }
-
-
-     private fun mapAction(action: CourierBillingAccountSelectorUIAction) = when (action) {
-        is CourierBillingAccountSelectorUIAction.FocusChange -> checkFieldFocus(action)
-        is CourierBillingAccountSelectorUIAction.TextChange -> checkFieldText(action)
-        is CourierBillingAccountSelectorUIAction.CompleteClick -> checkFieldAll(action)
-    }
-
-    private fun checkFieldAll(action: CourierBillingAccountSelectorUIAction.CompleteClick): CourierBillingAccountSelectorUIState {
-        val iterator = action.userData.iterator()
-        while (iterator.hasNext()) {
-            val item = iterator.next()
-            when (item.type) {
-                CourierBillingAccountSelectorQueryType.SURNAME -> if (isNotCheck(
-                        checkSurname(
-                            item.text,
-                            item.type
-                        )
-                    )
-                ) iterator.remove()
+                logException(it, "onFormChanges")
             }
-        }
-        return if (action.userData.isEmpty()) {
-            // TODO: 20.08.2021 выполнить загрузку данных пользователя
-            CourierBillingAccountSelectorUIState.NextComplete
-        } else {
-            CourierBillingAccountSelectorUIState.ErrorFocus("", action.userData.first().type)
-        }
-    }
+                    .launchIn(viewModelScope)
+            }
 
-    private fun checkFieldFocus(action: CourierBillingAccountSelectorUIAction.FocusChange) =
-        when (action.type) {
-            CourierBillingAccountSelectorQueryType.SURNAME -> checkFocusSurnameWrapper(action)
+
+        private fun mapAction(action: CourierBillingAccountSelectorUIAction) = when (action) {
+            is CourierBillingAccountSelectorUIAction.FocusChange -> checkFieldFocus(action)
+            is CourierBillingAccountSelectorUIAction.TextChange -> checkFieldText(action)
+            is CourierBillingAccountSelectorUIAction.CompleteClick -> checkFieldAll(action)
         }
 
-    private fun checkFieldText(action: CourierBillingAccountSelectorUIAction.TextChange) =
-        when (action.type) {
-            CourierBillingAccountSelectorQueryType.SURNAME -> {
-                _balanceChangeState.value = if (action.text.isEmpty()) {
-                    CourierBillingAccountSelectorBalanceAction.Init(resourceProvider.getWithdrawBalanceInit())
-                } else {
-                    val balanceFromText = amountFromString(action.text)
-                    val balance = decimalFormat(balanceFromText)
-                    val drawBalance = resourceProvider.getWithdrawBalance(balance)
-                    when {
-                        balanceFromText == 0 -> CourierBillingAccountSelectorBalanceAction.Error(
-                            drawBalance
+        private fun checkFieldAll(action: CourierBillingAccountSelectorUIAction.CompleteClick): CourierBillingAccountSelectorUIState {
+            val iterator = action.userData.iterator()
+            while (iterator.hasNext()) {
+                val item = iterator.next()
+                when (item.type) {
+                    CourierBillingAccountSelectorQueryType.SURNAME -> if (isNotCheck(
+                            checkSurname(
+                                item.text,
+                                item.type
+                            )
                         )
-                        localBalance >= balanceFromText -> CourierBillingAccountSelectorBalanceAction.Complete(
-                            drawBalance
-                        )
-                        else -> CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
-                    }
+                    ) iterator.remove()
                 }
-
-                checkTextSurnameWrapper(action)
+            }
+            return if (action.userData.isEmpty()) {
+                // TODO: 20.08.2021 выполнить загрузку данных пользователя
+                CourierBillingAccountSelectorUIState.NextComplete
+            } else {
+                CourierBillingAccountSelectorUIState.ErrorFocus("", action.userData.first().type)
             }
         }
 
-    private fun decimalFormat(balanceFromText: Int): String {
-        val decimalFormat = DecimalFormat("#,###.##")
-        return decimalFormat.format(balanceFromText)
-    }
+        private fun checkFieldFocus(action: CourierBillingAccountSelectorUIAction.FocusChange) =
+            when (action.type) {
+                CourierBillingAccountSelectorQueryType.SURNAME -> checkFocusSurnameWrapper(action)
+            }
 
-    private fun isNotCheck(state: CourierBillingAccountSelectorUIState) =
-        state is CourierBillingAccountSelectorUIState.Complete
+        private fun checkFieldText(action: CourierBillingAccountSelectorUIAction.TextChange) =
+            when (action.type) {
+                CourierBillingAccountSelectorQueryType.SURNAME -> {
+                    _balanceChangeState.value = if (action.text.isEmpty()) {
+                        CourierBillingAccountSelectorBalanceAction.Init(resourceProvider.getWithdrawBalanceInit())
+                    } else {
+                        val balanceFromText = amountFromString(action.text)
+                        val balance = decimalFormat(balanceFromText)
+                        val drawBalance = resourceProvider.getWithdrawBalance(balance)
+                        when {
+                            balanceFromText == 0 -> CourierBillingAccountSelectorBalanceAction.Error(
+                                drawBalance
+                            )
+                            localBalance >= balanceFromText -> CourierBillingAccountSelectorBalanceAction.Complete(
+                                drawBalance
+                            )
+                            else -> CourierBillingAccountSelectorBalanceAction.Error(drawBalance)
+                        }
+                    }
 
-    fun onNextCompleteClick(accountId: Long, amount: String) {
-        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
-        val amountFromText = amountFromString(amount)
-        val courierBillingAccountEntity = billingAccounts[accountId.toInt()]
-        val paymentEntity = with(courierBillingAccountEntity) {
-            PaymentEntity(
-                recipientBankName = bank,
-                recipientName = userName,
-                recipientBankBik = bic,
-                recipientCorrespondentAccount = correspondentAccount,
-                recipientAccount = account,
-                recipientInn = inn
-            )
+                    checkTextSurnameWrapper(action)
+                }
+            }
+
+        private fun decimalFormat(balanceFromText: Int): String {
+            val decimalFormat = DecimalFormat("#,###.##")
+            return decimalFormat.format(balanceFromText)
         }
-        viewModelScope.launch  {
-            try {
-                interactor.payments(amountFromText, paymentEntity)
-                paymentsComplete(amountFromText)
-            } catch (e: Exception) {
-                logException(e,"onNextCompleteClick")
-                onTechErrorLog("requestPayout", e)
-                errorDialogManager.showErrorDialog(e, _errorDialogState)
+
+        private fun isNotCheck(state: CourierBillingAccountSelectorUIState) =
+            state is CourierBillingAccountSelectorUIState.Complete
+
+        fun onNextCompleteClick(accountId: Long, amount: String) {
+            _loaderState.value = CourierBillingAccountSelectorUILoaderState.Progress
+            val amountFromText = amountFromString(amount)
+            val courierBillingAccountEntity = billingAccounts[accountId.toInt()]
+            val paymentEntity = with(courierBillingAccountEntity) {
+                PaymentEntity(
+                    recipientBankName = bank,
+                    recipientName = userName,
+                    recipientBankBik = bic,
+                    recipientCorrespondentAccount = correspondentAccount,
+                    recipientAccount = account,
+                    recipientInn = inn
+                )
+            }
+            viewModelScope.launch {
+                try {
+                    interactor.payments(amountFromText, paymentEntity)
+                    paymentsComplete(amountFromText)
+                } catch (e: Exception) {
+                    logException(e, "onNextCompleteClick")
+                    //onTechEventLog("requestPayout", e)
+                    errorDialogManager.showErrorDialog(e, _errorDialogState)
+                }
             }
         }
-    }
-
-    fun onEditAccountClick(idView: Int) {
-        _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
-            billingAccounts[idView],
-            billingAccounts,
-            parameters.balance
-        )
-    }
-
-    fun onAddAccountClick() {
-        _navigationEvent.value =
-            CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
+        fun onEditAccountClick(idView: Int) {
+            _navigationEvent.value = CourierBillingAccountSelectorNavAction.NavigateToAccountEdit(
+                billingAccounts[idView],
                 billingAccounts,
                 parameters.balance
             )
-    }
-
-    fun onAccountSelectClick(id: Int) {
-        val selected = if (id == billingAccounts.size) {
-            onAddAccountClick()
-            0
-        } else {
-            id
         }
-        _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetSelected(selected)
+
+        fun onAddAccountClick() {
+            _navigationEvent.value =
+                CourierBillingAccountSelectorNavAction.NavigateToAccountCreate(
+                    billingAccounts,
+                    parameters.balance
+                )
+        }
+
+        fun onAccountSelectClick(id: Int) {
+            val selected = if (id == billingAccounts.size) {
+                onAddAccountClick()
+                0
+            } else {
+                id
+            }
+            _dropAccountState.value = CourierBillingAccountSelectorDropAction.SetSelected(selected)
+        }
+
+        private fun paymentsComplete(amount: Int) {
+            localBalance -= amount
+            parameters.balance = localBalance
+            initBalance()
+            _loaderState.value = CourierBillingAccountSelectorUILoaderState.Disable
+            _navigationEvent.value =
+                CourierBillingAccountSelectorNavAction.NavigateToBillingComplete(amount)
+        }
+
+        override fun getScreenTag(): String {
+            return ""
+        }
+
+
     }
-
-    private fun paymentsComplete(amount: Int) {
-        localBalance -= amount
-        parameters.balance = localBalance
-        initBalance()
-        _loaderState.value = CourierBillingAccountSelectorUILoaderState.Disable
-        _navigationEvent.value =
-            CourierBillingAccountSelectorNavAction.NavigateToBillingComplete(amount)
-    }
-
-    override fun getScreenTag(): String {
-        return ""
-    }
-
-
-}

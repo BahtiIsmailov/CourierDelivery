@@ -6,6 +6,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.wb.go.network.api.app.remote.courier.CourierOrdersResponse
 import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
+import ru.wb.go.network.api.app.remote.courier.TaskBoxCountResponse
 
 interface AppTasksApi {
 
@@ -20,4 +21,8 @@ interface AppTasksApi {
         @Query("srcOfficeID") srcOfficeID: Int
     ):  CourierOrdersResponse
 
+    @GET("/api/v1/routes/{rid}/boxes/count")
+    suspend fun boxCountWithRouteId(
+        @Path(value = "rid",encoded = true) rid: Long
+    ):TaskBoxCountResponse
 }
