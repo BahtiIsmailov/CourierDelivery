@@ -150,8 +150,8 @@ class CourierOrdersViewModel(
                         resourceProvider.getConfirmMessageDialog(
                             CarNumberUtils(interactor.carNumber()).fullNumber(),
                             resourceProvider.getCargo(
-                                courierOrderLocalEntity.minVolume,
-                                courierOrderLocalEntity.minBoxesCount
+                                courierOrderLocalEntity.minVolume
+                                //courierOrderLocalEntity.minBoxesCount
                             ),
                             courierOrderLocalEntity.reservedDuration,
                             if (boxCountWithRouteId == -1) courierOrderLocalEntity.minBoxesCount
@@ -658,7 +658,7 @@ class CourierOrdersViewModel(
                     itemId = itemId,
                     orderId = resourceProvider.getOrder(id),
                     cost = resourceProvider.getCost(coast),
-                    cargo = resourceProvider.getCargo(minVolume, minBoxesCount),
+                    cargo = resourceProvider.getCargo(minVolume),//, minBoxesCount
                     countPvz = resourceProvider.getCountPvz(pvz),
                     reserve = resourceProvider.getArrive(reservedDuration),
                     taskDistance = taskDistance
