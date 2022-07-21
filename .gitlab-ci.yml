@@ -67,7 +67,7 @@ assembleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - master
+    - dev
 
 bundleRelease:
   interruptible: true
@@ -79,15 +79,14 @@ bundleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - master
+    - dev
 
 deploy:
   stage: deploy
   interruptible: true
   script:
     #deploy success
-    - sh ci-notify.sh ✅
-
+    - sh ci-notify.sh "bundleRelease is ready to download✅"
   only:
     - dev
 
