@@ -16,7 +16,6 @@ before_script:
    
 
   - export ANDROID_HOME="${PWD}/android-home"
-  - export JAVA_HOME="/usr/lib/jvm/java-18.0.2-openjdk-amd64"
 
   - install -d $ANDROID_HOME
 
