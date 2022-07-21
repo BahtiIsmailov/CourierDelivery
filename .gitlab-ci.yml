@@ -14,9 +14,9 @@ before_script:
   - apt-get --quiet update --yes
   - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
    
-  
 
   - export ANDROID_HOME="${PWD}/android-home"
+  - export JAVA_HOME="C:\Program Files\Java\jdk-18.0.2\"
 
   - install -d $ANDROID_HOME
 
@@ -35,9 +35,7 @@ before_script:
   - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
   - chmod +x ./gradlew
 
-spotbugs-sast:
-  before_scripts:
-   - source /root/.bashrc && switch_to java 18
+
 
 stages:
   - debugApk
