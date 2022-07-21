@@ -35,6 +35,10 @@ before_script:
   - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
   - chmod +x ./gradlew
 
+spotbugs-sast:
+  before_scripts:
+   - source /root/.bashrc && switch_to java 18
+
 stages:
   - debugApk
   - releaseApk
