@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierorders
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -138,10 +139,13 @@ class CourierOrdersViewModel(
     }
 
     private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
+        var boxCountWithRouteId = 0
         with(orderLocalDataEntities[it]) {
             viewModelScope.launch {
-               val boxCountWithRouteId:Int = interactor.getBoxCountWithRouteId(courierOrderLocalEntity).count
-
+                 if (courierOrderLocalEntity.ridMask != 0L) {
+                     boxCountWithRouteId =
+                     interactor.getBoxCountWithRouteId(courierOrderLocalEntity).count
+                 }
                 _navigateToDialogConfirmScoreInfo.value =
                     NavigateToDialogConfirmInfo(
                         DialogInfoStyle.INFO.ordinal,
