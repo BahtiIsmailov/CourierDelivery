@@ -16,7 +16,7 @@ before_script:
    
 
   - export ANDROID_HOME="${PWD}/android-home"
-  - export JAVA_HOME=C:/ProgramFiles/Java/jdk-18.0.2/bin/
+  - export JAVA_HOME=C:/ProgramFiles/Java/jdk-18.0.2/
 
   - install -d $ANDROID_HOME
 
