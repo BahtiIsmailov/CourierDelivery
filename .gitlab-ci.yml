@@ -38,6 +38,8 @@ stages:
   - debugApk
   - releaseApk
   - releaseBundle
+  - deploy
+  - notify
 
 # Make Project
 assembleDebug:
@@ -50,7 +52,7 @@ assembleDebug:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 assembleRelease:
   interruptible: true
@@ -63,7 +65,7 @@ assembleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 bundleRelease:
   interruptible: true
@@ -76,3 +78,23 @@ bundleRelease:
       - $OUTPUT_DIR
   only:
     - dev
+
+deploy:
+  image: node:4.2.2
+  stage: deploy
+
+  script:
+    #deploy success
+    - sh .ci-notify.sh ✅
+
+  artifacts:
+    paths:
+      - public
+  only:
+    - dev
+
+notify_error:
+  stage: notify
+  script:
+    - sh .ci-notify.sh ❌
+  when: on_failure #deploy fail
