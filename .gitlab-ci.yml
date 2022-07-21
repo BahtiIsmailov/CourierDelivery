@@ -4,7 +4,7 @@ variables:
 
   ANDROID_COMPILE_SDK: "30"
 
-  OUTPUT_DIR: app/build/outputs/
+  OUTPUT_DIR: outputs/
 
   ANDROID_BUILD_TOOLS: "30.0.3"
 
@@ -34,10 +34,14 @@ before_script:
   - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
   - chmod +x ./gradlew
 
+
+
 stages:
   - debugApk
   - releaseApk
   - releaseBundle
+  - deploy
+  - notify
 
 # Make Project
 assembleDebug:
@@ -76,3 +80,19 @@ bundleRelease:
       - $OUTPUT_DIR
   only:
     - master
+
+deploy:
+  stage: deploy
+  interruptible: true
+  script:
+    #deploy success
+    - sh ci-notify.sh "bundleRelease is ready to download✅"
+  only:
+    - master
+
+notify_error:
+  stage: notify
+  interruptible: true
+  script:
+    - sh clean ci-notify.sh ❌
+  when: on_failure #deploy fail
