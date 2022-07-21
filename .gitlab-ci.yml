@@ -83,7 +83,6 @@ bundleRelease:
     - master
 
 deploy:
-  image: node:4.2.2
   stage: deploy
   interruptible: true
   script:
