@@ -153,7 +153,7 @@ class CourierOrdersViewModel(
                                 courierOrderLocalEntity.minBoxesCount
                             ),
                             courierOrderLocalEntity.reservedDuration,
-                            if (boxCountWithRouteId == -1) courierOrderLocalEntity.minBoxesCount
+                            if (boxCountWithRouteId == 0) courierOrderLocalEntity.minBoxesCount
                             else  boxCountWithRouteId
                         ),
                         resourceProvider.getConfirmPositiveDialog(),

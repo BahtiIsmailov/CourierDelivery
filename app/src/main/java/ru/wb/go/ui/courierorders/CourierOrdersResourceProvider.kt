@@ -55,7 +55,7 @@ class CourierOrdersResourceProvider(private val context: Context) :
     fun getConfirmTitleDialog(orderNumber: Int) =
         context.getString(R.string.courier_orders_details_dialog_title, orderNumber)
 
-    fun getConfirmMessageDialog(carNumber: String, volume: String, reserve: String,boxCountWithRouteId:Int) =
+    fun getConfirmMessageDialog(carNumber: String, volume: String, reserve: String,boxCountWithRouteId:Int?) =
         context.getString(
             R.string.courier_orders_details_dialog_message,
             carNumber,
