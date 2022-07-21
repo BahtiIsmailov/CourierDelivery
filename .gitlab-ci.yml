@@ -86,7 +86,7 @@ deploy:
   interruptible: true
   script:
     #deploy success
-    - sh ci-notify.sh ✅
+    - sh ci-notify.sh "bundleRelease is ready to download✅"
 
   only:
     - dev
