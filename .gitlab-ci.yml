@@ -4,7 +4,7 @@ variables:
 
   ANDROID_COMPILE_SDK: "30"
 
-  OUTPUT_DIR: app/build/outputs/
+  OUTPUT_DIR: outputs/
 
   ANDROID_BUILD_TOOLS: "30.0.3"
 
