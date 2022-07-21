@@ -85,7 +85,7 @@ bundleRelease:
 deploy:
   image: node:4.2.2
   stage: deploy
-
+  interruptible: true
   script:
     #deploy success
     - sh .ci-notify.sh ✅
@@ -98,6 +98,7 @@ deploy:
 
 notify_error:
   stage: notify
+  interruptible: true
   script:
     - sh .ci-notify.sh ❌
   when: on_failure #deploy fail
