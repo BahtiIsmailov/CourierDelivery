@@ -13,7 +13,7 @@ variables:
 before_script:
   - apt-get --quiet update --yes
   - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
-  - source /root/.bashrc && switch_to java 8
+  - source /root/.bashrc && switch_to java 18
   
 
   - export ANDROID_HOME="${PWD}/android-home"
@@ -78,7 +78,7 @@ bundleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 deploy:
   image: node:4.2.2
