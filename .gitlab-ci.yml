@@ -67,7 +67,7 @@ assembleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 bundleRelease:
   interruptible: true
@@ -79,7 +79,7 @@ bundleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 deploy:
   stage: deploy
