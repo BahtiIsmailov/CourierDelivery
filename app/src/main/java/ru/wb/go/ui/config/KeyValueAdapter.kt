@@ -17,6 +17,7 @@ class KeyValueAdapter(context: Context?, val items: List<KeyValueDao>) :
         return getView(position, convertView)
     }
 
+
     private fun getView(position: Int, convertView: View?): View {
         val view: View
         val keyValue = items[position]
