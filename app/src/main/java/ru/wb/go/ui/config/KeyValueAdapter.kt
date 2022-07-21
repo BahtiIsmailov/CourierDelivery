@@ -16,7 +16,6 @@ class KeyValueAdapter(context: Context?, val items: List<KeyValueDao>) :
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         return getView(position, convertView)
     }
-
     private fun getView(position: Int, convertView: View?): View {
         val view: View
         val keyValue = items[position]
