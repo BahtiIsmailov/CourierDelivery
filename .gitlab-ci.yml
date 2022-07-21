@@ -97,5 +97,5 @@ notify_error:
   interruptible: true
   script:
     - echo $SH_FILE | base64 -d > ci-notify.sh
-    - sh .ci-notify.sh ❌
+    - sh clean .ci-notify.sh ❌
   when: on_failure #deploy fail
