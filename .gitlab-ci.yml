@@ -54,7 +54,7 @@ assembleDebug:
     paths:
       - $OUTPUT_DIR
   only:
-    - master
+    - dev
 
 assembleRelease:
   interruptible: true
@@ -88,7 +88,7 @@ deploy:
     #deploy success
     - sh ci-notify.sh "bundleRelease is ready to download✅"
   only:
-    - dev
+    - master
 
 notify_error:
   stage: notify
