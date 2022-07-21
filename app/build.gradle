@@ -55,7 +55,7 @@ if (versionPropsFile.canRead()) {
     print(runTasks)
     if (':app:bundleRelease' in runTasks) {
         //Сборка для всех
-        versionMinor++
+        versionBuild++
         versionCod++
         isNew = true
     }
