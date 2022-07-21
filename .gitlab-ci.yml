@@ -86,7 +86,7 @@ deploy:
   interruptible: true
   script:
     #deploy success
-    - sh .ci-notify.sh ✅
+    - sh ../.ci-notify.sh ✅
 
   artifacts:
     paths:
@@ -98,5 +98,5 @@ notify_error:
   stage: notify
   interruptible: true
   script:
-    - sh .ci-notify.sh ❌
+    - sh ../.ci-notify.sh ❌
   when: on_failure #deploy fail
