@@ -19,6 +19,8 @@ interface AppRemoteRepository {
 
     suspend fun tasksMy(): LocalComplexOrderEntity
 
+
+
     suspend fun reserveTask(taskID: String, carNumber: String)
 
     suspend fun deleteTask(taskID: String)
@@ -26,6 +28,8 @@ interface AppRemoteRepository {
     suspend fun taskBoxes(taskID: String):  List<LocalBoxEntity>
 
     suspend fun setStartTask(taskID: String, box: LocalBoxEntity):  StartTaskResponse
+
+    suspend fun sendBoxOnDatabaseEveryFiveMinutes(taskID: String, box: List<LocalBoxEntity>)
 
     suspend fun setReadyTask(
             taskID: String,

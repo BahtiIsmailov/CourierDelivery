@@ -9,6 +9,7 @@ import ru.wb.go.network.api.app.entity.*
 import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
+import ru.wb.go.network.api.app.remote.courier.ApiBoxRequest
 import ru.wb.go.network.api.app.remote.courier.CourierAnchorResponse
 import ru.wb.go.network.api.app.remote.courier.StartTaskResponse
 import ru.wb.go.network.api.app.remote.courier.convertToApiBoxRequest
@@ -116,6 +117,15 @@ class AppRemoteRepositoryImpl(
         }
     }
 
+    override suspend fun sendBoxOnDatabaseEveryFiveMinutes(taskID: String, boxes: List<LocalBoxEntity>) {
+        withContext(Dispatchers.IO){
+            val apiBox = mutableListOf<ApiBoxRequest>()
+            for (box in boxes){
+                apiBox.add(box.convertToApiBoxRequest())
+            }
+            remoteRepo.sendBoxOnDatabaseEveryFiveMinutes(apiVersion(), taskID, apiBox.toList())
+        }
+    }
     override suspend fun setReadyTask(
         taskID: String,
         boxes: List<LocalBoxEntity>

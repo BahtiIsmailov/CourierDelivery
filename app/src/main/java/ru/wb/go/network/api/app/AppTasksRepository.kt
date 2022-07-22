@@ -10,6 +10,6 @@ interface AppTasksRepository {
 
     suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity>
 
-    suspend fun getBoxCountWithRouteId(ridMask:Long):TaskBoxCountResponse
+    suspend fun getBoxCountWithRidMask(ridMask:Long):TaskBoxCountResponse
 
 }

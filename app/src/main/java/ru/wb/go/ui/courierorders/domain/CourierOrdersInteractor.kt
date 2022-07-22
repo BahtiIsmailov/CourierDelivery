@@ -39,7 +39,7 @@ interface CourierOrdersInteractor : BaseServiceInteractor {
 
     fun clearedSharedFlow()
 
-    suspend fun getBoxCountWithRouteId(it: CourierOrderLocalEntity) : TaskBoxCountResponse
+    suspend fun getBoxCountWithRidMask(it: CourierOrderLocalEntity) : TaskBoxCountResponse
 
 }
 

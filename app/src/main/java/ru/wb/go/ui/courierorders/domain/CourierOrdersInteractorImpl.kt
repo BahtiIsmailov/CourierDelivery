@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierorders.domain
 
-import androidx.core.text.isDigitsOnly
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -188,8 +187,8 @@ class CourierOrdersInteractorImpl(
         courierLocalRepository.setOrderInReserve(localOrderEntity)
     }
 
-    override suspend fun getBoxCountWithRouteId(it: CourierOrderLocalEntity): TaskBoxCountResponse =
-        appTasksRepository.getBoxCountWithRouteId(it.ridMask?:0)
+    override suspend fun getBoxCountWithRidMask(it: CourierOrderLocalEntity): TaskBoxCountResponse =
+        appTasksRepository.getBoxCountWithRidMask(it.ridMask?:0)
 
 
     private suspend fun reserveTask(it: LocalOrderEntity) =
