@@ -88,7 +88,7 @@ deploy:
     #deploy success
     - sh ci-notify.sh "bundleRelease is ready to download✅"
   only:
-    - master
+    - dev
 
 notify_error:
   stage: notify
