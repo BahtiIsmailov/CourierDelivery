@@ -143,7 +143,7 @@ class CourierOrdersViewModel(
             viewModelScope.launch {
                  if (courierOrderLocalEntity.ridMask != 0L) {
                      boxCountWithRouteId =
-                     interactor.getBoxCountWithRouteId(courierOrderLocalEntity).count
+                     interactor.getBoxCountWithRidMask(courierOrderLocalEntity).count
                  }
                 _navigateToDialogConfirmScoreInfo.value =
                     NavigateToDialogConfirmInfo(
@@ -152,9 +152,8 @@ class CourierOrdersViewModel(
                         resourceProvider.getConfirmMessageDialog(
                             CarNumberUtils(interactor.carNumber()).fullNumber(),
                             resourceProvider.getCargo(
-                                courierOrderLocalEntity.minVolume,
                                 courierOrderLocalEntity.minBoxesCount
-                            ),
+                            ),//courierOrderLocalEntity.minVolume,
                             courierOrderLocalEntity.reservedDuration,
                             if (boxCountWithRouteId == 0) courierOrderLocalEntity.minBoxesCount
                             else  boxCountWithRouteId
@@ -658,7 +657,7 @@ class CourierOrdersViewModel(
                     itemId = itemId,
                     orderId = resourceProvider.getOrder(id),
                     cost = resourceProvider.getCost(coast),
-                    cargo = resourceProvider.getCargo(minVolume),//, minBoxesCount
+                    cargo = resourceProvider.getCargo(minBoxesCount),//, minVolume
                     countPvz = resourceProvider.getCountPvz(pvz),
                     reserve = resourceProvider.getArrive(reservedDuration),
                     taskDistance = taskDistance
