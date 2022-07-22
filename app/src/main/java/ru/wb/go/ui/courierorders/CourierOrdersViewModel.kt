@@ -140,8 +140,11 @@ class CourierOrdersViewModel(
     private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
         with(orderLocalDataEntities[it]) {
             viewModelScope.launch {
-               val boxCountWithRouteId:Int = interactor.getBoxCountWithRidMask(courierOrderLocalEntity).count
-
+               var boxCountWithRouteId = 0
+                if (courierOrderLocalEntity.ridMask != 0L) {
+                    boxCountWithRouteId =
+                        interactor.getBoxCountWithRidMask(courierOrderLocalEntity).count
+                }
                 _navigateToDialogConfirmScoreInfo.value =
                     NavigateToDialogConfirmInfo(
                         DialogInfoStyle.INFO.ordinal,
