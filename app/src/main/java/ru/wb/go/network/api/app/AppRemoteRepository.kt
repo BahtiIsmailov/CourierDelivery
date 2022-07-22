@@ -29,7 +29,7 @@ interface AppRemoteRepository {
 
     suspend fun setStartTask(taskID: String, box: LocalBoxEntity):  StartTaskResponse
 
-    suspend fun sendBoxOnDatabaseEveryFiveMinutes(taskID: String, box: List<LocalBoxEntity>)
+    suspend fun sendBoxOnDatabaseEveryFiveMinutes(taskID: String,srcOfficeID: Int, boxes: List<LocalBoxEntity>)
 
     suspend fun setReadyTask(
             taskID: String,

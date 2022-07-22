@@ -117,15 +117,20 @@ class AppRemoteRepositoryImpl(
         }
     }
 
-    override suspend fun sendBoxOnDatabaseEveryFiveMinutes(taskID: String, boxes: List<LocalBoxEntity>) {
+    override suspend fun sendBoxOnDatabaseEveryFiveMinutes(
+        taskID: String,
+        srcOfficeID: Int,
+        boxes: List<LocalBoxEntity>
+    ) {
         withContext(Dispatchers.IO){
             val apiBox = mutableListOf<ApiBoxRequest>()
             for (box in boxes){
                 apiBox.add(box.convertToApiBoxRequest())
             }
-            remoteRepo.sendBoxOnDatabaseEveryFiveMinutes(apiVersion(), taskID, apiBox.toList())
+            remoteRepo.sendBoxOnDatabaseEveryFiveMinutes(apiDemoVersion(), taskID, srcOfficeID, apiBox.toList())
         }
     }
+
     override suspend fun setReadyTask(
         taskID: String,
         boxes: List<LocalBoxEntity>

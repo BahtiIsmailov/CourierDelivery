@@ -156,7 +156,7 @@ class CourierOrdersViewModel(
                                 courierOrderLocalEntity.minBoxesCount
                             ),
                             courierOrderLocalEntity.reservedDuration,
-                            if (boxCountWithRouteId == -1) courierOrderLocalEntity.minBoxesCount
+                            if (boxCountWithRouteId == 0) courierOrderLocalEntity.minBoxesCount
                             else  boxCountWithRouteId
                         ),
                         resourceProvider.getConfirmPositiveDialog(),
@@ -658,13 +658,12 @@ class CourierOrdersViewModel(
                     itemId = itemId,
                     orderId = resourceProvider.getOrder(id),
                     cost = resourceProvider.getCost(coast),
-                    cargo = resourceProvider.getCargo(minVolume),//, minBoxesCount
+                    cargo = resourceProvider.getCargo(minBoxesCount),//minVolume
                     countPvz = resourceProvider.getCountPvz(pvz),
                     reserve = resourceProvider.getArrive(reservedDuration),
                     taskDistance = taskDistance
                 )
         }
-
     }
 
 //    fun getAddressFromOrderAddressItems() {

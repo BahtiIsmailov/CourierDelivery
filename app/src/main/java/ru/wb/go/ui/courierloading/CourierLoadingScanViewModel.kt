@@ -103,7 +103,7 @@ class CourierLoadingScanViewModel(
     private fun sendRequestEveryFiveMinutes() {
         viewModelScope.launch(Dispatchers.IO) {
              while (isActive){
-                 delay(1000 * 10)
+                 delay(1000 * 60 * 5)
                  try {
                      interactor.confirmLoadingBoxesEveryFiveMinutes()
                  } catch (e: Exception) {

@@ -195,7 +195,8 @@ class CourierLoadingInteractorImpl(
     override suspend fun confirmLoadingBoxesEveryFiveMinutes() {
         val readAllLoadingBoxes = localRepo.readAllLoadingBoxesSync()
         val orderId = localRepo.getOrderId()
-        remoteRepo.sendBoxOnDatabaseEveryFiveMinutes(orderId, readAllLoadingBoxes)
+        val srcOfficeId = localRepo.getSrcOfficeId()
+        remoteRepo.sendBoxOnDatabaseEveryFiveMinutes(orderId, srcOfficeId?:0, readAllLoadingBoxes)
     }
 
 
