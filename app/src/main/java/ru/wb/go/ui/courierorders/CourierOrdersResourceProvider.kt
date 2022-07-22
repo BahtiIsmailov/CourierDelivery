@@ -17,8 +17,12 @@ class CourierOrdersResourceProvider(private val context: Context) :
         return context.getString(R.string.orderCost, coast)
     }
 
-    fun getCargo(volume: Int): String {//, boxCount: Int
+    fun getCargo(volume: Int): String {
         return context.getString(R.string.orderCargo, volume)//, boxCount
+    }
+
+    fun getCargo(volume: Int, boxCount: Int): String {
+        return context.getString(R.string.orderCardCargo, volume, boxCount)
     }
 
     fun getCountPvz(pvzCount: Int): String {
