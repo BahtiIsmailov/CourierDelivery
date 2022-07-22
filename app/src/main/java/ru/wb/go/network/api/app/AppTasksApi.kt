@@ -22,7 +22,7 @@ interface AppTasksApi {
     ):  CourierOrdersResponse
 
     @GET("/api/v1/routes/{rid}/boxes/count")
-    suspend fun boxCountWithRouteId(
+    suspend fun boxCountWithRidMask(
         @Path(value = "rid",encoded = true) rid: Long
     ):TaskBoxCountResponse
 }

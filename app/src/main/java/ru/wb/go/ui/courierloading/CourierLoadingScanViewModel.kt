@@ -90,10 +90,10 @@ class CourierLoadingScanViewModel(
 
     init {
         observeInitScanProcess()
-        observeScanProcess()//1
+        observeScanProcess()
         getGate()
         holdSplashScanner()
-        //sendRequestEveryFiveMinutes()
+        sendRequestEveryFiveMinutes()
     }
 
     private fun holdSplashScanner() {
@@ -103,10 +103,9 @@ class CourierLoadingScanViewModel(
     private fun sendRequestEveryFiveMinutes() {
         viewModelScope.launch(Dispatchers.IO) {
              while (isActive){
-                 delay(1000 * 10)
-                 Log.e("TimerFiveMinutes","tag")
+                 delay(1000 * 60 * 5)
                  try {
-                     //TODO(тут бет запрос на выгрузку коробок каждые пять минут до реализации на сервере)
+                     interactor.confirmLoadingBoxesEveryFiveMinutes()
                  } catch (e: Exception) {
 
                  }

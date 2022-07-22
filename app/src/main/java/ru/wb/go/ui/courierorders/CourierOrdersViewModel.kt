@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierorders
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -659,7 +658,7 @@ class CourierOrdersViewModel(
                     itemId = itemId,
                     orderId = resourceProvider.getOrder(id),
                     cost = resourceProvider.getCost(coast),
-                    cargo = resourceProvider.getCargo(minBoxesCount),//, minVolume
+                    cargo = resourceProvider.getCargo(minVolume),//, minBoxesCount
                     countPvz = resourceProvider.getCountPvz(pvz),
                     reserve = resourceProvider.getArrive(reservedDuration),
                     taskDistance = taskDistance

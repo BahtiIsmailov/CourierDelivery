@@ -31,9 +31,9 @@ class AppTasksRepositoryImpl(
         }
     }
 
-    override suspend fun getBoxCountWithRouteId(ridMask: Long): TaskBoxCountResponse {
+    override suspend fun getBoxCountWithRidMask(ridMask: Long): TaskBoxCountResponse {
         return withContext(Dispatchers.IO){
-            remoteRepo.boxCountWithRouteId(ridMask)
+            remoteRepo.boxCountWithRidMask(ridMask)
         }
 
     }

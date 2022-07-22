@@ -51,6 +51,8 @@ interface CourierLocalRepository {
 
     suspend fun getOrderId(): String
 
+    suspend fun getSrcOfficeId() : Int?
+
     suspend fun getOrderGate(): String?
 
     suspend fun getOffices(): List<LocalOfficeEntity>

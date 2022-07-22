@@ -60,6 +60,14 @@ interface AppApi {
     ):  StartTaskResponse
 
 
+    @POST("{version}/tasks/{taskID}/statuses/start/sync")
+    suspend fun sendBoxOnDatabaseEveryFiveMinutes(
+        @Path(value = "version", encoded = true) version: String,
+        @Path("taskID") orderId: String,
+        @Query("srcOfficeID") srcOfficeID: Int,
+        @Body boxes: List<ApiBoxRequest>
+    )
+
     @POST("{version}/tasks/{taskID}/statuses/ready")
     suspend fun taskStatusesReady(
         @Path(value = "version", encoded = true) version: String,

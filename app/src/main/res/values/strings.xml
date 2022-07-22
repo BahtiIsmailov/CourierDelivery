@@ -276,7 +276,7 @@
 
     <string name="courier_orders_details_dialog_title">Взять заказ %1$d?</string>
 
-    <string name="courier_orders_details_dialog_message">Машина • <b>%1$s</b>\nОбъём • <b>%2$s</b>\nРезерв • <b>%3$s мин</b>\nВ наличии • ~ <b>%4$s коробок.</b></string>
+    <string name="courier_orders_details_dialog_message">Машина • <b>%1$s</b>\nОбъём • <b>%2$s</b>\nРезерв • <b>%3$s мин</b>\nВ наличии •~ <b>%4$s коробок.</b></string>
     <string name="box_count_id">На складе ~ %1$d шт.</string>
     <string name="courier_orders_details_dialog_negative_button">Отмена</string>
     <string name="courier_orders_details_dialog_positive_button">Подтвердить</string>

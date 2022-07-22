@@ -195,8 +195,10 @@ class CourierLoadingInteractorImpl(
     override suspend fun confirmLoadingBoxesEveryFiveMinutes() {
         val readAllLoadingBoxes = localRepo.readAllLoadingBoxesSync()
         val orderId = localRepo.getOrderId()
-        //TODO(здесь будет дергаться запрос на отправку данных на сервере каждые пять минут)
+        val srcOfficeId = localRepo.getSrcOfficeId()
+        remoteRepo.sendBoxOnDatabaseEveryFiveMinutes(orderId, srcOfficeId?:0, readAllLoadingBoxes)
     }
+
 
     override suspend fun getGate(): String? {
         return localRepo.getOrderGate()

@@ -150,6 +150,11 @@ class CourierLocalRepositoryImpl(
         }
     }
 
+    override suspend fun getSrcOfficeId(): Int? {
+        return withContext(Dispatchers.IO){
+            getOrder()?.srcId
+        }
+    }
     override suspend fun setOrderInReserve(order: LocalOrderEntity) {
         withContext(Dispatchers.IO){
             courierOrderDao.addOrderFromReserve(order)
