@@ -138,9 +138,9 @@ class CourierOrdersViewModel(
     }
 
     private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
+        var boxCountWithRouteId = 0
         with(orderLocalDataEntities[it]) {
             viewModelScope.launch {
-               var boxCountWithRouteId = 0
                 if (courierOrderLocalEntity.ridMask != 0L) {
                     boxCountWithRouteId =
                         interactor.getBoxCountWithRidMask(courierOrderLocalEntity).count
