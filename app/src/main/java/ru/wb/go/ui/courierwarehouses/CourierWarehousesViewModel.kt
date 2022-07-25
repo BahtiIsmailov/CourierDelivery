@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.exceptions.NoInternetException
+import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.CourierMapAction
@@ -176,7 +177,7 @@ class CourierWarehousesViewModel(
 
     private fun getWarehousesError(it: Throwable) {
         setLoader(WaitLoader.Complete)
-        if (it is NoInternetException) {
+        if (it is NoInternetException || it is TimeoutException) {
             _warehouseState.value = CourierWarehouseItemState.NoInternet
         } else {
             errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
