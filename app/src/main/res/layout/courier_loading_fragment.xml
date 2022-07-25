@@ -389,11 +389,79 @@
                     app:layout_constraintTop_toBottomOf="@+id/title_address_divider"
                     tools:itemCount="20"
                     tools:listitem="@layout/courier_loading_details_layout" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </FrameLayout>
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_background"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/order_have_little_time_window"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="#BA0B0B0B"
+        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/order_have_little_time_window"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/waewhouse_bottom_sheet_info"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scanner_frame">
 
+        <ImageView
+            android:id="@+id/no_internet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:background="?selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/update"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_order_have_little_time"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/no_internet_title"
+            style="@style/VeryLargePrimaryRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/no_internet"
+            android:layout_marginTop="19dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/order_have_little_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/no_internet"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/update"
+            style="@style/AppButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="20dp"
+            android:enabled="true"
+            android:text="@string/courier_orders_details_dialog_is_not_exist_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

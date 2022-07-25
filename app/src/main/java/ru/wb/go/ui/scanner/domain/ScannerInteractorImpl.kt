@@ -82,10 +82,8 @@ class ScannerInteractorImpl(
             coroutineScope = CoroutineScope(SupervisorJob())
             prolongHoldSubject
             .onEach {
-                //delay(HOLD_SCANNER_DELAY,)
                 scannerRepository.scannerAction(ScannerAction.HoldSplashLock)
                 holdSplashSubject.tryEmit(Unit)
-                //holdSplashSubject.update { }
             }
             .launchIn(coroutineScope!!)
 

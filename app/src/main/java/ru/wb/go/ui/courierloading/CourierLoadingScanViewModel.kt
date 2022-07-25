@@ -1,6 +1,5 @@
 package ru.wb.go.ui.courierloading
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -96,7 +95,7 @@ class CourierLoadingScanViewModel(
         sendRequestEveryFiveMinutes()
     }
 
-    private fun holdSplashScanner() {
+    fun holdSplashScanner() {
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
     }
 
@@ -192,7 +191,6 @@ class CourierLoadingScanViewModel(
         interactor.observeScanProcess()
             .onEach {
                 observeScanProcessComplete(it)
-                interactor.scanRepoHoldStart()
             }
             .retryWhen { it, _ ->
                 scanProcessError(it)
@@ -207,26 +205,29 @@ class CourierLoadingScanViewModel(
         errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
     }
 
-    private fun observeScanProcessComplete(scanResult: CourierLoadingProcessData) {
+    private suspend fun observeScanProcessComplete(scanResult: CourierLoadingProcessData) {
         val scanBoxData = scanResult.scanBoxData
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
-                _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
+                _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar //+
                 _boxDataStateUI.value =
                     with(scanBoxData) {
                         BoxInfoDataState(qrCode, address, countBoxes)
-                    }
-                setLogBoxesQrCodeAddressAndCount(scanBoxData.qrCode,scanBoxData.address,countBoxes)
-                setValueToStartLog(true)
-                 _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded
+                    }//+
+                setLogBoxesQrCodeAddressAndCount(scanBoxData.qrCode,scanBoxData.address,countBoxes)//+
+                setValueToStartLog(true)//+
+                 _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded//+
                 _orderTimer.value = CourierLoadingScanTimerState.Stopped
                 _completeButtonState.value = true
+                holdSplashScanner()
+                //interactor.scanRepoHoldStart()
             }
             is CourierLoadingScanBoxData.SecondaryBoxAdded -> {
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar
                 _boxDataStateUI.value =
                     with(scanBoxData) { BoxInfoDataState(qrCode, address, countBoxes) }
+                interactor.scanRepoHoldStart()
             }
             is CourierLoadingScanBoxData.ForbiddenTakeBox -> {
                 if (scanResult.count == 0) {
@@ -242,6 +243,7 @@ class CourierLoadingScanViewModel(
                     }
                 }
                 _beepEvent.value = CourierLoadingScanBeepState.UnknownBox
+                interactor.scanRepoHoldStart()
             }
             is CourierLoadingScanBoxData.NotRecognizedQr -> {
                 if (scanResult.count == 0) {
@@ -255,6 +257,7 @@ class CourierLoadingScanViewModel(
                     )
                 }
                 _beepEvent.value = CourierLoadingScanBeepState.UnknownQR
+                interactor.scanRepoHoldStart()
             }
         }
     }
@@ -327,7 +330,7 @@ class CourierLoadingScanViewModel(
         interactor.scannerAction(ScannerState.StartScan)
     }
 
-    private fun stopScanner() {
+    fun stopScanner() {
         interactor.scannerAction(ScannerState.StopScan)
     }
 

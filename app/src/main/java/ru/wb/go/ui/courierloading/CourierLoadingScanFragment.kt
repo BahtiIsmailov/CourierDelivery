@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoadingFragmentBinding
@@ -216,7 +217,12 @@ class CourierLoadingScanFragment :
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                CourierLoadingScanBeepState.BoxFirstAdded -> beepFirstSuccess()
+                CourierLoadingScanBeepState.BoxFirstAdded -> {
+                    binding.orderHaveLittleTimeWindow.isVisible = true
+                    binding.topBackground.isVisible = true
+
+                    beepFirstSuccess()
+                }
                 CourierLoadingScanBeepState.BoxAdded -> beepSuccess()
                 CourierLoadingScanBeepState.UnknownBox -> beepWrongBox()
                 CourierLoadingScanBeepState.UnknownQR -> beepUnknownQr()
@@ -256,7 +262,6 @@ class CourierLoadingScanFragment :
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is CourierLoadingScanBoxState.InitScanner -> {
-                    //здесь блокировать сканер
                     with(binding) {
                         timerLayout.visibility = VISIBLE
                         boxInfoLayout.visibility = View.GONE
@@ -389,6 +394,11 @@ class CourierLoadingScanFragment :
         }
         binding.counterLayout.setOnClickListener { viewModel.onCounterBoxClicked() }
         binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
+        binding.update.setOnClickListener {
+            binding.orderHaveLittleTimeWindow.isGone = true
+            binding.topBackground.isGone = true
+            //viewModel.onStartScanner()
+        }
     }
 
     companion object {

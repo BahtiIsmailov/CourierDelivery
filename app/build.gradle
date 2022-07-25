@@ -210,7 +210,7 @@ dependencies {
     //annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
     annotationProcessor 'androidx.room:room-compiler:2.4.2'
 
-    //coroutine suspend fun
+    //coroutine suspend fun for room
     implementation "androidx.room:room-ktx:2.4.2"
 
     // navigation
