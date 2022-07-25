@@ -233,6 +233,7 @@ val interactorModule = module {
         appRemoteRepository: AppRemoteRepository,
         scannerRepository: ScannerRepository,
         timeManager: TimeManager,
+        sharedWorker: SharedWorker,
         courierLocalRepository: CourierLocalRepository,
         taskTimerRepository: TaskTimerRepository,
     ): CourierLoadingInteractor {
@@ -243,6 +244,7 @@ val interactorModule = module {
             appRemoteRepository,
             scannerRepository,
             timeManager,
+            sharedWorker = sharedWorker,
             courierLocalRepository,
             taskTimerRepository
         )
@@ -363,13 +365,13 @@ val interactorModule = module {
     }
 
     single { provideNumberPhoneInteractor(get(), get()) }
-    single { provideUserFormInteractorImpl(get(), get(), get(), ) }
+    single { provideUserFormInteractorImpl(get(), get(), get()) }
     single { provideCouriersCompleteRegistrationInteractorImpl(get(), get(), get(), get()) }
     single { provideCheckSmsInteractor(get(), get()) }
     single { provideNavigationInteractor(get(), get(), get()) }
     single { provideScannerInteractor(get(), get()) }
 
-    single { provideCourierBillingAccountDataInteractor(get(), get(), get(),) }
+    single { provideCourierBillingAccountDataInteractor(get(), get(), get()) }
     single {
         provideCourierBillingAccountSelectorInteractor(
             get(),
@@ -378,7 +380,7 @@ val interactorModule = module {
             get(),
             get(),
 
-        )
+            )
     }
 
     factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get(), get()) }
@@ -395,7 +397,7 @@ val interactorModule = module {
             get(),
             get(),
 
-        )
+            )
     }
     single { provideCourierCarNumberInteractor(get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get()) }
@@ -408,7 +410,7 @@ val interactorModule = module {
             get(),
             get(),
             get(),
-
+            get()
         )
     }
     factory {
@@ -420,7 +422,7 @@ val interactorModule = module {
             get(),
             get(),
 
-        )
+            )
     }
     factory {
         provideCourierIntransitInteractor(
@@ -432,7 +434,7 @@ val interactorModule = module {
             get(),
             get(),
 
-        )
+            )
     }
     factory { provideCourierIntransitOfficeScannerInteractor(get(), get(), get(), get()) }
     factory { provideCourierCompleteDeliveryInteractor(get()) }

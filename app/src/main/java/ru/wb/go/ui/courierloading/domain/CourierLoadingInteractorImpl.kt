@@ -17,6 +17,8 @@ import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
+import ru.wb.go.utils.prefs.SharedWorker
+import ru.wb.go.utils.prefs.SharedWorker.Companion.READ_ALL_BOXES_SYNC_SIZE
 
 class CourierLoadingInteractorImpl(
     networkMonitorRepository: NetworkMonitorRepository,
@@ -24,6 +26,7 @@ class CourierLoadingInteractorImpl(
     private val remoteRepo: AppRemoteRepository,
     private val scanRepo: ScannerRepository,
     private val timeManager: TimeManager,
+    private val sharedWorker: SharedWorker,
     private val localRepo: CourierLocalRepository,
     private val taskTimerRepository: TaskTimerRepository,
 ) : BaseServiceInteractorImpl(networkMonitorRepository, deviceManager),
@@ -192,11 +195,19 @@ class CourierLoadingInteractorImpl(
         return CourierCompleteData(setReadyTask.coast, readAllLoadingBoxes.size)
     }
 
+
     override suspend fun confirmLoadingBoxesEveryFiveMinutes() {
         val readAllLoadingBoxes = localRepo.readAllLoadingBoxesSync()
-        val orderId = localRepo.getOrderId()
-        val srcOfficeId = localRepo.getSrcOfficeId()
-        remoteRepo.sendBoxOnDatabaseEveryFiveMinutes(orderId, srcOfficeId?:0, readAllLoadingBoxes)
+        if (readAllLoadingBoxes.size > sharedWorker.load(READ_ALL_BOXES_SYNC_SIZE,0)) {
+            sharedWorker.saveMediate(READ_ALL_BOXES_SYNC_SIZE,readAllLoadingBoxes.size)
+            val orderId = localRepo.getOrderId()
+            val srcOfficeId = localRepo.getSrcOfficeId()
+            remoteRepo.sendBoxOnDatabaseEveryFiveMinutes(
+                orderId,
+                srcOfficeId ?: 0,
+                readAllLoadingBoxes
+            )
+        }
     }
 
 
