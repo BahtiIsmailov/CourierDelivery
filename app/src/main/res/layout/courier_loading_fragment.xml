@@ -398,12 +398,19 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
+        android:fillAfter="true"
+        android:fillEnabled="true"
+        android:clickable="true"
         tools:visibility="visible"
+        android:layout_marginBottom="-15dp"
         app:layout_constraintBottom_toTopOf="@+id/order_have_little_time_window"
         app:layout_constraintTop_toTopOf="parent"
         android:background="#BA0B0B0B"
-        />
+        android:focusable="true" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:fillAfter="true"
+        android:fillEnabled="true"
         android:id="@+id/order_have_little_time_window"
         android:layout_width="match_parent"
         android:layout_height="0dp"
