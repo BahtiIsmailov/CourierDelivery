@@ -3,6 +3,8 @@ package ru.wb.go.ui.courierloading
 import android.os.Bundle
 import android.view.View
 import android.view.View.VISIBLE
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
@@ -218,7 +220,12 @@ class CourierLoadingScanFragment :
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierLoadingScanBeepState.BoxFirstAdded -> {
+                    val anim = AnimationUtils.loadAnimation(
+                        requireContext(),
+                        R.anim.fade_out_more_long
+                    )
                     binding.orderHaveLittleTimeWindow.isVisible = true
+                    binding.orderHaveLittleTimeWindow.startAnimation(anim)
                     binding.topBackground.isVisible = true
 
                     beepFirstSuccess()
@@ -324,6 +331,18 @@ class CourierLoadingScanFragment :
             }
         }
     }
+    private fun initListener() {
+        binding.completeButton.setOnClickListener {
+            viewModel.onCompleteLoaderClicked()
+        }
+        binding.counterLayout.setOnClickListener { viewModel.onCounterBoxClicked() }
+        binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
+        binding.update.setOnClickListener {
+            binding.orderHaveLittleTimeWindow.startAnimation(AnimationUtils.loadAnimation(requireContext(),R.anim.fade_in_more_long))
+            binding.orderHaveLittleTimeWindow.isGone = true
+            binding.topBackground.isGone = true
+        }
+    }
 
     private fun getColor(colorId: Int) = ContextCompat.getColor(requireContext(), colorId)
 
@@ -388,18 +407,7 @@ class CourierLoadingScanFragment :
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
 
-    private fun initListener() {
-        binding.completeButton.setOnClickListener {
-            viewModel.onCompleteLoaderClicked()
-        }
-        binding.counterLayout.setOnClickListener { viewModel.onCounterBoxClicked() }
-        binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
-        binding.update.setOnClickListener {
-            binding.orderHaveLittleTimeWindow.isGone = true
-            binding.topBackground.isGone = true
-            //viewModel.onStartScanner()
-        }
-    }
+
 
     companion object {
         const val DIALOG_LOADING_CONFIRM_TAG = "DIALOG_LOADING_CONFIRM_TAG"
