@@ -83,6 +83,7 @@ class CourierWarehousesViewModel(
         checkDemoMode()
     }
     init {
+        sharedWorker.saveMediate(SharedWorker.CLOSE_FRAGMENT_WHEN_ENDED_TIME,"")
         stringFromSms = sharedWorker.load(FRAGMENT_MANAGER,"")
     }
 

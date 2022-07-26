@@ -41,6 +41,7 @@ class ScannerInteractorImpl(
          scannerRepository.scannerAction(ScannerAction.ScanResult(barcode))
     }
 
+
     override fun holdSplashUnlock() {
          scannerRepository.scannerAction(ScannerAction.HoldSplashUnlock)
     }

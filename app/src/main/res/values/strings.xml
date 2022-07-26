@@ -17,7 +17,10 @@
     <string name="app_support_next">Перейти</string>
     <string name="app_support_cancel">Отмена</string>
     <string name="app_no_internet_warehouse_title">Отсутствует интернет\nсоединение</string>
+
     <string name="order_have_little_time">Время погрузки ограничено</string>
+    <string name="order_have_end_hour">Время погрузки вышло</string>
+
     <string name="app_no_internet_warehouse_message">Мы не можем отобразить заказы =(</string>
 
     <string name="app_duration_time_value">Выслать CMC повторно через %1$s:%2$s</string>

@@ -422,7 +422,7 @@
         app:layout_constraintTop_toBottomOf="@+id/scanner_frame">
 
         <ImageView
-            android:id="@+id/no_internet"
+            android:id="@+id/reload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -430,27 +430,47 @@
             android:background="?selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/update"
+            android:layout_marginBottom="@dimen/pad12"
+            app:layout_constraintBottom_toTopOf="@+id/title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_order_have_little_time"
+            app:srcCompat="@drawable/ic_warning_end_hour"
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/no_internet_title"
+            android:id="@+id/title"
             style="@style/VeryLargePrimaryRegularText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@id/no_internet"
+            android:layout_alignStart="@id/reload"
             android:layout_marginTop="19dp"
             android:gravity="center"
-            android:textStyle="bold"
             android:text="@string/order_have_little_time"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/pad12"
+            app:layout_constraintBottom_toTopOf="@+id/description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/no_internet"
             app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/description"
+            style="@style/LargeSecondaryRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/pad16"
+            android:layout_marginTop="19dp"
+            android:layout_marginEnd="@dimen/pad16"
+            android:gravity="center"
+            android:maxLines="2"
+            android:text="@string/courier_loading_dialog_done_message"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/update"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="30dp"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:visibility="visible" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/update"

@@ -215,6 +215,9 @@ class CourierLoadingInteractorImpl(
         return localRepo.getOrderGate()
     }
 
+    override fun clearScannerState() {
+        scanRepo.clearScannerState()
+    }
     override suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals {
         val it = localRepo.loadingBoxBoxesGroupByOffice()
         var pvzCount = 0

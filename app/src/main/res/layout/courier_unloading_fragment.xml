@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:scaleType="center"
-        android:src="@drawable/ic_qr2"
+        android:src="@drawable/ic_qr"
         app:layout_constraintBottom_toBottomOf="@id/qr_code"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/qr_code"
@@ -81,7 +81,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:letterSpacing="0.1"
-        android:text="@string/courier_unloading_scanner_order"
         app:layout_constraintStart_toStartOf="@+id/prefix_qr_code"
         app:layout_constraintTop_toBottomOf="@+id/prefix_qr_code" />
 

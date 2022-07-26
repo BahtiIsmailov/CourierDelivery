@@ -7,6 +7,7 @@ interface SharedWorker {
     fun save(key: String, value: String)
     fun saveMediate(key: String,value: String):Boolean
     fun saveMediate(key: String,value: Int):Boolean
+    fun saveMediate(key: String,value: Boolean):Boolean
     fun load(key: String, defValue: Long): Long
     fun save(key: String, value: Long)
     fun load(key: String, defValue: Int): Int
@@ -18,5 +19,6 @@ interface SharedWorker {
     companion object{
         const val FRAGMENT_MANAGER = "fragment_manager"
         const val READ_ALL_BOXES_SYNC_SIZE = "count_of_load_boxes"
+        const val CLOSE_FRAGMENT_WHEN_ENDED_TIME = "close_fragment_when_end_time"
     }
 }
