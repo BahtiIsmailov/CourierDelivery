@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import ru.wb.go.app.AppPreffsKeys.CLOSE_FRAGMENT_WHEN_ENDED_TIME
+import ru.wb.go.app.AppPreffsKeys.FRAGMENT_MANAGER
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
 import ru.wb.go.network.exceptions.NoInternetException
@@ -28,7 +30,6 @@ import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 import ru.wb.go.utils.prefs.SharedWorker
-import ru.wb.go.utils.prefs.SharedWorker.Companion.FRAGMENT_MANAGER
 
 class CourierWarehousesViewModel(
     private val interactor: CourierWarehousesInteractor,
@@ -83,7 +84,7 @@ class CourierWarehousesViewModel(
         checkDemoMode()
     }
     init {
-        sharedWorker.saveMediate(SharedWorker.CLOSE_FRAGMENT_WHEN_ENDED_TIME,"")
+        sharedWorker.saveMediate(CLOSE_FRAGMENT_WHEN_ENDED_TIME,"")
         stringFromSms = sharedWorker.load(FRAGMENT_MANAGER,"")
     }
 

@@ -1,11 +1,11 @@
 package ru.wb.go.ui.auth
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import ru.wb.go.app.AppPreffsKeys.FRAGMENT_MANAGER
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -17,7 +17,6 @@ import ru.wb.go.ui.auth.signup.TimerState
 import ru.wb.go.ui.auth.signup.TimerStateHandler
 import ru.wb.go.utils.prefs.SharedWorker
 import java.net.UnknownHostException
-import kotlin.math.floor
 
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
@@ -80,7 +79,7 @@ class CheckSmsViewModel(
     }
 
     fun saveDataToShared(){
-        sharedWorker.saveMediate(SharedWorker.FRAGMENT_MANAGER,"fromSms")
+        sharedWorker.saveMediate(FRAGMENT_MANAGER,"fromSms")
     }
 
     private fun subscribeTimer() {
