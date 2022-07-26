@@ -1,5 +1,7 @@
 package ru.wb.go.ui.courierloading
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
+import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.auth.signup.TimerState
@@ -23,11 +26,16 @@ import ru.wb.go.ui.courierloading.domain.CourierLoadingScanBoxData
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.scanner.domain.ScannerState
+import ru.wb.go.utils.Event
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
+import ru.wb.go.utils.prefs.SharedWorker
+import ru.wb.go.utils.prefs.SharedWorker.Companion.CLOSE_FRAGMENT_WHEN_ENDED_TIME
 import ru.wb.go.utils.time.DateTimeFormatter
+import java.time.Duration
+import java.time.LocalTime
 
 class CourierLoadingScanViewModel(
     private val resourceProvider: CourierLoadingResourceProvider,
@@ -35,6 +43,7 @@ class CourierLoadingScanViewModel(
     private val courierOrderTimerInteractor: CourierOrderTimerInteractor,
     private val errorDialogManager: ErrorDialogManager,
     private val playManager: PlayManager,
+    private val sharedWorker: SharedWorker,
 ) : TimerStateHandler,
     ServicesViewModel(interactor, resourceProvider) {
 
@@ -77,6 +86,11 @@ class CourierLoadingScanViewModel(
 
     private val _dublicateBoxId = MutableLiveData<Boolean>()
     val dublicateBoxId: LiveData<Boolean> = _dublicateBoxId
+
+    private val _startTimeForThreeHour = MutableLiveData<LocalTime>()
+    private val _endTimeForThreeHour = MutableLiveData<LocalTime>()
+    private val _endTimeOfCourierOrderAfterThreeHour = MutableLiveData<Boolean>()
+    val endTimeOfCourierOrderAfterThreeHour: LiveData<Boolean> = _endTimeOfCourierOrderAfterThreeHour
 
 
     private val _timeOut = SingleLiveEvent<Boolean>()
@@ -127,6 +141,21 @@ class CourierLoadingScanViewModel(
             }
         }
     }
+
+    fun clearScannerState(){
+        holdSplashScanner()
+        interactor.clearScannerState()
+    }
+
+    fun checkInternetAndThenShow(context: Context){
+        if (CheckInternet.checkConnection(context)){
+            onConfirmLoadingClick()
+            saveInfoIfCloseApp("")
+        }else{
+            errorDialogManager.showErrorDialog(NoInternetException(""), _navigateToDialogInfo)
+        }
+    }
+
     private fun getGate() {
         viewModelScope.launch {
             try {
@@ -187,6 +216,10 @@ class CourierLoadingScanViewModel(
         }
     }
 
+    private fun scanProcessError(throwable: Throwable) {
+        errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
+    }
+
     private fun observeScanProcess() {
         interactor.observeScanProcess()
             .onEach {
@@ -200,28 +233,51 @@ class CourierLoadingScanViewModel(
             .launchIn(viewModelScope)
     }
 
+    private fun timeBetweenStartAndEndTask(){
+        try {
+            _endTimeForThreeHour.value = LocalTime.now()
+            val duration = Duration.between(_startTimeForThreeHour.value,_endTimeForThreeHour.value)
+            Log.e("duration_time","${duration.seconds}")
+            if ((duration.seconds / 60L) >= 1L){ //TODO(не забудь поменять на часы)
+                _endTimeOfCourierOrderAfterThreeHour.value = false
+            }
+        }catch (e:Exception){
+            _startTimeForThreeHour.value = LocalTime.now()
+        }
 
-    private fun scanProcessError(throwable: Throwable) {
-        errorDialogManager.showErrorDialog(throwable, _navigateToDialogInfo)
+    }
+
+    fun saveInfoIfCloseApp(flag:String){
+        sharedWorker.saveMediate(CLOSE_FRAGMENT_WHEN_ENDED_TIME,flag)
+    }
+
+    fun showBottomSheetAfterClose(){
+        val response = sharedWorker.load(CLOSE_FRAGMENT_WHEN_ENDED_TIME,"")
+        if (response != "") {
+            _endTimeOfCourierOrderAfterThreeHour.value = response == "0"
+        }
     }
 
     private suspend fun observeScanProcessComplete(scanResult: CourierLoadingProcessData) {
+        timeBetweenStartAndEndTask()
         val scanBoxData = scanResult.scanBoxData
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
-                _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar //+
+
+                _startTimeForThreeHour.value = LocalTime.now()
+
+                _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar 
                 _boxDataStateUI.value =
                     with(scanBoxData) {
                         BoxInfoDataState(qrCode, address, countBoxes)
-                    }//+
-                setLogBoxesQrCodeAddressAndCount(scanBoxData.qrCode,scanBoxData.address,countBoxes)//+
-                setValueToStartLog(true)//+
-                 _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded//+
+                    }
+                setLogBoxesQrCodeAddressAndCount(scanBoxData.qrCode,scanBoxData.address,countBoxes)
+                setValueToStartLog(true)
+                 _beepEvent.value = CourierLoadingScanBeepState.BoxFirstAdded
                 _orderTimer.value = CourierLoadingScanTimerState.Stopped
                 _completeButtonState.value = true
                 holdSplashScanner()
-                //interactor.scanRepoHoldStart()
             }
             is CourierLoadingScanBoxData.SecondaryBoxAdded -> {
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar

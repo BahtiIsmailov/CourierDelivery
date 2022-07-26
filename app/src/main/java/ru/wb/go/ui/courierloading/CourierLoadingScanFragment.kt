@@ -3,7 +3,6 @@ package ru.wb.go.ui.courierloading
 import android.os.Bundle
 import android.view.View
 import android.view.View.VISIBLE
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
@@ -15,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierLoadingFragmentBinding
@@ -46,6 +44,7 @@ class CourierLoadingScanFragment :
     private val bottomSheetDetails: BottomSheetBehavior<FrameLayout>
         get() = BottomSheetBehavior.from(binding.detailsGoals)
 
+
     override val viewModel by viewModel<CourierLoadingScanViewModel>()
 
     private val bottomSheetDetailsCallback = object :
@@ -61,6 +60,7 @@ class CourierLoadingScanFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.showBottomSheetAfterClose()
         viewModel.observeTimer()
     }
 
@@ -73,6 +73,7 @@ class CourierLoadingScanFragment :
         initRecyclerViewDetails()
         initBottomSheet()
     }
+
 
     private fun initBottomSheet() {
         binding.detailsLayout.visibility = VISIBLE
@@ -142,6 +143,9 @@ class CourierLoadingScanFragment :
             showDialogInfo(it)
         }
 
+        viewModel.endTimeOfCourierOrderAfterThreeHour.observe(viewLifecycleOwner) {
+            showBottomSheetDialog(it)
+        }
         viewModel.networkState.observe(viewLifecycleOwner) {
             val ic = when (it) {
                 is NetworkState.Complete -> R.drawable.ic_inet_complete
@@ -220,14 +224,8 @@ class CourierLoadingScanFragment :
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
                 CourierLoadingScanBeepState.BoxFirstAdded -> {
-                    val anim = AnimationUtils.loadAnimation(
-                        requireContext(),
-                        R.anim.fade_out_more_long
-                    )
-                    binding.orderHaveLittleTimeWindow.isVisible = true
-                    binding.orderHaveLittleTimeWindow.startAnimation(anim)
-                    binding.topBackground.isVisible = true
-
+                    viewModel.saveInfoIfCloseApp("0")
+                    showBottomSheetDialog(true)
                     beepFirstSuccess()
                 }
                 CourierLoadingScanBeepState.BoxAdded -> beepSuccess()
@@ -331,17 +329,47 @@ class CourierLoadingScanFragment :
             }
         }
     }
+
+    private fun showBottomSheetDialog(type: Boolean) {
+        val anim = AnimationUtils.loadAnimation(
+            requireContext(),
+            R.anim.fade_out_more_long
+        )
+        if (!type) {
+            binding.title.text = resources.getText(R.string.order_have_end_hour)
+            binding.update.text = resources.getText(R.string.courier_order_scanner_complete)
+            binding.description.isVisible = true
+            viewModel.saveInfoIfCloseApp("1")
+            viewModel.clearScannerState()
+        }
+        binding.orderHaveLittleTimeWindow.isVisible = true
+        binding.orderHaveLittleTimeWindow.startAnimation(anim)
+        binding.topBackground.isVisible = true
+        binding.update.setOnClickListener {
+            if (!type) {
+                viewModel.checkInternetAndThenShow(requireContext())
+            } else {
+                binding.orderHaveLittleTimeWindow.startAnimation(
+                    AnimationUtils.loadAnimation(
+                        requireContext(),
+                        R.anim.fade_in_more_long
+                    )
+                )
+                binding.orderHaveLittleTimeWindow.isGone = true
+                binding.topBackground.isGone = true
+                viewModel.saveInfoIfCloseApp("")
+            }
+        }
+
+    }
+
     private fun initListener() {
         binding.completeButton.setOnClickListener {
             viewModel.onCompleteLoaderClicked()
         }
         binding.counterLayout.setOnClickListener { viewModel.onCounterBoxClicked() }
         binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
-        binding.update.setOnClickListener {
-            binding.orderHaveLittleTimeWindow.startAnimation(AnimationUtils.loadAnimation(requireContext(),R.anim.fade_in_more_long))
-            binding.orderHaveLittleTimeWindow.isGone = true
-            binding.topBackground.isGone = true
-        }
+
     }
 
     private fun getColor(colorId: Int) = ContextCompat.getColor(requireContext(), colorId)
@@ -406,7 +434,6 @@ class CourierLoadingScanFragment :
             positiveButtonName = requireContext().getString(R.string.ok_button_title)
         ).show(parentFragmentManager, DIALOG_INFO_TAG)
     }
-
 
 
     companion object {

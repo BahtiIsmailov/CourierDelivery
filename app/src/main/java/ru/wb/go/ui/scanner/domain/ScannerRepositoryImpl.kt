@@ -31,9 +31,18 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-//private var scannerActionSubject = PublishSubject.create<ScannerAction>()
-//private val scannerStateSubject = PublishSubject.create<ScannerState>()
+    override fun clearScannerState() {
+        scannerActionSubject = MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = Int.MAX_VALUE,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
+        scannerStateSubject = MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = Int.MAX_VALUE,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+    }
      override fun scannerAction(action:ScannerAction){
          Log.e("scannerAction","emit:$action")
          scannerActionSubject.tryEmit(action)

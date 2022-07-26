@@ -26,6 +26,8 @@ interface CourierLoadingInteractor : BaseServiceInteractor {
 
     suspend fun getGate(): String?
 
+    fun clearScannerState()
+
     suspend fun loadingBoxBoxesGroupByOffice(): LoadingBoxGoals
 
     suspend fun scanRepoHoldStart()

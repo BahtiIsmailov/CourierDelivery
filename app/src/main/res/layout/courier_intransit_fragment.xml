@@ -331,7 +331,7 @@
             android:layout_height="@dimen/auth_button_height"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="20dp"
-            android:src="@drawable/ic_qr"
+            android:src="@drawable/ic_qr2"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
