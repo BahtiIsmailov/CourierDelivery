@@ -1,5 +1,7 @@
 package ru.wb.go.utils.prefs
 
+import java.time.LocalTime
+
 interface SharedWorker {
     fun load(key: String, defValue: Boolean): Boolean
     fun save(key: String, value: Boolean)
@@ -16,9 +18,5 @@ interface SharedWorker {
     fun <T> load(key: String, serializeClass: Class<T>): T?
     fun isAllExists(vararg keys: String): Boolean
     fun delete(vararg keys: String)
-    companion object{
-        const val FRAGMENT_MANAGER = "fragment_manager"
-        const val READ_ALL_BOXES_SYNC_SIZE = "count_of_load_boxes"
-        const val CLOSE_FRAGMENT_WHEN_ENDED_TIME = "close_fragment_when_end_time"
-    }
+
 }

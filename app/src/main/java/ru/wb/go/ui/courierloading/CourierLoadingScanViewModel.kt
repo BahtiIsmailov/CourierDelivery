@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierloading
 
+import CheckInternet
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import ru.wb.go.app.AppPreffsKeys.CLOSE_FRAGMENT_WHEN_ENDED_TIME
+import ru.wb.go.app.AppPreffsKeys.SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.ui.ServicesViewModel
@@ -26,13 +29,11 @@ import ru.wb.go.ui.courierloading.domain.CourierLoadingScanBoxData
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.ui.scanner.domain.ScannerState
-import ru.wb.go.utils.Event
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.managers.PlayManager
 import ru.wb.go.utils.prefs.SharedWorker
-import ru.wb.go.utils.prefs.SharedWorker.Companion.CLOSE_FRAGMENT_WHEN_ENDED_TIME
 import ru.wb.go.utils.time.DateTimeFormatter
 import java.time.Duration
 import java.time.LocalTime
@@ -235,6 +236,8 @@ class CourierLoadingScanViewModel(
 
     private fun timeBetweenStartAndEndTask(){
         try {
+            _startTimeForThreeHour.value = sharedWorker.load(
+                SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP, LocalTime::class.java)
             _endTimeForThreeHour.value = LocalTime.now()
             val duration = Duration.between(_startTimeForThreeHour.value,_endTimeForThreeHour.value)
             Log.e("duration_time","${duration.seconds}")
@@ -242,7 +245,7 @@ class CourierLoadingScanViewModel(
                 _endTimeOfCourierOrderAfterThreeHour.value = false
             }
         }catch (e:Exception){
-            _startTimeForThreeHour.value = LocalTime.now()
+            //_startTimeForThreeHour.value = LocalTime.now()
         }
 
     }
@@ -265,7 +268,7 @@ class CourierLoadingScanViewModel(
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
 
-                _startTimeForThreeHour.value = LocalTime.now()
+                sharedWorker.save(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP,LocalTime.now())
 
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar 
                 _boxDataStateUI.value =

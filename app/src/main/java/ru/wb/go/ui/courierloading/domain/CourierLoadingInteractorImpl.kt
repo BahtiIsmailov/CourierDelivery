@@ -4,6 +4,7 @@ import android.util.Log
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
+import ru.wb.go.app.AppPreffsKeys.READ_ALL_BOXES_SYNC_SIZE
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.TaskTimerRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
@@ -18,7 +19,6 @@ import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 import ru.wb.go.utils.prefs.SharedWorker
-import ru.wb.go.utils.prefs.SharedWorker.Companion.READ_ALL_BOXES_SYNC_SIZE
 
 class CourierLoadingInteractorImpl(
     networkMonitorRepository: NetworkMonitorRepository,
