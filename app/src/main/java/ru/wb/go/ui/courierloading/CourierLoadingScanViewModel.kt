@@ -238,7 +238,7 @@ class CourierLoadingScanViewModel(
             _endTimeForThreeHour.value = LocalTime.now()
             val duration = Duration.between(_startTimeForThreeHour.value,_endTimeForThreeHour.value)
             Log.e("duration_time","${duration.seconds}")
-            if ((duration.seconds / 60L) >= 1L){ //TODO(не забудь поменять на часы)
+            if ((duration.seconds / 3600L) >= 3L){
                 _endTimeOfCourierOrderAfterThreeHour.value = false
             }
         }catch (e:Exception){
