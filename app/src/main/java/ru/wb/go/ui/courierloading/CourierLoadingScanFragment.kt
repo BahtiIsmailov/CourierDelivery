@@ -266,7 +266,7 @@ class CourierLoadingScanFragment :
         }
         viewModel.fragmentStateUI.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is CourierLoadingScanBoxState.InitScanner -> {
+                CourierLoadingScanBoxState.InitScanner -> {
                     with(binding) {
                         timerLayout.visibility = VISIBLE
                         boxInfoLayout.visibility = View.GONE
@@ -275,7 +275,7 @@ class CourierLoadingScanFragment :
                     }
 
                 }
-                is CourierLoadingScanBoxState.LoadInCar -> {
+                CourierLoadingScanBoxState.LoadInCar -> {
                     holdBackButtonOnScanBox()
                     with(binding) {
                         ribbonStatus.setText(R.string.courier_loading_load_in_car)
@@ -287,7 +287,7 @@ class CourierLoadingScanFragment :
                     }
 
                 }
-                is CourierLoadingScanBoxState.ForbiddenTakeWithTimer -> {
+                CourierLoadingScanBoxState.ForbiddenTakeWithTimer -> {
                     with(binding) {
                         timerLayout.visibility = VISIBLE
                         boxInfoLayout.visibility = View.GONE
@@ -296,7 +296,7 @@ class CourierLoadingScanFragment :
                     }
 
                 }
-                is CourierLoadingScanBoxState.ForbiddenTakeBox -> {
+                CourierLoadingScanBoxState.ForbiddenTakeBox -> {
                     holdBackButtonOnScanBox()
                     with(binding) {
                         timerLayout.visibility = View.GONE
@@ -308,7 +308,7 @@ class CourierLoadingScanFragment :
                     }
 
                 }
-                is CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
+                CourierLoadingScanBoxState.NotRecognizedQrWithTimer -> {
                     with(binding) {
                         timerLayout.visibility = View.VISIBLE
                         boxInfoLayout.visibility = View.GONE
@@ -317,7 +317,7 @@ class CourierLoadingScanFragment :
                     }
 
                 }
-                is CourierLoadingScanBoxState.NotRecognizedQr -> {
+                CourierLoadingScanBoxState.NotRecognizedQr -> {
                     holdBackButtonOnScanBox()
                     with(binding) {
                         timerLayout.visibility = View.GONE

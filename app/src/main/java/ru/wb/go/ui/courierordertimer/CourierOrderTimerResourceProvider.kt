@@ -29,6 +29,9 @@ class CourierOrderTimerResourceProvider(private val context: Context) :
         return context.getString(R.string.courier_orders_count, boxCount, v)
     }
 
+    fun getCargo(volume: Int, boxCount: Int): String {
+        return context.getString(R.string.orderCardCargo, volume, boxCount)
+    }
     fun getDialogTimerSkipTitle() = context.getString(R.string.courier_orders_timer_dialog_skip_title)
     fun getDialogTimerSkipMessage() = context.getString(R.string.courier_orders_timer_dialog_skip_message)
     fun getDialogTimerPositiveButton() = context.getString(R.string.courier_orders_timer_dialog_positive_button)

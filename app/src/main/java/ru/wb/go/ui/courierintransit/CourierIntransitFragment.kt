@@ -338,7 +338,6 @@ class CourierIntransitFragment :
             when (it) {
                 CourierIntransitNavigationState.NavigateToScanner -> {
                     binding.scanQrPvzButton.isEnabled = false
-                    //binding.navigatorButton.isEnabled = false
                     binding.scanQrPvzCompleteButton.isEnabled = false
                     binding.completeDeliveryButton.isEnabled = false
 

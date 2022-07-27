@@ -13,14 +13,6 @@ interface CourierIntransitOfficeScannerInteractor: BaseServiceInteractor {
 
     fun scannerAction(scannerAction: ScannerState)
 
-}
+    fun clearMutableSharedFlow()
 
-//interface CourierIntransitOfficeScannerInteractor: BaseServiceInteractor {
-//
-//    fun getOffices(): Observable<List<LocalOfficeEntity>>
-//
-//    fun observeOfficeIdScanProcess(): Observable<CourierIntransitOfficeScanData>
-//
-//    fun scannerAction(scannerAction: ScannerState)
-//
-//}
+}

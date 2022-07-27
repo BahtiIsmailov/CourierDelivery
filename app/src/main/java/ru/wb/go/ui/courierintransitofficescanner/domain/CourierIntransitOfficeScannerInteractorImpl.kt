@@ -39,8 +39,8 @@ class CourierIntransitOfficeScannerInteractorImpl(
             .flatMapMerge{
                 flowOf(
                     when (it) {
-                        is ScannerAction.HoldSplashUnlock -> CourierIntransitOfficeScanData.HoldSplashUnlock
-                        is ScannerAction.HoldSplashLock -> CourierIntransitOfficeScanData.HoldSplashLock
+                        ScannerAction.HoldSplashUnlock -> CourierIntransitOfficeScanData.HoldSplashUnlock
+                        ScannerAction.HoldSplashLock -> CourierIntransitOfficeScanData.HoldSplashLock
                         is ScannerAction.ScanResult -> scanResult(it)
                     }
                 )
@@ -64,6 +64,10 @@ class CourierIntransitOfficeScannerInteractorImpl(
 
     override fun scannerAction(scannerAction: ScannerState) {
         scannerRepo.scannerState(scannerAction)
+    }
+
+    override fun clearMutableSharedFlow() {
+        scannerRepo.clearScannerState()
     }
 }
 

@@ -28,4 +28,6 @@ interface CourierUnloadingInteractor : BaseServiceInteractor {
     suspend fun getOrderId(): String
 
     suspend fun scannerRepoHoldStart()
+
+    fun clearMutableSharedFlow()
 }
