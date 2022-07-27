@@ -133,7 +133,7 @@ class CourierOrderTimerViewModel(
                 resourceProvider.getOrder(orderId),
                 name,
                 resourceProvider.getCoast(coast),
-                resourceProvider.getBoxCountAndVolume(boxesCount, volume),
+                resourceProvider.getCargo(volume,boxesCount),
                 resourceProvider.getPvz(countPvz),
                 gate.ifEmpty { "-" }
             )

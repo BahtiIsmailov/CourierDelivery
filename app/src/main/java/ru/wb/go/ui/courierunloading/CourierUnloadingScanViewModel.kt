@@ -75,6 +75,8 @@ class CourierUnloadingScanViewModel(
         get() = _completeButtonEnable
 
     fun update() {
+        clearSharedFlow()
+        holdSplashScanner()
         initTitle()
         initToolbar()
         observeBoxInfoProcessInitState()
@@ -88,7 +90,7 @@ class CourierUnloadingScanViewModel(
         }
     }
 
-    private fun holdSplashScanner() {
+    fun holdSplashScanner() {
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
     }
 
@@ -100,7 +102,6 @@ class CourierUnloadingScanViewModel(
 
             } catch (e: Exception) {
                 logException(e,"observeBoxInfoProcessInitState")
-                //onTechEventLog("observeInitScanProcessError", e)
             }
         }
 
@@ -129,14 +130,12 @@ class CourierUnloadingScanViewModel(
                     Label(interactor.getCurrentOffice(parameters.officeId).officeName)
             } catch (e: Exception) {
                 logException(e,"initToolbar")
-                //onTechEventLog("initToolbar", e)
             }
         }
 
     }
 
     fun onCancelScoreUnloadingClick() {
-        //onTechEventLog("onCancelScoreUnloadingClick")
         _completeButtonEnable.value = true
         setLoader(WaitLoader.Complete)
         onStartScanner()
@@ -147,7 +146,6 @@ class CourierUnloadingScanViewModel(
     }
 
     fun onConfirmScoreUnloadingClick() {
-        //onTechEventLog("onConfirmScoreUnloadingClick")
         confirmUnloading()
     }
 
@@ -157,7 +155,6 @@ class CourierUnloadingScanViewModel(
                 interactor.completeOfficeUnload()
             } catch (e: Exception) {
                 logException(e,"confirmUnloading")
-                //onTechEventLog("confirmUnload", e)
             }finally {
                 _navigationEvent.value = CourierUnloadingScanNavAction.NavigateToIntransit
 
@@ -165,46 +162,34 @@ class CourierUnloadingScanViewModel(
         }
     }
 
+    fun clearSharedFlow(){
+        interactor.clearMutableSharedFlow()
+    }
+
     private fun observeScanProcess() {
-        holdSplashScanner()
+        //holdSplashScanner()
         interactor.observeScanProcess(parameters.officeId)
             .onEach {
                 Log.e("scannerAction","observeScanProcessOnEach : $it")
                 observeScanProcessComplete(it)
+
                 interactor.scannerRepoHoldStart()
-//                delay(2000)
-                onStartScanner()
+                //onStartScanner()
 
             }
             .catch {
                 logException(it,"observeScanProcess")
-                //onTechEventLog("observeScanProcessError", it)
                 errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
             }
             .launchIn(viewModelScope)
     }
 
-//
-//    private fun observeScanProcess() {
-//        addSubscription(
-//            interactor.observeScanProcess(parameters.officeId)
-//                .doOnSubscribe { holdSplashScanner() }
-//                .subscribe(
-//                    { observeScanProcessComplete(it) },
-//                    {
-//                        //onTechEventLog("observeScanProcessError", it)
-//                        errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-//                    }
-//                )
-//        )
-//    }
     fun onCloseDetailsClick() {
         onStartScanner()
         _navigationEvent.value = CourierUnloadingScanNavAction.HideUnloadingItems
     }
 
     private fun observeScanProcessComplete(scanProcess: CourierUnloadingProcessData) {
-        //onTechEventLog("observeScanProcessComplete", "scanProcess $scanProcess")
         val scanBoxData = scanProcess.scanBoxData
         val accepted =
             resourceProvider.getAccepted(scanProcess.unloadingCounter, scanProcess.fromCounter)

@@ -55,6 +55,7 @@ class CourierIntransitOfficeScannerViewModel(
         get() = _waitLoader
 
     init {
+        clearMutableSharedFlow()
         initTitle()
         initScanner()
     }
@@ -75,6 +76,10 @@ class CourierIntransitOfficeScannerViewModel(
              .launchIn(viewModelScope)
     }
 
+    fun clearMutableSharedFlow(){
+        interactor.clearMutableSharedFlow()
+    }
+
     private fun observeOfficeIdScanProcessComplete(it: CourierIntransitOfficeScanData) {
         when (it) {
             is CourierIntransitOfficeScanData.NecessaryOfficeScan -> {
@@ -83,9 +88,10 @@ class CourierIntransitOfficeScannerViewModel(
                     CourierIntransitOfficeScannerNavigationState.NavigateToUnloadingScanner(
                         it.id
                     )
+
                 onCleared()
             }
-            is CourierIntransitOfficeScanData.UnknownQrOfficeScan -> {
+            CourierIntransitOfficeScanData.UnknownQrOfficeScan -> {
                 onStopScanner()
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.UnknownQrOffice
                 _navigationState.value =
@@ -93,7 +99,7 @@ class CourierIntransitOfficeScannerViewModel(
                         "QR-код ПВЗ не распознан", "QR код должен предоставить менеджер ПВЗ"
                     )
             }
-            is CourierIntransitOfficeScanData.WrongOfficeScan -> {
+            CourierIntransitOfficeScanData.WrongOfficeScan -> {
                 onStopScanner()
                 _beepEvent.value = CourierIntransitOfficeScannerBeepState.WrongOffice
                 _navigationState.value =
@@ -101,13 +107,12 @@ class CourierIntransitOfficeScannerViewModel(
                         "У вас нет коробок для этого ПВЗ.", "Проверьте свой маршрут"
                     )
             }
-            is CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
-            is CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
+            CourierIntransitOfficeScanData.HoldSplashUnlock -> _infoCameraVisibleState.value = true
+            CourierIntransitOfficeScanData.HoldSplashLock -> _infoCameraVisibleState.value = false
         }
     }
 
     private fun observeOfficeIdScanProcessError(it: Throwable) {
-        //onTechEventLog("observeOfficeIdScanProcess", it)
         errorDialogManager.showErrorDialog(it, _navigateToErrorDialog)
     }
 
@@ -119,11 +124,6 @@ class CourierIntransitOfficeScannerViewModel(
     fun onAccessiblyClick() {
         onStartScanner()
         _navigationState.value = CourierIntransitOfficeScannerNavigationState.NavigateToScanner
-    }
-
-    fun onDestroy() {
-        //viewModelScope.coroutineContext.cancelChildren()
-        //clearSubscription()
     }
 
     fun onErrorDialogConfirmClick() {

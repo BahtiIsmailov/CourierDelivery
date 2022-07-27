@@ -112,7 +112,7 @@ class CourierIntransitOfficeScannerFragment :
 
         viewModel.officeScannerNavigationState.observe(viewLifecycleOwner) {
             when (it) {
-                is CourierIntransitOfficeScannerNavigationState.NavigateToMap -> {
+                CourierIntransitOfficeScannerNavigationState.NavigateToMap -> {
                     findNavController().popBackStack()
                 }
                 is CourierIntransitOfficeScannerNavigationState.NavigateToOfficeFailed -> {
@@ -128,7 +128,7 @@ class CourierIntransitOfficeScannerFragment :
                         )
                     )
                 }
-                is CourierIntransitOfficeScannerNavigationState.NavigateToScanner -> {
+                CourierIntransitOfficeScannerNavigationState.NavigateToScanner -> {
                     hideAllBottomSheet()
                 }
             }
@@ -178,11 +178,6 @@ class CourierIntransitOfficeScannerFragment :
             positiveButtonName = positiveButtonName,
             negativeButtonName = negativeButtonName
         ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
-    }
-
-    override fun onDestroyView() {
-        viewModel.onDestroy()
-        super.onDestroyView()
     }
 
     private fun scanOfficeAccepted() {

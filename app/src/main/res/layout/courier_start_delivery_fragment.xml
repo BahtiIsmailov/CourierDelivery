@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lvl_1">
+    android:background="@color/lvl_1"
+    tools:context=".ui.courierstartdelivery.CourierStartDeliveryFragment">
 
     <ImageView
         android:id="@+id/imageView3"

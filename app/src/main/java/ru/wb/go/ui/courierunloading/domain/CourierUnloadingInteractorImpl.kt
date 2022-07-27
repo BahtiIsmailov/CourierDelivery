@@ -81,6 +81,10 @@ class CourierUnloadingInteractorImpl(
     }
 
 
+    override fun clearMutableSharedFlow() {
+        scannerRepo.clearScannerState()
+    }
+
     var scanLoaderProgressSubject = MutableSharedFlow<CourierUnloadingProgressData>()
     override suspend fun getCurrentOffice(officeId: Int): LocalOfficeEntity {
         return localRepo.findOfficeById(officeId)

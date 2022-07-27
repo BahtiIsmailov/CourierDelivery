@@ -404,7 +404,6 @@ class CourierIntransitViewModel(
     }
 
     fun onScanQrPvzClick() {
-        //onTechEventLog("Button scan QR Office")
         updateMarkers()
         changeSelectedItemsByMarker(0, false)
         updateAndScrollToItems(0)
