@@ -85,6 +85,9 @@ class CourierWarehousesViewModel(
     }
     init {
         sharedWorker.saveMediate(CLOSE_FRAGMENT_WHEN_ENDED_TIME,"")
+        if (!sharedWorker.isAllExists(FRAGMENT_MANAGER)){
+            sharedWorker.saveMediate(FRAGMENT_MANAGER,"fromSms")
+        }
         stringFromSms = sharedWorker.load(FRAGMENT_MANAGER,"")
     }
 
