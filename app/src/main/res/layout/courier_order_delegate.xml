@@ -9,7 +9,8 @@
     android:background="@color/lvl_1"
     android:clickable="true"
     android:focusable="true"
-    app:layout_constraintTop_toTopOf="parent">
+    app:layout_constraintTop_toTopOf="parent"
+    tools:ignore="ExtraText">
 
     <ImageView
         android:id="@+id/selected_background"
@@ -66,7 +67,7 @@
         android:layout_marginTop="12dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        tools:text="3 км "
+        tools:text="323 км "
         app:layout_constraintStart_toEndOf="@id/countOffice"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -75,12 +76,17 @@
     <TextView
         android:id="@+id/cost"
         style="@style/LargePrimaryMediumText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/pad12"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
+        android:gravity="end"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/taskDistance"
         app:layout_constraintTop_toTopOf="@id/countOffice"
-        tools:text="@sample/orders.json/orders/price" />
+        tools:text="от 99 999 - 99 999 $"
+         />
+<!--    tools:text="@sample/orders.json/orders/price"-->
 
     <TextView
         android:id="@+id/cargo"
