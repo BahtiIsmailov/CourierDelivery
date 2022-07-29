@@ -28,13 +28,14 @@
 
     <TextView
         android:id="@+id/linerNumber"
-        style="@style/MediumLvl1SmallRegularText"
+        style="@style/SmallLvl2RegularText"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/pad24"
+        android:layout_height="@dimen/pad28"
         android:textColor="#642CA3"
         android:layout_marginHorizontal="@dimen/pad16"
         android:background="@drawable/ic_courier_map_order_none_border"
         android:gravity="center"
+        android:padding="@dimen/dp_0d2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
