@@ -39,6 +39,7 @@ before_script:
 
 
 stages:
+  - tag-release
   - debugApk
   - releaseApk
   - releaseBundle
@@ -81,7 +82,7 @@ bundleRelease:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 deploy:
   stage: deploy
