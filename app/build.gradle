@@ -32,9 +32,9 @@ def getVersionTag = { variant ->
 
 def getVersionCode = { tag ->
     def parts = tag.tokenize('.')
-    if(parts.size() != 3 || parts[1].length() > 2 || parts[2].length() > 2) {
-        throw new RuntimeException("Invalid version tag ${tag}, format x.y.z expected.")
-    }
+//    if(parts.size() != 3 || parts[1].length() > 2 || parts[2].length() > 2) {
+//        throw new RuntimeException("Invalid version tag ${tag}, format x.y.z expected.")
+//    }
     if(parts[1].length() == 1) {
         parts[1] = "0" + parts[1]
     }
@@ -202,12 +202,11 @@ lint {
 applicationVariants.all { variant ->
     def versionTag = getVersionTag(variant.buildType.name)
     def myVersionCode = getVersionCode(versionTag)
-    def myVersionName = getVersionName(versionTag)
-    versionProps.load(new FileInputStream(versionPropsFile))
+  // def myVersionName = getVersionName(versionTag)
 
-    println variant.name + "[" + {$myVersionCode++} + ", " + myVersionName + "]"
+//    println variant.name + "[" + {$myVersionCode++} + ", " + myVersionName + "]"
 
-    variant.mergedFlavor.versionName = myVersionName;
+  // variant.mergedFlavor.versionName = myVersionName;
     variant.mergedFlavor.versionCode = myVersionCode;
 }
 
