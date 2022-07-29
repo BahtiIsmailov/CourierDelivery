@@ -10,8 +10,6 @@ variables:
 
   ANDROID_SDK_TOOLS: "7583922"
 
-  GITLAB_PROJECT_URL: "https://gitlab.wildberries.ru/wbtrans/mobile.git"
-
 before_script:
   - apt-get --quiet update --yes
   - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
