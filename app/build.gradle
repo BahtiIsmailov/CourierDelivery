@@ -19,14 +19,15 @@ def getVersionTag = { variant ->
     try {
         stdout = new ByteArrayOutputStream()
         exec {
-            commandLine "git", "describe", "--match", "${variant}/*", "--tags"
+            commandLine 'git', 'fetch', '--tags'
+            ignoreExitValue = true
             standardOutput = stdout
         }
         def longTag = stdout.toString().trim()
 
         return longTag.substring(longTag.indexOf('/') + 1, longTag.indexOf('-'))
     } catch (ignored) {
-        return "0.0.1";
+        return "0.0.1"
     }
 }
 
