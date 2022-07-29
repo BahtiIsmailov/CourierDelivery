@@ -207,11 +207,15 @@ applicationVariants.all { variant ->
 //    println variant.name + "[" + {$myVersionCode++} + ", " + myVersionName + "]"
 
   // variant.mergedFlavor.versionName = myVersionName;
-    variant.mergedFlavor.versionCode = myVersionCode;
+
+        variant.outputs.each { output ->
+            output.versionCodeOverride = myVersionCode
+        }
+    }
+
 }
 
 
-}
 
 dependencies {
 
