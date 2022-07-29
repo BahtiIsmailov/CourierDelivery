@@ -19,7 +19,7 @@ def getVersionTag = { variant ->
     try {
         stdout = new ByteArrayOutputStream()
         exec {
-            commandLine "git", "describe", "--match", "${variant}/*", "--tag"
+            commandLine "git", "describe", "--match", "${variant}/*", "--tags"
             standardOutput = stdout
         }
         def longTag = stdout.toString().trim()
@@ -32,9 +32,9 @@ def getVersionTag = { variant ->
 
 def getVersionCode = { tag ->
     def parts = tag.tokenize('.')
-//    if(parts.size() != 3 || parts[1].length() > 2 || parts[2].length() > 2) {
-//        throw new RuntimeException("Invalid version tag ${tag}, format x.y.z expected.")
-//    }
+    if(parts.size() != 3 || parts[1].length() > 2 || parts[2].length() > 3) {
+        throw new RuntimeException("Invalid version ta \"${tag}\", format \"x.y.z\" expected.")
+    }
     if(parts[1].length() == 1) {
         parts[1] = "0" + parts[1]
     }
@@ -64,59 +64,59 @@ android {
 compileSdkVersion 32
 buildToolsVersion "30.0.3"
 
-def versionPropsFile = file('version.properties')
+//def versionPropsFile = file('version.properties')
+//
+//Properties versionProps = new Properties()
+//
+//if (!versionPropsFile.exists()) {
+//    versionProps['VERSION_MAJOR'] = "0"
+//    versionProps['VERSION_MINOR'] = "0"
+//    versionProps['VERSION_BUILD'] = "0"
+//    versionProps['VERSION_CODE'] = "0"
+//    versionProps.store(versionPropsFile.newWriter(), null)
+//}
 
-Properties versionProps = new Properties()
-
-if (!versionPropsFile.exists()) {
-    versionProps['VERSION_MAJOR'] = "0"
-    versionProps['VERSION_MINOR'] = "0"
-    versionProps['VERSION_BUILD'] = "0"
-    versionProps['VERSION_CODE'] = "0"
-    versionProps.store(versionPropsFile.newWriter(), null)
-}
-
-if (versionPropsFile.canRead()) {
-
-    versionProps.load(new FileInputStream(versionPropsFile))// из файла в переменную
-
-    def runTasks = gradle.startParameter.taskNames
-    def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
-    def versionMinor = versionProps['VERSION_MINOR'].toInteger()
-    def versionBuild = versionProps['VERSION_BUILD'].toInteger()
-    def versionCod = versionProps['VERSION_CODE'].toInteger()
-
-    def isNew = false
-
-    print(runTasks)
-    if (':app:bundleRelease' in getVersionTag) {
-        //Сборка для всех
-        versionMinor++
-        versionCod++
-        isNew = true
-    }
-    if (':app:bundleReleaseTest' in runTasks) {
-        //Сборка для тестирующих курьеров
-        versionBuild++
-        versionCod++
-        isNew = true
-    }
-
-    versionProps['VERSION_MAJOR'] = versionMajor.toString()
-    versionProps['VERSION_MINOR'] = versionMinor.toString()
-    versionProps['VERSION_BUILD'] = versionBuild.toString()
-    versionProps['VERSION_CODE'] = versionCod.toString()
-    if (isNew) {
-        versionProps.store(versionPropsFile.newWriter(), null)
-    }
+//if (versionPropsFile.canRead()) {
+//
+//    versionProps.load(new FileInputStream(versionPropsFile))// из файла в переменную
+//
+//    def runTasks = gradle.startParameter.taskNames
+//    def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
+//    def versionMinor = versionProps['VERSION_MINOR'].toInteger()
+//    def versionBuild = versionProps['VERSION_BUILD'].toInteger()
+//    def versionCod = versionProps['VERSION_CODE'].toInteger()
+//
+//    def isNew = false
+//
+//    print(runTasks)
+//    if (':app:bundleRelease' in getVersionTag) {
+//        //Сборка для всех
+//        versionMinor++
+//        versionCod++
+//        isNew = true
+//    }
+//    if (':app:bundleReleaseTest' in runTasks) {
+//        //Сборка для тестирующих курьеров
+//        versionBuild++
+//        versionCod++
+//        isNew = true
+//    }
+//
+//    versionProps['VERSION_MAJOR'] = versionMajor.toString()
+//    versionProps['VERSION_MINOR'] = versionMinor.toString()
+//    versionProps['VERSION_BUILD'] = versionBuild.toString()
+//    versionProps['VERSION_CODE'] = versionCod.toString()
+//    if (isNew) {
+//        versionProps.store(versionPropsFile.newWriter(), null)
+//    }
 
     defaultConfig {
         multiDexEnabled true
         applicationId "ru.wb.go"
         minSdkVersion 23
         targetSdkVersion 32
-        versionCode versionCod
-        versionName versionMajor + "." + versionMinor + "." + versionBuild
+//        versionCode versionCod
+//        versionName versionMajor + "." + versionMinor + "." + versionBuild
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -127,9 +127,9 @@ if (versionPropsFile.canRead()) {
 
     }
 
-} else {
-    throw new GradleException("Could not read version.properties!")
-}
+//} else {
+    //throw new GradleException("Could not read version.properties!")
+//}
 
 kapt {
     arguments {
@@ -140,7 +140,7 @@ kapt {
 buildTypes {
     release {
 //            debuggable true
-//            minifyEnabled true
+        minifyEnabled false
         proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         manifestPlaceholders = [appName: "WB Go"]
         signingConfig signingConfigs.release
@@ -194,24 +194,20 @@ buildFeatures {
     dataBinding = true
     viewBinding true
 }
+applicationVariants.all { variant ->
+    def versionTag = getVersionTag(variant.buildType.name)
+    def myVersionCode = getVersionCode(versionTag)
+    def myVersionName = getVersionName(versionTag)
+
+    println variant.name + "[" + myVersionCode + ", " + myVersionName + "]"
+
+    variant.mergedFlavor.versionName = myVersionName
+    variant.mergedFlavor.versionCode = myVersionCode
+}
 lint {
     abortOnError false
     warningsAsErrors true
 }
-
-applicationVariants.all { variant ->
-    def versionTag = getVersionTag(variant.buildType.name)
-    def myVersionCode = getVersionCode(versionTag)
-  // def myVersionName = getVersionName(versionTag)
-
-//    println variant.name + "[" + {$myVersionCode++} + ", " + myVersionName + "]"
-
-  // variant.mergedFlavor.versionName = myVersionName;
-
-        variant.outputs.each { output ->
-            output.versionCodeOverride = myVersionCode
-        }
-    }
 
 }
 
