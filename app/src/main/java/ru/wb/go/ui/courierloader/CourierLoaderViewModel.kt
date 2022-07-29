@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
@@ -22,6 +23,7 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
+import ru.wb.go.utils.prefs.SharedWorker
 import java.net.UnknownHostException
 
 class CourierLoaderViewModel(
@@ -32,6 +34,7 @@ class CourierLoaderViewModel(
     private val resourceProvider: CourierLoaderResourceProvider,
     private val settingsManager: SettingsManager,
     private val userManager: UserManager,
+    private val sharedWorker: SharedWorker
 ) : NetworkViewModel() {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
@@ -51,6 +54,9 @@ class CourierLoaderViewModel(
         initDrawer()
         initVersion()
         checkRootState()
+        if (!sharedWorker.isAllExists(AppPreffsKeys.FRAGMENT_MANAGER)){
+            sharedWorker.saveMediate(AppPreffsKeys.FRAGMENT_MANAGER,"fromSms")
+        }
     }
 
     private fun initDrawer() {
