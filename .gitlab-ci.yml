@@ -135,9 +135,3 @@ tag-release: #Our job name
     - git tag -a "v$GRADLE_VERSION_NAME" -m "New Version"
     - git push --tags $GITLAB_PROJECT_URL
 
-notify_error:
-  stage: notify
-  interruptible: true
-  script:
-    - sh clean ci-notify.sh ❌
-  when: on_failure #deploy fail
