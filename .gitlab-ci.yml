@@ -39,7 +39,6 @@ before_script:
 
 
 stages:
-  - tag-release
   - debugApk
   - releaseApk
   - releaseBundle
