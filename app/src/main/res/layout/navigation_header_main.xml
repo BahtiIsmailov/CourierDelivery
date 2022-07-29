@@ -7,40 +7,71 @@
     android:background="@color/lvl_2"
     android:orientation="vertical">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/pad24"
+        android:layout_marginTop="60dp"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_wbgo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="@dimen/pad24"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/pad8">
+
+            <TextView
+                android:id="@+id/version_app_title"
+                style="@style/LargePrimaryRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/pad24"
+                android:paddingEnd="@dimen/pad8"
+                android:text="@string/app_ver"
+                tools:text="ver." />
+
+            <TextView
+                android:id="@+id/version_app"
+                style="@style/LargePrimaryRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="0.1.100" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
         android:id="@+id/nav_header_name"
         style="@style/VeryLargePrimaryRegularText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="24dp"
         android:textStyle="bold"
         tools:text="Махно Иван Иванович" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/user_id"
+        style="@style/MediumPrimaryRegularText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="@dimen/pad8">
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="@dimen/pad8"
+        android:text="@string/user_id" />
 
-        <TextView
-            android:id="@+id/version_app_title"
-            style="@style/LargePrimaryRegularText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="@dimen/pad24"
-            android:paddingEnd="@dimen/pad8"
-            android:text="@string/app_ver"
-            tools:text="ver." />
-
-        <TextView
-            android:id="@+id/version_app"
-            style="@style/LargePrimaryRegularText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="0.1.100" />
-    </LinearLayout>
 
 
     <View
@@ -50,41 +81,41 @@
         android:layout_marginTop="24dp"
         android:background="@color/colorDividerPale" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:orientation="horizontal">
+<!--    <LinearLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:layout_marginBottom="20dp"-->
+<!--        android:orientation="horizontal">-->
 
-        <TextView
-            android:id="@+id/inet_app_text"
-            style="@style/LargeSecondaryRegularText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="10dp"
-            android:text="@string/inet_text" />
+<!--        <TextView-->
+<!--            android:id="@+id/inet_app_text"-->
+<!--            style="@style/LargeSecondaryRegularText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="24dp"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            android:text="@string/inet" />-->
 
-        <TextView
-            android:id="@+id/inet_app_status_make_text"
-            style="@style/LargeLvl2RegularText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/inet_ok"
-            android:textColor="@color/green"
-            android:visibility="gone" />
+<!--        <TextView-->
+<!--            android:id="@+id/inet_app_status_make_text"-->
+<!--            style="@style/LargeLvl2RegularText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/inet_ok"-->
+<!--            android:textColor="@color/green"-->
+<!--            android:visibility="gone" />-->
 
-        <TextView
-            android:id="@+id/inet_app_status_no_text"
-            style="@style/LargeLvl2RegularText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/inet_no"
-            android:textColor="@color/red"
-            android:visibility="gone" />
+<!--        <TextView-->
+<!--            android:id="@+id/inet_app_status_no_text"-->
+<!--            style="@style/LargeLvl2RegularText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/inet_no"-->
+<!--            android:textColor="@color/red"-->
+<!--            android:visibility="gone" />-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
     <View
         android:layout_width="match_parent"
@@ -177,6 +208,34 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorDividerPale" />
+
+    <LinearLayout
+        android:id="@+id/prompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:selectableItemBackground"
+        android:paddingVertical="@dimen/pad16">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="24dp"
+            app:srcCompat="@drawable/ic_prompticon"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            style="@style/LargePrimaryRegularText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/prompt" />
+
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -233,7 +292,6 @@
                     android:text="@string/app_nav_support" />
 
             </LinearLayout>
-
 
 
         </LinearLayout>

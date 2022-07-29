@@ -55,7 +55,7 @@ class AuthRemoteRepositoryImpl(
 
     override suspend fun userInfo(): UserInfoEntity {
         return withContext(Dispatchers.IO){
-            UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
+            UserInfoEntity(tokenManager.userName(), tokenManager.userCompany(),tokenManager.wbUserID())
         }
     }
 

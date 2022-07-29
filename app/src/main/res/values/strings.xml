@@ -620,6 +620,7 @@
 
     <string name="settings_title">Настройки</string>
     <string name="documents">Документы</string>
+    <string name="prompt">Инструктаж</string>
     <string name="settings_autoflash_hint">Автоматически включать подсветку при работе с камерой</string>
     <string name="settings_voice_help_hint">Голосовое сопровождение результата сканирования</string>
     <string name="settings_theme_help_hint">Включить темную тему</string>
@@ -628,5 +629,7 @@
     <string name="scannerAutoOffHint">Автоматическая блокировка сканера при неактивности (25 сек)</string>
     <string name="qrTitle">QR</string>
     <string name="route">Маршрут </string>
+    <string name="user_id">1231231223</string>
+    <string name="inet">Интернет:</string>
 
 </resources>

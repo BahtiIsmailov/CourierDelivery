@@ -46,7 +46,7 @@ class CourierLoaderFragment : Fragment(R.layout.courier_loader_fragment) {
     private fun initObserver() {
 
         viewModel.drawerHeader.observe(viewLifecycleOwner) {
-            (activity as OnUserInfo).userInfo(it.name, it.company)
+            (activity as OnUserInfo).userInfo(it.name, it.company,it.userId)
         }
 
         viewModel.navigationDrawerState.observe(viewLifecycleOwner) { state ->

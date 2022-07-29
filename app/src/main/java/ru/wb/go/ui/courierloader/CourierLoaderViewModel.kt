@@ -48,14 +48,13 @@ class CourierLoaderViewModel(
 
 
     init {
-        //onTechEventLog("init")
         initDrawer()
         initVersion()
         checkRootState()
     }
 
     private fun initDrawer() {
-        _drawerHeader.value = UserInfoEntity(tokenManager.userName(), tokenManager.userCompany())
+        _drawerHeader.value = UserInfoEntity(tokenManager.userName(), tokenManager.userCompany(),tokenManager.wbUserID())
     }
 
     fun initVersion() {

@@ -146,16 +146,16 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
                 ContextCompat.getDrawable(this, ic)
             )
 
-            when (it) {
-                is NetworkState.Failed -> {
-                    binding.navigationHeaderMain.inetAppStatusMakeText.visibility = GONE
-                    binding.navigationHeaderMain.inetAppStatusNoText.visibility = VISIBLE
-                }
-                is NetworkState.Complete -> {
-                    binding.navigationHeaderMain.inetAppStatusMakeText.visibility = VISIBLE
-                    binding.navigationHeaderMain.inetAppStatusNoText.visibility = GONE
-                }
-            }
+//            when (it) {
+//                is NetworkState.Failed -> {
+//                    binding.navigationHeaderMain.inetAppStatusMakeText.visibility = GONE
+//                    binding.navigationHeaderMain.inetAppStatusNoText.visibility = VISIBLE
+//                }
+//                is NetworkState.Complete -> {
+//                    binding.navigationHeaderMain.inetAppStatusMakeText.visibility = VISIBLE
+//                    binding.navigationHeaderMain.inetAppStatusNoText.visibility = GONE
+//                }
+//            }
         }
 
         viewModel.versionApp.observe(this) {
@@ -321,9 +321,10 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
         ).show(supportFragmentManager, DIALOG_CONFIRM_INFO_TAG)
     }
 
-    override fun userInfo(name: String, company: String) {
+    override fun userInfo(name: String, company: String,userId:String) {
         with(binding.navView) {
             findViewById<TextView>(R.id.nav_header_name).text = name
+            findViewById<TextView>(R.id.user_id).text = userId
         }
     }
 
@@ -402,7 +403,7 @@ interface KeyboardListener {
 }
 
 interface OnUserInfo {
-    fun userInfo(name: String, company: String)
+    fun userInfo(name: String, company: String,userId: String)
 }
 
 interface OnCourierScanner {
