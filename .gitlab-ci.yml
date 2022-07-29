@@ -93,45 +93,9 @@ deploy:
   only:
     - master
 
-tag-release: #Our job name
-  stage: deploy #Stage type
-  script: #Our reference tags will be called sequentially and the scripts in them will run.
-    - !reference [.check-git, script]
-    - !reference [.clone-project, script]
-    - !reference [.generate-tag, script]
-  rules: #With the following if condition specified that this pipeline will run only when we push to master branch
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
-
-.check-git: #This section will check the git information. (This is not mandatory. Just a curiosity)
+notify_error:
+  stage: notify
+  interruptible: true
   script:
-    - git --version
-    - git config --global user.email
-    - git config --global user.name
-
-.clone-project: #This section will clone the project from gitlab and change the current directory.
-  script:
-    - git clone $GITLAB_PROJECT_URL
-    - cd library-rnd
-
-.generate-tag: #In this section we will obtain some information and generate and publish a tag
-  script:
-    # Read Version Name from Gradle File (app/build.gradle)
-    - export GRADLE_VERSION_NAME=$(grep -E "versionName" app/build.gradle | cut -d "\"" -f2)
-    # Get last tag's name from Gitlab
-    - export CURRENT_TAG_NAME=$(git tag --list | sort -V | tail -n1)
-    - echo "Tag name -> $CURRENT_TAG_NAME" # Write tag name on the screen
-    - echo "Gradle version name -> v$GRADLE_VERSION_NAME" # Write version name on the screen
-    - !reference [.delete-tag, script] # Call the delete-tag script
-    - !reference [.create-tag, script] # Call the create-tag script
-
-.delete-tag: #if the version name of the most recently published tag in gitlab and the current version of the app are the same,
-  # delete the tag here in order to update the tag on the server.
-  script:
-    - if [ "$CURRENT_TAG_NAME" == "v$GRADLE_VERSION_NAME" ]; then git tag -d $CURRENT_TAG_NAME; fi
-    - if [ "$CURRENT_TAG_NAME" == "v$GRADLE_VERSION_NAME" ]; then git push origin --delete $CURRENT_TAG_NAME; fi
-
-.create-tag: # publish a new tag with the version name I read from gradle
-  script:
-    - git tag -a "v$GRADLE_VERSION_NAME" -m "New Version"
-    - git push --tags $GITLAB_PROJECT_URL
-
+    - sh clean ci-notify.sh ❌
+  when: on_failure #deploy fail
