@@ -1,3 +1,5 @@
+image: openjdk:11-jdk
+
 variables:
 
   ANDROID_COMPILE_SDK: "30"
