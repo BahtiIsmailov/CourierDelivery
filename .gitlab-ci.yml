@@ -1,5 +1,3 @@
-image: openjdk:11-jdk
-
 variables:
 
   ANDROID_COMPILE_SDK: "30"
@@ -54,7 +52,7 @@ assembleDebug:
     paths:
       - $OUTPUT_DIR
   only:
-    - master
+    - dev
 
 assembleRelease:
   interruptible: true
