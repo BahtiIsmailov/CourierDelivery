@@ -411,15 +411,15 @@ class CourierIntransitViewModel(
     }
 
     fun onCompleteDeliveryClick() {
-        //onTechEventLog("Button CompleteDelivery")
         viewModelScope.launch {
             try {
                 _isEnableState.value = false
                 val boxes = interactor.getBoxes()
                 val order = interactor.getOrder()
+                val srcOfficeID = interactor.getSrcOfficeID()
                 val orderId = order?.orderId.toString()
                 setLoader(WaitLoader.Wait)
-                interactor.setIntransitTask(orderId, boxes)
+                interactor.setIntransitTask(orderId, srcOfficeID?:0, boxes, )
                 interactor.completeDelivery(order!!)
                 completeDeliveryComplete(order.cost)
             } catch (e: Exception) {

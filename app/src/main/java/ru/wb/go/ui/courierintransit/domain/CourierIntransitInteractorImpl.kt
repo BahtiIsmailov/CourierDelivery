@@ -48,8 +48,8 @@ class CourierIntransitInteractorImpl(
 
 
 
-    override suspend fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>) {
-        remoteRepo.setIntransitTask(orderId, boxes)
+    override suspend fun setIntransitTask(orderId: String, srcOfficeID:Int, boxes: List<LocalBoxEntity>) {
+        remoteRepo.setIntransitTask(orderId, boxes, srcOfficeID)
         locRepo.setOnlineOffices()
     }
 
@@ -86,6 +86,10 @@ class CourierIntransitInteractorImpl(
 
     override suspend fun getBoxes(): List<LocalBoxEntity> {
         return locRepo.getBoxes()
+    }
+
+    override suspend fun getSrcOfficeID(): Int? {
+        return  locRepo.getSrcOfficeId()
     }
 }
 

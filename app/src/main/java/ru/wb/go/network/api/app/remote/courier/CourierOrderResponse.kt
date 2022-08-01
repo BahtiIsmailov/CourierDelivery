@@ -7,7 +7,7 @@ data class CourierOrderResponse(
     val ridMask: Long?,
     val gate: String?,
     val srcOffice: CourierOrderSrcOfficeResponse?,
-    val minPrice: Int,
+    val minCost: String,
     val minVolume: Int,
     val minBoxesCount: Int,
     val dstOffices: List<CourierOrderDstOfficeResponse>,

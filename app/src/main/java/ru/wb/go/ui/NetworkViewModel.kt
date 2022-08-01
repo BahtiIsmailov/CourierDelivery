@@ -26,7 +26,7 @@ abstract class NetworkViewModel() : ViewModel() {
         params.putInt("orderId", data.orderId)
         params.putInt("routeId", data.routeID)
         params.putString("gate", data.gate)
-        params.putInt("minPrice", data.minPrice)
+        params.putString("minPrice", data.minCost)
         params.putString("route", data.route)
         params.putInt("minVolume", data.minVolume)
         params.putInt("minBoxes", data.minBoxes)

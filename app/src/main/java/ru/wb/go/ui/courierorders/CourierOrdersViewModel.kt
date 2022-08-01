@@ -141,10 +141,10 @@ class CourierOrdersViewModel(
         var boxCountWithRouteId = 0
         with(orderLocalDataEntities[it]) {
             viewModelScope.launch {
-                 if (courierOrderLocalEntity.ridMask != 0L) {
-                     boxCountWithRouteId =
-                     interactor.getBoxCountWithRidMask(courierOrderLocalEntity).count
-                 }
+                if (courierOrderLocalEntity.ridMask != 0L) {
+                    boxCountWithRouteId =
+                        interactor.getBoxCountWithRidMask(courierOrderLocalEntity).count
+                }
                 _navigateToDialogConfirmScoreInfo.value =
                     NavigateToDialogConfirmInfo(
                         DialogInfoStyle.INFO.ordinal,
@@ -152,8 +152,9 @@ class CourierOrdersViewModel(
                         resourceProvider.getConfirmMessageDialog(
                             CarNumberUtils(interactor.carNumber()).fullNumber(),
                             resourceProvider.getCargo(
+                                courierOrderLocalEntity.minVolume,
                                 courierOrderLocalEntity.minBoxesCount
-                            ),//courierOrderLocalEntity.minVolume,
+                            ),
                             courierOrderLocalEntity.reservedDuration,
                             if (boxCountWithRouteId == 0) courierOrderLocalEntity.minBoxesCount
                             else  boxCountWithRouteId
@@ -648,7 +649,7 @@ class CourierOrdersViewModel(
             val carNumber = carNumberFormat(interactor.carNumber())
             val carTypeIcon = resourceProvider.getTypeIcons(interactor.carType())
             val itemId = (idView + 1).toString()
-            val coast = DecimalFormat("#,###.##").format(minPrice)
+           // val coast = DecimalFormat("#,###.##").format(minCost)
             _orderDetails.value =
                 CourierOrderDetailsInfoUIState.InitOrderDetails(
                     carNumber = carNumber,
@@ -656,23 +657,14 @@ class CourierOrdersViewModel(
                     isChangeCarNumber = interactor.carNumberIsConfirm(),
                     itemId = itemId,
                     orderId = resourceProvider.getOrder(id),
-                    cost = resourceProvider.getCost(coast),
-                    cargo = resourceProvider.getCargo(minBoxesCount),//, minVolume
+                    cost = resourceProvider.getCost(minCost),
+                    cargo = resourceProvider.getCargo(minBoxesCount),//minVolume
                     countPvz = resourceProvider.getCountPvz(pvz),
                     reserve = resourceProvider.getArrive(reservedDuration),
                     taskDistance = taskDistance
                 )
         }
-
     }
-
-//    fun getAddressFromOrderAddressItems() {
-//        sharedWorker.save(
-//            SharedWorker.ADDRESS_DETAIL_SCHEDULE_FOR_INTRANSIT,
-//            "${orderAddressItems.lastOrNull()?.fullAddress};${orderAddressItems.lastOrNull()?.timeWork}"
-//        )
-//    }
-
 
     private fun saveAddressItems(items: List<CourierOrderDetailsAddressItem>) {
         orderAddressItems = items.toMutableList()

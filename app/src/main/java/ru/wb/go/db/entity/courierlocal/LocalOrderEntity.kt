@@ -13,7 +13,7 @@ data class LocalOrderEntity(
     val routeID: Int,
     val gate: String,
     @ColumnInfo(name = "min_price")
-    val minPrice: Int,
+    val minCost: String,
     @ColumnInfo(name = "route")
     val route: String,
     @ColumnInfo(name = "min_volume")

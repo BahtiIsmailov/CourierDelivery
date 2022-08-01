@@ -6,8 +6,9 @@ const val APP_JSON = "application/json"
 
 const val VERSION_API = "/api/v1"
 const val VERSION_DEMO_API = "/api/v2"
+const val VERSION_API3 = "/api/v3"
 
-const val VERSION_DATABASE = 49
+const val VERSION_DATABASE = 50
 const val EXPORT_SCHEMA_DATABASE = true
 
 const val NEED_SEND_COURIER_DOCUMENTS = "NEED_SEND_COURIER_DOCUMENTS" //не заполнил данные

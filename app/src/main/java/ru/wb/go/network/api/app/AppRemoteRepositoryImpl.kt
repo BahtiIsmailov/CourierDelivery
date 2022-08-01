@@ -46,7 +46,7 @@ class AppRemoteRepositoryImpl(
         autentificatorIntercept.initNameOfMethod("getMyTask")
         return withContext(Dispatchers.IO) {
             try {
-                val res = remoteRepo.tasksMy(apiVersion())
+                val res = remoteRepo.tasksMy(apiDemoVersion())
                 if (res.id > 0) {
                     val remoteOffices = mutableListOf<LocalOfficeEntity>()
                     res.dstOffices.forEach { remoteOffices.add(toLocalOfficeEntity(it)) }
@@ -153,12 +153,13 @@ class AppRemoteRepositoryImpl(
 
     override suspend fun setIntransitTask(
         taskID: String,
-        boxes: List<LocalBoxEntity>
+        boxes: List<LocalBoxEntity>,
+        srcOfficeID: Int
     ) {
         withContext(Dispatchers.IO) {
             val boxesRequest = boxes.map { it.convertToApiBoxRequest() }
             autentificatorIntercept.initNameOfMethod("setIntransit")
-            remoteRepo.taskStatusesIntransit(apiVersion(), taskID, boxesRequest)
+            remoteRepo.taskStatusesIntransit(apiDemoVersion(), taskID, srcOfficeID, boxesRequest)
         }
     }
 
