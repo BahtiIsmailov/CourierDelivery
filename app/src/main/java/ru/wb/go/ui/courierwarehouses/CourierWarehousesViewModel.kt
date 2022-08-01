@@ -221,7 +221,7 @@ class CourierWarehousesViewModel(
                 item.longitude
             )
             val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
-            mapMarkers.add(mapMarker)// arrive latitude b longitotude
+            mapMarkers.add(mapMarker)
         }
     }
 
@@ -363,15 +363,7 @@ class CourierWarehousesViewModel(
             CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
     }
 
-    private fun navigateToCourierOrders(oldEntity: CourierWarehouseLocalEntity) {
-        _navigationState.value =
-            CourierWarehousesNavigationState.NavigateToCourierOrders(
-                oldEntity.id,
-                oldEntity.latitude,
-                oldEntity.longitude,
-                oldEntity.name
-            )
-    }
+
 
     fun onNextFab() {
         viewModelScope.launch {
@@ -384,6 +376,15 @@ class CourierWarehousesViewModel(
         }
     }
 
+    private fun navigateToCourierOrders(oldEntity: CourierWarehouseLocalEntity) {
+        _navigationState.value =
+            CourierWarehousesNavigationState.NavigateToCourierOrders(
+                oldEntity.id,
+                oldEntity.latitude,
+                oldEntity.longitude,
+                oldEntity.name
+            )
+    }
 
 
     private fun onShowAllClick() {
