@@ -16,12 +16,12 @@ class CourierOrdersDataBuilderImpl(
         isSelected: Boolean
     ): BaseItem {
         with(courierOrderLocalDataEntity) {
-            val decim = DecimalFormat("#,###.##")
-            val coast = decim.format(courierOrderLocalEntity.minPrice)
+            //val decim = DecimalFormat("#,###.##")
+            //val coast = decim.format(courierOrderLocalEntity.minCost)
             return CourierOrderItem(
                 lineNumber = lineNumber,
                 orderId = resourceProvider.getOrder(courierOrderLocalEntity.id),
-                cost = resourceProvider.getCost(coast),
+                cost = resourceProvider.getCost(courierOrderLocalEntity.minCost),
                 cargo = resourceProvider.getCargo(
                     courierOrderLocalEntity.minBoxesCount
                  ),//courierOrderLocalEntity.minVolume,

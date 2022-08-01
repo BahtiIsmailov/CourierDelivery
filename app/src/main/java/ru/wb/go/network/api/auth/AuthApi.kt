@@ -21,7 +21,7 @@ interface AuthApi {
         @Path("phone") phone: String,
     ):  CheckCouriersPhoneResponse
 
-    @PUT("{version}/auth")
+    @POST("{version}/auth/refresh")
     suspend fun refreshToken(
         @Path(value = "version", encoded = true) version: String,
         @Body refreshTokenQuery: RefreshTokenQuery

@@ -108,9 +108,10 @@ class CourierUnloadingInteractorImpl(
     }
 
     override suspend fun completeOfficeUnload() {
+        val srcOfficeId = localRepo.getSrcOfficeId()
         val boxes = localRepo.getOfflineBoxes()
         boxes.find { b -> b.deliveredAt != "" }
-        remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes)
+        remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes, srcOfficeId?:0)
         localRepo.setOnlineOffices()
     }
 

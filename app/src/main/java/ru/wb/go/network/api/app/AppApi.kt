@@ -40,7 +40,8 @@ interface AppApi {
         @Body courierAnchorResponse: CourierAnchorResponse
     )
 
-    @HTTP(method = "DELETE", path = "{version}/tasks/{taskID}/courier", hasBody = true)
+    //@HTTP(method = "DELETE", path = "{version}/tasks/{taskID}/courier", hasBody = true)
+    @POST("{version}/tasks/{taskID}/courier/delete")
     suspend fun deleteTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
@@ -79,6 +80,7 @@ interface AppApi {
     suspend fun taskStatusesIntransit(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
+        @Query("srcOfficeID") srcOfficeID: Int,
         @Body boxes: List<ApiBoxRequest>
     )
 
@@ -115,7 +117,7 @@ interface AppApi {
         @Path(value = "version", encoded = true) version: String
     ): AccountsResponse
 
-    @PUT("{version}/me/bank-accounts")
+    @POST("{version}/me/bank-accounts")
     suspend fun setBankAccounts(
         @Path(value = "version", encoded = true) version: String,
         @Body accountRequest: List<AccountRequest>

@@ -25,23 +25,11 @@ class AppTasksRepositoryImpl(
     override suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity> {
         return withContext(Dispatchers.IO){
             autentificatorIntercept.initNameOfMethod("courierOrders")
-            remoteRepo.freeTasks(apiVersion(), srcOfficeID).data.map {
+            remoteRepo.freeTasks(tokenManager.apiVersion3(), srcOfficeID).map {
                 convertCourierOrderEntity(it)
-            }.toList()
+            }
         }
     }
-    /*
-        override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
-        return remoteRepo.freeTasks(apiVersion(), srcOfficeID)
-            .map { it.data }
-            .flatMap {
-                Observable.fromIterable(it)
-                    .map { order -> convertCourierOrderEntity(order) }
-                    .toList()
-            }
-            .compose(rxSchedulerFactory.applySingleMetrics("courierOrders"))
-    }
-     */
 
     override suspend fun getBoxCountWithRidMask(ridMask: Long): TaskBoxCountResponse {
         return withContext(Dispatchers.IO){

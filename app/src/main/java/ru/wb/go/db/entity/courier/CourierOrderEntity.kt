@@ -10,7 +10,7 @@ data class CourierOrderEntity(
     val route:String,
     val gate: String,
     val ridMask:Long?,
-    val minPrice: Int,
+    val minCost: String,
     val minVolume: Int,
     val minBoxesCount: Int,
     var dstOffices: List<CourierOrderDstOfficeEntity>,

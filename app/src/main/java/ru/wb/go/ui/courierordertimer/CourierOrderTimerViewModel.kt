@@ -127,12 +127,12 @@ class CourierOrderTimerViewModel(
     private fun initOrderInfo(courierTimerEntity: CourierTimerEntity) {
         with(courierTimerEntity) {
             val decimalFormat = DecimalFormat("#,###.##")
-            val coast = decimalFormat.format(price)
+            //val coast = decimalFormat.format(price)
             _orderInfo.value = CourierOrderTimerInfoUIState.InitOrderInfo(
                 resourceProvider.getRoute(route),
                 resourceProvider.getOrder(orderId),
                 name,
-                resourceProvider.getCoast(coast),
+                resourceProvider.getCoast(price),
                 resourceProvider.getCargo(volume,boxesCount),
                 resourceProvider.getPvz(countPvz),
                 gate.ifEmpty { "-" }

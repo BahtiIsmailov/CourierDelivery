@@ -38,7 +38,8 @@ interface AppRemoteRepository {
 
     suspend fun setIntransitTask(
         taskID: String,
-        boxes: List<LocalBoxEntity>
+        boxes: List<LocalBoxEntity>,
+        srcOfficeID: Int
     )
 
      suspend fun taskStatusesEnd(taskID: String)

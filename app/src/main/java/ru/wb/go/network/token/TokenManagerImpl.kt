@@ -14,6 +14,10 @@ class TokenManagerImpl(private val worker: SharedWorker) : TokenManager {
         return VERSION_DEMO_API
     }
 
+    override fun apiVersion3(): String {
+        return VERSION_API3
+    }
+
     override fun wbUserID(): String {
         return tokenResource().extra?.wbUserID.toString()
     }

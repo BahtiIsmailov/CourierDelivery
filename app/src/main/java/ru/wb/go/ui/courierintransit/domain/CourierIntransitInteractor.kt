@@ -16,7 +16,7 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     suspend fun completeDelivery(order: LocalOrderEntity)
 
-    suspend fun setIntransitTask(orderId: String, boxes: List<LocalBoxEntity>)
+    suspend fun setIntransitTask(orderId: String,srcOfficeID:Int, boxes: List<LocalBoxEntity>,)
 
     suspend fun clearLocalTaskData()
 
@@ -28,5 +28,6 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
     suspend fun getOrderId(): String
     suspend fun getOfflineBoxes(): List<LocalBoxEntity>
     suspend fun getBoxes(): List<LocalBoxEntity>
+    suspend fun getSrcOfficeID():Int?
 }
 

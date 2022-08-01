@@ -8,7 +8,7 @@ data class CourierTimerEntity(
     val route:String,
     val name: String,
     val orderId: Int,
-    val price: Int,
+    val price: String,
     val boxesCount: Int,
     val volume: Int,
     val countPvz: Int,

@@ -90,7 +90,7 @@ class CourierUnloadingScanViewModel(
         }
     }
 
-    fun holdSplashScanner() {
+    private fun holdSplashScanner() {
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
     }
 
@@ -162,19 +162,17 @@ class CourierUnloadingScanViewModel(
         }
     }
 
-    fun clearSharedFlow(){
+    private fun clearSharedFlow(){
         interactor.clearMutableSharedFlow()
     }
 
     private fun observeScanProcess() {
-        //holdSplashScanner()
         interactor.observeScanProcess(parameters.officeId)
             .onEach {
                 Log.e("scannerAction","observeScanProcessOnEach : $it")
                 observeScanProcessComplete(it)
 
                 interactor.scannerRepoHoldStart()
-                //onStartScanner()
 
             }
             .catch {
@@ -324,7 +322,6 @@ class CourierUnloadingScanViewModel(
         resourceProvider.getUnloadingDetails(index, boxId.takeLast(3))
 
     fun onCompleteUnloadClick() {
-        //_completeButtonEnable.value = false
         onStopScanner()
         viewModelScope.launch {
             try {
