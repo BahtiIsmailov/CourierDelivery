@@ -114,7 +114,7 @@ class CourierLoadingScanViewModel(
     private fun timerForFoneModeCountTimeBetweenStartAndEndOrder(){
         viewModelScope.launch(Dispatchers.IO) {
             if (isActive) {
-                delay(1000 * 60 * 2)//delay(1000 * 60 * 60 * 3)
+                delay(1000 * 60 * 60 * 3)
                 _endTimeOfCourierOrderAfterThreeHour.postValue(false)
             }
         }
@@ -257,7 +257,7 @@ class CourierLoadingScanViewModel(
                     _endTimeForThreeHour.value
                 )
                 Log.e("duration_time", "${duration.seconds}")
-                if ((duration.seconds / 60L) >= 2L) { //(duration.seconds / 3600L) >= 3L)
+                if ((duration.seconds / 3600L) >= 3L) {
                     _endTimeOfCourierOrderAfterThreeHour.value = false
                 }
             }
