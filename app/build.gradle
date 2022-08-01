@@ -66,157 +66,144 @@ android {
     }
 
 
-compileSdkVersion 32
-buildToolsVersion "30.0.3"
+    compileSdkVersion 32
+    buildToolsVersion "30.0.3"
 
-//def versionPropsFile = file('version.properties')
-//
-//Properties versionProps = new Properties()
-//
-//if (!versionPropsFile.exists()) {
-//    versionProps['VERSION_MAJOR'] = "0"
-//    versionProps['VERSION_MINOR'] = "0"
-//    versionProps['VERSION_BUILD'] = "0"
-//    versionProps['VERSION_CODE'] = "0"
-//    versionProps.store(versionPropsFile.newWriter(), null)
-//}
+    def versionPropsFile = file('version.properties')
 
-//if (versionPropsFile.canRead()) {
-//
-//    versionProps.load(new FileInputStream(versionPropsFile))// из файла в переменную
-//
-//    def runTasks = gradle.startParameter.taskNames
-//    def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
-//    def versionMinor = versionProps['VERSION_MINOR'].toInteger()
-//    def versionBuild = versionProps['VERSION_BUILD'].toInteger()
-//    def versionCod = versionProps['VERSION_CODE'].toInteger()
-//
-//    def isNew = false
-//
-//    print(runTasks)
-//    if (':app:bundleRelease' in getVersionTag) {
-//        //Сборка для всех
-//        versionMinor++
-//        versionCod++
-//        isNew = true
-//    }
-//    if (':app:bundleReleaseTest' in runTasks) {
-//        //Сборка для тестирующих курьеров
-//        versionBuild++
-//        versionCod++
-//        isNew = true
-//    }
-//
-//    versionProps['VERSION_MAJOR'] = versionMajor.toString()
-//    versionProps['VERSION_MINOR'] = versionMinor.toString()
-//    versionProps['VERSION_BUILD'] = versionBuild.toString()
-//    versionProps['VERSION_CODE'] = versionCod.toString()
-//    if (isNew) {
-//        versionProps.store(versionPropsFile.newWriter(), null)
-//    }
+    Properties versionProps = new Properties()
 
-    defaultConfig {
-        multiDexEnabled true
-        applicationId "ru.wb.go"
-        minSdkVersion 23
-        targetSdkVersion 32
-//        versionCode versionCod
-//        versionName versionMajor + "." + versionMinor + "." + versionBuild
+    if (!versionPropsFile.exists()) {
+        versionProps['VERSION_MAJOR'] = "0"
+        versionProps['VERSION_MINOR'] = "0"
+        versionProps['VERSION_BUILD'] = "0"
+        versionProps['VERSION_CODE'] = "0"
+        versionProps.store(versionPropsFile.newWriter(), null)
+    }
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
+    if (versionPropsFile.canRead()) {
 
-        ndk {
-            abiFilters "arm64-v8a", "armeabi-v7a", "x86_64", "x86"
+        versionProps.load(new FileInputStream(versionPropsFile))// из файла в переменную
+
+        def runTasks = gradle.startParameter.taskNames
+        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
+        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
+        def versionBuild = versionProps['VERSION_BUILD'].toInteger()
+        def versionCod = versionProps['VERSION_CODE'].toInteger()
+
+        def isNew = false
+
+        print(runTasks)
+        if (':app:bundleRelease' in runTasks) {
+            //Сборка для всех
+            versionMinor++
+            versionCod++
+            isNew = true
+        }
+        if (':app:bundleReleaseTest' in runTasks) {
+            //Сборка для тестирующих курьеров
+            versionBuild++
+            versionCod++
+            isNew = true
         }
 
+        versionProps['VERSION_MAJOR'] = versionMajor.toString()
+        versionProps['VERSION_MINOR'] = versionMinor.toString()
+        versionProps['VERSION_BUILD'] = versionBuild.toString()
+        versionProps['VERSION_CODE'] = versionCod.toString()
+        if (isNew) {
+            versionProps.store(versionPropsFile.newWriter(), null)
+        }
+
+        defaultConfig {
+            multiDexEnabled true
+            applicationId "ru.wb.go"
+            minSdkVersion 23
+            targetSdkVersion 32
+            versionCode versionCod
+            versionName versionMajor + "." + versionMinor + "." + versionBuild
+
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+            vectorDrawables.useSupportLibrary = true
+
+            ndk {
+                abiFilters "arm64-v8a", "armeabi-v7a", "x86_64", "x86"
+            }
+
+        }
+
+    } else {
+        throw new GradleException("Could not read version.properties!")
     }
 
-//} else {
-    //throw new GradleException("Could not read version.properties!")
-//}
-
-kapt {
-    arguments {
-        arg("room.schemaLocation", "$projectDir/schemas")
+    kapt {
+        arguments {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
-}
 
-buildTypes {
-    release {
+    buildTypes {
+        release {
 //            debuggable true
-        minifyEnabled false
-        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        manifestPlaceholders = [appName: "WB Go"]
-        signingConfig signingConfigs.release
-        matchingFallbacks = ['release']
-        ndk {
-            debugSymbolLevel 'FULL'
-        }
-    }
-    releaseTest {
-        manifestPlaceholders = [appName: "WB Go"]
-        //FIXME необходмио внедрить тестовую информацию
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        matchingFallbacks = ['release']
-        //signingConfig signingConfigs.release
-    }
-    debug {
 //            minifyEnabled true
-        applicationIdSuffix ".debug"
-        manifestPlaceholders = [appName: "WB Go debug"]
-        signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [appName: "WB Go"]
+            signingConfig signingConfigs.release
+            matchingFallbacks = ['release']
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
+        }
+        releaseTest {
+            manifestPlaceholders = [appName: "WB Go"]
+            //FIXME необходмио внедрить тестовую информацию
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            matchingFallbacks = ['release']
+            //signingConfig signingConfigs.release
+        }
+        debug {
+//            minifyEnabled true
+            applicationIdSuffix ".debug"
+            manifestPlaceholders = [appName: "WB Go debug"]
+            signingConfig signingConfigs.debug
+        }
+
+        debugQA {
+            initWith debug
+            debuggable true
+            signingConfig signingConfigs.debug
+        }
+
     }
 
-    debugQA {
-        initWith debug
-        debuggable true
-        signingConfig signingConfigs.debug
-    }
-
-}
-
-task outputApk {
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
-            def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
-            outputFileName = fileName
+    task outputApk {
+        android.applicationVariants.all { variant ->
+            variant.outputs.all {
+                def fileName = "${variant.name}_${variant.versionName}_${variant.versionCode}.apk"
+                outputFileName = fileName
+            }
         }
     }
-}
 
-compileOptions {
-    coreLibraryDesugaringEnabled true
+    compileOptions {
+        coreLibraryDesugaringEnabled true
 
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-}
-kotlinOptions {
-    jvmTarget = '1.8'
-}
-
-buildFeatures {
-    dataBinding = true
-    viewBinding true
-}
-applicationVariants.all { variant ->
-    def versionTag = getVersionTag(variant.buildType.name)
-    def myVersionCode = getVersionCode(versionTag)
-    def myVersionName = getVersionName(versionTag)
-
-    println variant.name + "[" + myVersionCode + "," + myVersionName + "]"
-
-
-
-    variant.outputs.each { output ->
-        output.versionNameOverride = myVersionName
-        output.versionCodeOverride = myVersionCode
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
-}
-lint {
-    abortOnError false
-    warningsAsErrors true
-}
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        dataBinding = true
+        viewBinding true
+    }
+    lint {
+        abortOnError false
+        warningsAsErrors true
+    }
+
 
 }
 
