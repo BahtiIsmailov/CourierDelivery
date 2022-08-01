@@ -385,6 +385,7 @@ class CourierWarehousesViewModel(
     }
 
 
+
     private fun onShowAllClick() {
         zoomMarkersFromBoundingBox(myLocation!!)
     }

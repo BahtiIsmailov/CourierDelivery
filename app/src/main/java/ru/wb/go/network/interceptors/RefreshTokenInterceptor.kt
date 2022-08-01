@@ -32,18 +32,18 @@ class RefreshTokenInterceptor(
 
         val request = chain.request()
         val builder = request.newBuilder()
-        var response = chain.proceed(builder.build())
-
-        if (response.code == 409 ) {
-            RebootApplication.doRestart(App.getContext())
-        }
-
         for ((key, value) in headerManager.headerApiMap) {
             builder.addHeader(key, value)
         }
 
+        var response = chain.proceed(builder.build())
+
         if (tokenManager.bearerToken().isEmpty() || tokenManager.refreshToken().isEmpty()) {
             return response
+        }
+
+        if (response.code == 409 ) {
+            RebootApplication.doRestart(App.getContext())
         }
 
         if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
