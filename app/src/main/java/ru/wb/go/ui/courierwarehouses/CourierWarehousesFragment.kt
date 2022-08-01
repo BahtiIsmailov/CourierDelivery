@@ -191,6 +191,7 @@ class CourierWarehousesFragment :
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
     }
 
+
     private fun initRecyclerView() {
         binding.items.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         binding.items.addItemDecoration(getHorizontalDividerDecoration())

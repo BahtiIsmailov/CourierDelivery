@@ -5,7 +5,8 @@
     android:id="@+id/warehouse_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lvl_1">
+    android:background="@color/lvl_1"
+    tools:context=".ui.courierwarehouses.CourierWarehousesFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/content_center"

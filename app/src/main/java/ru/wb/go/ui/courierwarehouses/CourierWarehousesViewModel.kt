@@ -87,6 +87,14 @@ class CourierWarehousesViewModel(
         checkDemoMode()
     }
     init {
+        workWithSharedWorker()
+    }
+
+    private fun checkDemoMode() {
+        _demoState.value = interactor.isDemoMode()
+    }
+
+    private fun workWithSharedWorker(){
         sharedWorker.saveMediate(CLOSE_FRAGMENT_WHEN_ENDED_TIME,"")
         if (sharedWorker.isAllExists(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)) {
             sharedWorker.delete(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)
@@ -95,10 +103,6 @@ class CourierWarehousesViewModel(
             sharedWorker.saveMediate(FRAGMENT_MANAGER,"fromSms")
         }
         stringFromSms = sharedWorker.load(FRAGMENT_MANAGER,"")
-    }
-
-    private fun checkDemoMode() {
-        _demoState.value = interactor.isDemoMode()
     }
 
     private fun observeMapAction() {
@@ -374,11 +378,12 @@ class CourierWarehousesViewModel(
             val index = warehouseItems.indexOfFirst { item -> item.isSelected }
             assert(index != -1)
             clearFabAndWhList()
-            val oldEntity = warehouseEntities.toList()[index].copy()
+            val oldEntity = warehouseEntities.elementAt(index).copy()
             interactor.clearAndSaveCurrentWarehouses(oldEntity)
             navigateToCourierOrders(oldEntity)
         }
     }
+
 
 
     private fun onShowAllClick() {

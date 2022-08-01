@@ -30,6 +30,18 @@ class AppTasksRepositoryImpl(
             }.toList()
         }
     }
+    /*
+        override fun getFreeOrders(srcOfficeID: Int): Single<List<CourierOrderEntity>> {
+        return remoteRepo.freeTasks(apiVersion(), srcOfficeID)
+            .map { it.data }
+            .flatMap {
+                Observable.fromIterable(it)
+                    .map { order -> convertCourierOrderEntity(order) }
+                    .toList()
+            }
+            .compose(rxSchedulerFactory.applySingleMetrics("courierOrders"))
+    }
+     */
 
     override suspend fun getBoxCountWithRidMask(ridMask: Long): TaskBoxCountResponse {
         return withContext(Dispatchers.IO){
