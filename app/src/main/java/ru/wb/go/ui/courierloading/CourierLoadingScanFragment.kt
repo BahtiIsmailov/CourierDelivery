@@ -62,6 +62,7 @@ class CourierLoadingScanFragment :
         super.onCreate(savedInstanceState)
         viewModel.showBottomSheetAfterClose()
         viewModel.observeTimer()
+        viewModel.timeBetweenStartAndEndTask()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

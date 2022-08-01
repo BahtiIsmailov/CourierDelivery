@@ -110,7 +110,18 @@ class CourierLoadingScanViewModel(
         sendRequestEveryFiveMinutes()
     }
 
-    fun holdSplashScanner() {
+
+    private fun timerForFoneModeCountTimeBetweenStartAndEndOrder(){
+        viewModelScope.launch(Dispatchers.IO) {
+            if (isActive) {
+                delay(1000 * 60 * 2)//delay(1000 * 60 * 60 * 3)
+                _endTimeOfCourierOrderAfterThreeHour.postValue(false)
+            }
+        }
+    }
+
+
+    private fun holdSplashScanner() {
         interactor.scannerAction(ScannerState.StopScanWithHoldSplash)
     }
 
@@ -234,15 +245,21 @@ class CourierLoadingScanViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun timeBetweenStartAndEndTask(){
+    fun timeBetweenStartAndEndTask(){
         try {
-            _startTimeForThreeHour.value = sharedWorker.load(
-                SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP, LocalTime::class.java)
-            _endTimeForThreeHour.value = LocalTime.now()
-            val duration = Duration.between(_startTimeForThreeHour.value,_endTimeForThreeHour.value)
-            Log.e("duration_time","${duration.seconds}")
-            if ((duration.seconds / 3600L) >= 3L){
-                _endTimeOfCourierOrderAfterThreeHour.value = false
+            if (sharedWorker.isAllExists(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)) {
+                _startTimeForThreeHour.value = sharedWorker.load(
+                    SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP, LocalTime::class.java
+                )
+                _endTimeForThreeHour.value = LocalTime.now() // получаю текущее время
+                val duration = Duration.between(
+                    _startTimeForThreeHour.value,
+                    _endTimeForThreeHour.value
+                )
+                Log.e("duration_time", "${duration.seconds}")
+                if ((duration.seconds / 60L) >= 2L) { //(duration.seconds / 3600L) >= 3L)
+                    _endTimeOfCourierOrderAfterThreeHour.value = false
+                }
             }
         }catch (e:Exception){
             //_startTimeForThreeHour.value = LocalTime.now()
@@ -267,7 +284,7 @@ class CourierLoadingScanViewModel(
         val countBoxes = resourceProvider.getAccepted(scanResult.count)
         when (scanBoxData) {
             is CourierLoadingScanBoxData.FirstBoxAdded -> {
-
+                timerForFoneModeCountTimeBetweenStartAndEndOrder()
                 sharedWorker.save(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP,LocalTime.now())
 
                 _fragmentStateUI.value = CourierLoadingScanBoxState.LoadInCar 
@@ -304,7 +321,7 @@ class CourierLoadingScanViewModel(
                 _beepEvent.value = CourierLoadingScanBeepState.UnknownBox
                 interactor.scanRepoHoldStart()
             }
-            is CourierLoadingScanBoxData.NotRecognizedQr -> {
+            CourierLoadingScanBoxData.NotRecognizedQr -> {
                 if (scanResult.count == 0) {
                     _fragmentStateUI.value = CourierLoadingScanBoxState.NotRecognizedQrWithTimer
                 } else {

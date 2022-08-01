@@ -768,7 +768,6 @@ class CourierOrdersViewModel(
     }
 
     private fun anchorTaskError(it: Throwable) {
-        //onTechEventLog("anchorTaskError", it)
         setLoader(WaitLoader.Complete)
         if (it is HttpException) {
             if (it.code() == COURIER_ONLY_ONE_TASK_ERROR_400) {

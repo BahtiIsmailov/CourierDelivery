@@ -19,7 +19,8 @@ def getVersionTag = { variant ->
     try {
         stdout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'fetch', '--tags'
+            commandLine "git", "describe", "--match", "${variant}/*", "--tags"
+            //commandLine 'git', 'fetch', '--tags'
             ignoreExitValue = true
             standardOutput = stdout
         }
@@ -34,14 +35,17 @@ def getVersionTag = { variant ->
 def getVersionCode = { tag ->
     def parts = tag.tokenize('.')
     if(parts.size() != 3 || parts[1].length() > 2 || parts[2].length() > 3) {
-        throw new RuntimeException("Invalid version ta \"${tag}\", format \"x.y.z\" expected.")
+        throw new RuntimeException("Invalid version ta ${tag}, format x.y.z expected.")
     }
-    if(parts[1].length() == 1) {
-        parts[1] = "0" + parts[1]
+    if(parts[1].length() == 2) {
+        parts[1] = Integer.parseInt(parts[1]) + 1
     }
-    if(parts[2].length() == 1) {
-        parts[2] = "0" + parts[2]
+    if(parts[2].length() == 3) {
+        parts[2] = Integer.parseInt(parts[2]) + 1
     }
+//    exec{
+//        commandLine "git", "tag","${tag}/${myVersionCode}"
+//    }
     return Integer.parseInt(parts[0] + parts[1] + parts[2])
 }
 
@@ -200,7 +204,9 @@ applicationVariants.all { variant ->
     def myVersionCode = getVersionCode(versionTag)
     def myVersionName = getVersionName(versionTag)
 
-    println variant.name + "[" + myVersionCode + ", " + myVersionName + "]"
+    println variant.name + "[" + myVersionCode + "," + myVersionName + "]"
+
+
 
     variant.outputs.each { output ->
         output.versionNameOverride = myVersionName
