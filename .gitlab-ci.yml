@@ -54,7 +54,7 @@ assembleDebug:
     paths:
       - $OUTPUT_DIR
   only:
-    - dev
+    - master
 
 assembleRelease:
   interruptible: true
