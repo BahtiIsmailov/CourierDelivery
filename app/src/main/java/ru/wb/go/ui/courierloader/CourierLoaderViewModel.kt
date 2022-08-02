@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.app.NEED_APPROVE_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_CORRECT_COURIER_DOCUMENTS
 import ru.wb.go.app.NEED_SEND_COURIER_DOCUMENTS
@@ -22,6 +23,7 @@ import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.courierdata.CourierDataParameters
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.SettingsManager
+import ru.wb.go.utils.prefs.SharedWorker
 import java.net.UnknownHostException
 
 class CourierLoaderViewModel(
@@ -29,7 +31,7 @@ class CourierLoaderViewModel(
     private val locRepo: CourierLocalRepository,
     private val remoteRepo: AppRemoteRepository,
     private val deviceManager: DeviceManager,
-    private val resourceProvider: CourierLoaderResourceProvider,
+    private val sharedWorker: SharedWorker,
     private val settingsManager: SettingsManager,
     private val userManager: UserManager,
 ) : NetworkViewModel() {
@@ -50,7 +52,9 @@ class CourierLoaderViewModel(
     init {
         initDrawer()
         initVersion()
-        checkRootState()
+//        if (!sharedWorker.isAllExists(AppPreffsKeys.FRAGMENT_MANAGER)){
+            sharedWorker.saveMediate(AppPreffsKeys.FRAGMENT_MANAGER,"fromSms")
+      //  }
     }
 
     private fun initDrawer() {
@@ -65,33 +69,23 @@ class CourierLoaderViewModel(
                 appVersionUpdateComplete(response)
             } catch (e: Exception) {
                 logException(e,"initVersion")
-                appVersionUpdateError(e)
-            }
+                appVersionUpdateError() }
         }
     }
 
     private fun appVersionUpdateComplete(version: String) {
-        //onTechEventLog("appVersionUpdateComplete", "appStart $version")
         checkUserState(version)
     }
 
-    private fun appVersionUpdateError(throwable: Throwable) {
-        //onTechEventLog("appVersionUpdateError", throwable)
+    private fun appVersionUpdateError() {
         checkUserState("0.0.0")
     }
 
     private fun goToUpdate(version: String): Boolean {
-        //onTechEventLog("admin version: $version")
         val res = !deviceManager.isAppVersionActual(version)
         if (res)
             toAppUpdate()
         return res
-    }
-
-    private fun checkRootState() {
-        if (resourceProvider.isRooted()) {
-            //onTechEventLog("phoneIsRooted")
-        }
     }
 
     private fun checkUserState(version: String) {
@@ -152,13 +146,11 @@ class CourierLoaderViewModel(
         val remoteTaskId = remoteOrder.order.orderId
         return when {
             (order == null || remoteTaskId != order.orderId) && (remoteTaskId != -2) -> {
-                //onTechEventLog("OrderSynchronization", "Get from server")
                 syncFromServer(remoteOrder)
                 getNavigationState(remoteOrder.order.status)
             }
             else -> {
                 val localStatus = order!!.status
-                //onTechEventLog("OrderSynchronization", "Get local version")
                 getNavigationState(localStatus)
             }
         }

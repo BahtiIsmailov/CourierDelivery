@@ -63,7 +63,7 @@ val viewModelModule = module {
             locRepo = get(),
             remoteRepo = get(),
             deviceManager = get(),
-            resourceProvider = get(),
+            sharedWorker = get(),
             settingsManager = get(),
             userManager = get(),
         )
