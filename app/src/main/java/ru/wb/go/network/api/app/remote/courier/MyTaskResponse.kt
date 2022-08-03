@@ -14,7 +14,7 @@ data class MyTaskResponse(
     val carNumber: String?,
     val reservedAt: String?,
     val startedAt: String?,
-    val reservedDuration: Int,
+    val reservedDuration: String,
     val status: String?,
     val cost: String?,
 )

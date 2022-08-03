@@ -216,14 +216,14 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'androidx.fragment:fragment-ktx:1.5.0'
+    implementation 'androidx.fragment:fragment-ktx:1.5.1'
     implementation 'androidx.work:work-runtime-ktx:2.8.0-alpha02'
 
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.google.android.gms:play-services-location:20.0.0'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.room:room-runtime:2.4.2'
+    implementation 'androidx.room:room-runtime:2.4.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation files('../app/libs/commons-net-3.3-ftp.jar')
     testImplementation 'junit:junit:4.13.2'
@@ -236,8 +236,8 @@ dependencies {
 
     //ViewModel
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0"
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
 
     //Koin main features for Android (Scope,ViewModel ...)
     implementation "io.insert-koin:koin-android:$koin_version"
@@ -251,14 +251,14 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:1.1.1"
 
     //annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
-    annotationProcessor 'androidx.room:room-compiler:2.4.2'
+    annotationProcessor 'androidx.room:room-compiler:2.4.3'
 
     //coroutine suspend fun for room
-    implementation "androidx.room:room-ktx:2.4.2"
+    implementation "androidx.room:room-ktx:2.4.3"
 
     // navigation
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.0"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.0"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.1"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.1"
 
     //delegates
     api 'com.hannesdorfmann:adapterdelegates3:3.0.1'
@@ -285,7 +285,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
     //coroutine
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
 
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
 
