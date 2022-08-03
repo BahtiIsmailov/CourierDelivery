@@ -6,7 +6,7 @@ data class MyTaskResponse(
     val route:String?,
     val gate: String?,
     val srcOffice: MySrcOfficeResponse,
-    val minPrice: String,
+    val minCost: String?,
     val minVolume: Int,
     val minBoxesCount: Int,
     val dstOffices: List<MyDstOfficeResponse>,

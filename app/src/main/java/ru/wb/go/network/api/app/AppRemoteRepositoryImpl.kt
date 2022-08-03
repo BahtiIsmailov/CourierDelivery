@@ -1,5 +1,6 @@
 package ru.wb.go.network.api.app
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -49,8 +50,10 @@ class AppRemoteRepositoryImpl(
                 val res = remoteRepo.tasksMy(apiDemoVersion())
                 if (res.id > 0) {
                     val remoteOffices = mutableListOf<LocalOfficeEntity>()
-                    res.dstOffices.forEach { remoteOffices.add(toLocalOfficeEntity(it)) }
-                    toLocalComplexOrderEntity(remoteOffices, res)
+                    res.dstOffices.forEach {
+                        remoteOffices.add(toLocalOfficeEntity(it))
+                    }
+                    toLocalComplexOrderEntity(remoteOffices.toList(), res)
 
                 } else {
                     LocalComplexOrderEntity(toLocalOrderEntity(), listOf())
@@ -59,8 +62,8 @@ class AppRemoteRepositoryImpl(
 //                if (orderId == null) {
 //                    error(e)
 //                } else
+                Log.e("exceptioneithRoute","$e")
                     LocalComplexOrderEntity(toLocalOrderEntity().copy(orderId = -2), listOf())
-
             }
         }
     }

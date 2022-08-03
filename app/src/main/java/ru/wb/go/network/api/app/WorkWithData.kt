@@ -103,7 +103,7 @@ fun toMyTaskResponse(myTaskResponse: MyTaskResponse): MutableList<LocalOfficeEnt
 
 
 fun toLocalComplexOrderEntity(
-    remoteOffices: MutableList<LocalOfficeEntity>,
+    remoteOffices: List<LocalOfficeEntity>,
     myTaskResponse: MyTaskResponse
 ): LocalComplexOrderEntity {
     return LocalComplexOrderEntity(
@@ -111,7 +111,7 @@ fun toLocalComplexOrderEntity(
             orderId = myTaskResponse.id,
             routeID = myTaskResponse.routeID ?: 0,
             gate = myTaskResponse.gate ?: "",
-            minCost = myTaskResponse.minPrice,
+            minCost = myTaskResponse.minCost,
             minVolume = myTaskResponse.minVolume,
             minBoxes = myTaskResponse.minBoxesCount,
             countOffices = remoteOffices.size,
@@ -127,7 +127,7 @@ fun toLocalComplexOrderEntity(
             srcAddress = myTaskResponse.srcOffice.fullAddress,
             srcLongitude = myTaskResponse.srcOffice.long,
             srcLatitude = myTaskResponse.srcOffice.lat,
-            route = myTaskResponse.route ?: "не указан"
+            route = myTaskResponse.route
         ),
         offices = remoteOffices
     )

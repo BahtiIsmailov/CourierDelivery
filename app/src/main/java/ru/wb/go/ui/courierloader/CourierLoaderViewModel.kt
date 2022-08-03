@@ -54,9 +54,7 @@ class CourierLoaderViewModel(
         initDrawer()
         initVersion()
         checkRootState()
-        if (!sharedWorker.isAllExists(AppPreffsKeys.FRAGMENT_MANAGER)){
-            sharedWorker.saveMediate(AppPreffsKeys.FRAGMENT_MANAGER,"fromSms")
-        }
+        sharedWorker.saveMediate(AppPreffsKeys.FRAGMENT_MANAGER,"fromSms")
     }
 
     private fun initDrawer() {
@@ -77,17 +75,14 @@ class CourierLoaderViewModel(
     }
 
     private fun appVersionUpdateComplete(version: String) {
-        //onTechEventLog("appVersionUpdateComplete", "appStart $version")
         checkUserState(version)
     }
 
     private fun appVersionUpdateError(throwable: Throwable) {
-        //onTechEventLog("appVersionUpdateError", throwable)
         checkUserState("0.0.0")
     }
 
     private fun goToUpdate(version: String): Boolean {
-        //onTechEventLog("admin version: $version")
         val res = !deviceManager.isAppVersionActual(version)
         if (res)
             toAppUpdate()
@@ -96,7 +91,6 @@ class CourierLoaderViewModel(
 
     private fun checkRootState() {
         if (resourceProvider.isRooted()) {
-            //onTechEventLog("phoneIsRooted")
         }
     }
 
@@ -158,13 +152,11 @@ class CourierLoaderViewModel(
         val remoteTaskId = remoteOrder.order.orderId
         return when {
             (order == null || remoteTaskId != order.orderId) && (remoteTaskId != -2) -> {
-                //onTechEventLog("OrderSynchronization", "Get from server")
                 syncFromServer(remoteOrder)
                 getNavigationState(remoteOrder.order.status)
             }
             else -> {
                 val localStatus = order!!.status
-                //onTechEventLog("OrderSynchronization", "Get local version")
                 getNavigationState(localStatus)
             }
         }
@@ -236,7 +228,6 @@ private fun toRegistration(phone: String) {
 
         } catch (e: Exception) {
             logException(e,"toRegistration")
-            //onTechEventLog("getUserDocs", e)
             onRxError(e)
         }
     }
