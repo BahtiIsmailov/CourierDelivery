@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 53,
-    "identityHash": "9fa0e73817ad728685bf86aa2cf6ed98",
+    "identityHash": "040234585390a18938f83a96e4ea773e",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
@@ -390,7 +390,7 @@
       },
       {
         "tableName": "courier_order",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `gate` TEXT NOT NULL, `min_price` TEXT NOT NULL, `route` TEXT NOT NULL, `min_volume` INTEGER NOT NULL, `min_boxes` INTEGER NOT NULL, `count_offices` INTEGER NOT NULL, `wb_user_id` INTEGER NOT NULL, `car_number` TEXT NOT NULL, `reserved_at` TEXT NOT NULL, `started_at` TEXT NOT NULL, `reserve_duration` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` INTEGER NOT NULL, `src_id` INTEGER NOT NULL, `src_name` TEXT NOT NULL, `src_address` TEXT NOT NULL, `src_long` REAL NOT NULL, `src_lat` REAL NOT NULL, PRIMARY KEY(`order_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `gate` TEXT NOT NULL, `min_price` TEXT, `route` TEXT, `min_volume` INTEGER NOT NULL, `min_boxes` INTEGER NOT NULL, `count_offices` INTEGER NOT NULL, `wb_user_id` INTEGER NOT NULL, `car_number` TEXT NOT NULL, `reserved_at` TEXT NOT NULL, `started_at` TEXT NOT NULL, `reserve_duration` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` INTEGER NOT NULL, `src_id` INTEGER NOT NULL, `src_name` TEXT NOT NULL, `src_address` TEXT NOT NULL, `src_long` REAL NOT NULL, `src_lat` REAL NOT NULL, PRIMARY KEY(`order_id`))",
         "fields": [
           {
             "fieldPath": "orderId",
@@ -414,13 +414,13 @@
             "fieldPath": "minCost",
             "columnName": "min_price",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "route",
             "columnName": "route",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "minVolume",
@@ -526,7 +526,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9fa0e73817ad728685bf86aa2cf6ed98')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '040234585390a18938f83a96e4ea773e')"
     ]
   }
 }
