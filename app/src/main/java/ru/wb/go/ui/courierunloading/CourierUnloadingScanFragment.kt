@@ -182,9 +182,9 @@ class CourierUnloadingScanFragment :
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is CourierUnloadingScanBeepState.BoxAdded -> beepSuccess()
-                is CourierUnloadingScanBeepState.UnknownBox -> beepUnknownBox()
-                is CourierUnloadingScanBeepState.UnknownQR -> beepUnknownQR()
+                CourierUnloadingScanBeepState.BoxAdded -> beepSuccess()
+                CourierUnloadingScanBeepState.UnknownBox -> beepUnknownBox()
+                CourierUnloadingScanBeepState.UnknownQR -> beepUnknownQR()
             }
         }
 

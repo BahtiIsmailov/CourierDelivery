@@ -53,13 +53,18 @@ class CourierUnloadingInteractorImpl(
                         scannerRepo.scannerState(ScannerState.HoldScanError)
                     }
                     parsedScan.officeId != officeId.toString() ||
-                            // сложный случай. пикнули коробку с дублированием boxId но другим офисом
+                            // пикнули коробку с дублированием boxId но другим офисом
                             box.officeId.toString() != parsedScan.officeId -> {
                         result = CourierUnloadingScanBoxData.WrongBox(
                             parsedScan.boxId,
-                            EMPTY_ADDRESS
+                            EMPTY_ADDRESS,
                         )
                         localRepo.takeBackBox(box)
+                        localRepo.setFailedBoxes(
+                            parsedScan.officeId,
+                            timeManager.getLocalTime(),
+                            parsedScan.boxId
+                        )
                         scannerRepo.scannerState(ScannerState.HoldScanError)
                     }
                     else -> {
@@ -70,13 +75,13 @@ class CourierUnloadingInteractorImpl(
                         scannerRepo.scannerState(ScannerState.HoldScanComplete)
                     }
                 }
-                 val it = localRepo.findOfficeById(officeId)
-                  flowOf(CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes))
+                val it = localRepo.findOfficeById(officeId)
+                flowOf(CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes))
             }
     }
 
 
-    override suspend fun scannerRepoHoldStart(){
+    override suspend fun scannerRepoHoldStart() {
         scannerRepo.holdStart()
     }
 
@@ -95,7 +100,7 @@ class CourierUnloadingInteractorImpl(
         return scanLoaderProgressSubject
     }
 
-     override suspend fun removeScannedBoxes(checkedBoxes: List<String>) {
+    override suspend fun removeScannedBoxes(checkedBoxes: List<String>) {
         return
     }
 
@@ -111,7 +116,7 @@ class CourierUnloadingInteractorImpl(
         val srcOfficeId = localRepo.getSrcOfficeId()
         val boxes = localRepo.getOfflineBoxes()
         boxes.find { b -> b.deliveredAt != "" }
-        remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes, srcOfficeId?:0)
+        remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes, srcOfficeId ?: 0)
         localRepo.setOnlineOffices()
     }
 

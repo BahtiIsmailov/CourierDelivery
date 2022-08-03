@@ -31,7 +31,7 @@ data class LocalOrderEntity(
     @ColumnInfo(name = "started_at")
     val startedAt: String,
     @ColumnInfo(name = "reserve_duration")
-    val reservedDuration: String,
+    val reservedDuration: Int,
     val status: String,
     val cost: Int,
     @ColumnInfo(name = "src_id")

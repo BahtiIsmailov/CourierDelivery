@@ -419,12 +419,11 @@ class CourierIntransitViewModel(
                 val srcOfficeID = interactor.getSrcOfficeID()
                 val orderId = order?.orderId.toString()
                 setLoader(WaitLoader.Wait)
-                interactor.setIntransitTask(orderId, srcOfficeID?:0, boxes, )
+                interactor.setIntransitTask(orderId, srcOfficeID?:0, boxes)
                 interactor.completeDelivery(order!!)
                 completeDeliveryComplete(order.cost)
             } catch (e: Exception) {
                 logException(e,"onCompleteDeliveryClick")
-                //onTechEventLog("CompleteDelivery", e)
                 setLoader(WaitLoader.Complete)
                 errorDialogManager.showErrorDialog(e, _navigateToErrorDialog)
             }
@@ -440,10 +439,6 @@ class CourierIntransitViewModel(
                 boxes.size,
                 cost
             )
-            //onTechEventLog(
-                //"CompleteDelivery",
-                //"boxes: ${cdr.countBoxes}/${cdr.deliveredBoxes} - ${cdr.cost} руб"
-            //)
 
             interactor.clearLocalTaskData()
             _navigationState.value =

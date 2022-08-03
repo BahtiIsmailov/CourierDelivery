@@ -76,17 +76,18 @@
 
     <TextView
         android:id="@+id/cost"
-        style="@style/LargePrimaryMediumText"
+        style="@style/MediumPrimaryMediumText"
         android:layout_width="0dp"
-        android:layout_marginStart="@dimen/pad12"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/pad12"
         android:layout_marginEnd="16dp"
         android:gravity="end"
+        android:maxLines="1"
+        app:layout_constraintBottom_toBottomOf="@+id/taskDistance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/taskDistance"
         app:layout_constraintTop_toTopOf="@id/countOffice"
-        tools:text="от 99 999 - 99 999 $"
-         />
+        tools:text="от 99 999 - 99 999 $" />
 <!--    tools:text="@sample/orders.json/orders/price"-->
 
     <TextView

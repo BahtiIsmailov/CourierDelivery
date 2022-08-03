@@ -68,7 +68,7 @@ fun initLocalOrderEntity(): LocalOrderEntity {
         carNumber = "",
         reservedAt = "",
         startedAt = "",
-        reservedDuration = "",
+        reservedDuration = 0,
         status = "",
         cost = 0,
         srcId = 0,
@@ -109,19 +109,19 @@ fun toLocalComplexOrderEntity(
     return LocalComplexOrderEntity(
         order = LocalOrderEntity(
             orderId = myTaskResponse.id,
-            routeID = myTaskResponse.routeID ?: 0,
+            routeID = 0,
             gate = myTaskResponse.gate ?: "",
-            minCost = myTaskResponse.minPrice,
+            minCost = myTaskResponse.minCost?:"",
             minVolume = myTaskResponse.minVolume,
             minBoxes = myTaskResponse.minBoxesCount,
             countOffices = remoteOffices.size,
-            wbUserID = myTaskResponse.wbUserID,
-            carNumber = myTaskResponse.carNumber,
-            reservedAt = myTaskResponse.reservedAt,
+            wbUserID = myTaskResponse.wbUserID?:0,
+            carNumber = myTaskResponse.carNumber?:"",
+            reservedAt = myTaskResponse.reservedAt?:"",
             startedAt = myTaskResponse.startedAt ?: "",
             reservedDuration = myTaskResponse.reservedDuration,
             status = myTaskResponse.status ?: "",
-            cost = (myTaskResponse.cost ?: 0) / AppRemoteRepositoryImpl.COST_DIVIDER,
+            cost = (myTaskResponse.cost?.toInt() ?: 0) / AppRemoteRepositoryImpl.COST_DIVIDER,
             srcId = myTaskResponse.srcOffice.id,
             srcName = myTaskResponse.srcOffice.name,
             srcAddress = myTaskResponse.srcOffice.fullAddress,
@@ -142,7 +142,9 @@ fun toListLocalBoxEntity(courierTaskBoxesResponse: CourierTaskBoxesResponse): Li
                 address = "",
                 officeId = dstOfficeID,
                 loadingAt = loadingAt,
-                deliveredAt = deliveredAt ?: ""
+                deliveredAt = deliveredAt ?: "",
+                fakeOfficeId = fakeBeep?.officeId?:"",
+                fakeDeliveredAt = fakeBeep?.deliveryTime?:""
             )
         }
     }
@@ -240,7 +242,7 @@ fun toLocalOrderEntity():LocalOrderEntity {
         carNumber = "",
         reservedAt = "",
         startedAt = "",
-        reservedDuration = "",
+        reservedDuration = 0,
         status = "",
         cost = 0,
         srcId = 0,

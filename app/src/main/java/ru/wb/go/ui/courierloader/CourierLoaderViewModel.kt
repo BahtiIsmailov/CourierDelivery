@@ -52,9 +52,8 @@ class CourierLoaderViewModel(
     init {
         initDrawer()
         initVersion()
-//        if (!sharedWorker.isAllExists(AppPreffsKeys.FRAGMENT_MANAGER)){
-            sharedWorker.saveMediate(AppPreffsKeys.FRAGMENT_MANAGER,"fromSms")
-      //  }
+
+        sharedWorker.saveMediate(AppPreffsKeys.FRAGMENT_MANAGER,"fromSms")
     }
 
     private fun initDrawer() {
@@ -69,7 +68,8 @@ class CourierLoaderViewModel(
                 appVersionUpdateComplete(response)
             } catch (e: Exception) {
                 logException(e,"initVersion")
-                appVersionUpdateError() }
+                appVersionUpdateError()
+            }
         }
     }
 
@@ -96,7 +96,6 @@ class CourierLoaderViewModel(
             checkNewInstallation()
 
             val order = locRepo.getOrder()
-
 
             if (order == null && goToUpdate(version)) {
                 return@launch
@@ -131,7 +130,6 @@ class CourierLoaderViewModel(
                 _navigationDrawerState.value = res
             } catch (e: Exception) {
                 logException(e,"toApp")
-                //onTechEventLog("getMyTask", e)
                 onRxError(e)
             }
         }

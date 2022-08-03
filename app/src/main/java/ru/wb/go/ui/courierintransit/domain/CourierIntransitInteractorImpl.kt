@@ -13,6 +13,7 @@ import ru.wb.go.ui.BaseServiceInteractorImpl
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
+import ru.wb.go.ui.courierunloading.data.FakeBeep
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
 

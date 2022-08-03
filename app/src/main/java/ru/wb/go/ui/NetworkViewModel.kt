@@ -33,7 +33,7 @@ abstract class NetworkViewModel() : ViewModel() {
         params.putInt("countOffices", data.countOffices)
         params.putString("reservedAt", data.reservedAt)
         params.putString("startedAt", data.startedAt)
-        params.putString("reservedDuration", data.reservedDuration)
+        params.putString("reservedDuration", data.reservedDuration.toString())
         params.putString("status", data.status)
         params.putString("srcName", data.srcName)
         params.putString("SrcAddress", data.srcAddress)

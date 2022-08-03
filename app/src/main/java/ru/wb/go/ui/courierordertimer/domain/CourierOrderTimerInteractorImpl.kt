@@ -57,7 +57,7 @@ class CourierOrderTimerInteractorImpl(
         }
         return CourierTimerEntity(
             it.route, it.srcName, it.orderId, it.minCost, it.minBoxes, it.minVolume,
-            it.countOffices, it.gate, it.reservedDuration, it.reservedAt
+            it.countOffices, it.gate, it.reservedDuration.toString(), it.reservedAt
         )
 
     }

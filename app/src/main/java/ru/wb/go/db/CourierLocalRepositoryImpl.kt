@@ -10,6 +10,7 @@ import ru.wb.go.db.dao.CourierWarehouseDao
 import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.*
+import ru.wb.go.ui.courierunloading.data.FakeBeep
 
 class CourierLocalRepositoryImpl(
     private val courierWarehouseDao: CourierWarehouseDao,
@@ -250,6 +251,18 @@ class CourierLocalRepositoryImpl(
          return withContext(Dispatchers.IO){
              courierLoadingBoxDao.getBoxes()
          }
+    }
+
+    override suspend fun getFailedBoxes(): List<LocalBoxEntity> {
+        return withContext(Dispatchers.IO){
+            courierLoadingBoxDao.getFailedBoxes()
+        }
+    }
+
+    override suspend fun setFailedBoxes(fakeOfficeID: String, loadingAt: String, boxId: String) {
+        withContext(Dispatchers.IO){
+            courierLoadingBoxDao.setFailedBoxes(fakeOfficeID, loadingAt, boxId)
+        }
     }
 
     override suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity> {

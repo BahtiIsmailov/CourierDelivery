@@ -7,6 +7,7 @@ import ru.wb.go.db.entity.courierlocal.LocalOrderEntity
 import ru.wb.go.ui.BaseServiceInteractor
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
+import ru.wb.go.ui.courierunloading.data.FakeBeep
 
 interface CourierIntransitInteractor : BaseServiceInteractor {
 
@@ -16,7 +17,7 @@ interface CourierIntransitInteractor : BaseServiceInteractor {
 
     suspend fun completeDelivery(order: LocalOrderEntity)
 
-    suspend fun setIntransitTask(orderId: String,srcOfficeID:Int, boxes: List<LocalBoxEntity>,)
+    suspend fun setIntransitTask(orderId: String,srcOfficeID:Int, boxes: List<LocalBoxEntity>)
 
     suspend fun clearLocalTaskData()
 

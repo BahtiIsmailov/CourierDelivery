@@ -100,7 +100,8 @@ class CourierLoadingInteractorImpl(
                             isNewBox = true
                             box = LocalBoxEntity(
                                 boxId = parsedScan.boxId, officeId = office.officeId,
-                                address = office.address, loadingAt = scanTime, deliveredAt = ""
+                                address = office.address, loadingAt = scanTime, deliveredAt = "",
+                                fakeDeliveredAt = "", fakeOfficeId = ""
                             )
                         } else {
                             box = box.copy(loadingAt = scanTime)

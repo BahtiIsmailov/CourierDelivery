@@ -9,6 +9,7 @@ import ru.wb.go.network.api.app.remote.bank.BankResponse
 import ru.wb.go.network.api.app.remote.billing.BillingCommonResponse
 import ru.wb.go.network.api.app.remote.courier.*
 import ru.wb.go.network.api.app.remote.payments.PaymentsRequest
+import ru.wb.go.ui.courierunloading.data.FakeBeep
 
 
 interface AppApi {

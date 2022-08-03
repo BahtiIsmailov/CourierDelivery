@@ -7,6 +7,7 @@ import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
 import ru.wb.go.db.entity.courierlocal.LocalLoadingBoxEntity
+import ru.wb.go.ui.courierunloading.data.FakeBeep
 
 @Dao
 interface CourierBoxDao {
@@ -65,6 +66,12 @@ interface CourierBoxDao {
 
     @Query("SELECT * FROM boxes")
     suspend fun getBoxes(): List<LocalBoxEntity>
+
+    @Query("SELECT * FROM boxes WHERE fake_office_id <> '' ")
+    suspend fun getFailedBoxes():List<LocalBoxEntity>
+
+    @Query("UPDATE boxes SET fake_delivered_at=:loadingAt AND fake_office_id=:fakeOfficeId WHERE box_id=:boxId")
+    suspend fun setFailedBoxes(fakeOfficeId: String, loadingAt: String,boxId:String)
 
     @Query("SELECT * FROM boxes")
     fun getBoxesLive(): Flow<List<LocalBoxEntity>>

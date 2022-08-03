@@ -51,7 +51,6 @@ class AppRemoteRepositoryImpl(
                     val remoteOffices = mutableListOf<LocalOfficeEntity>()
                     res.dstOffices.forEach { remoteOffices.add(toLocalOfficeEntity(it)) }
                     toLocalComplexOrderEntity(remoteOffices, res)
-
                 } else {
                     LocalComplexOrderEntity(toLocalOrderEntity(), listOf())
                 }
@@ -98,7 +97,9 @@ class AppRemoteRepositoryImpl(
                         address = "",
                         officeId = dstOfficeID,
                         loadingAt = loadingAt,
-                        deliveredAt = deliveredAt ?: ""
+                        deliveredAt = deliveredAt ?: "",
+                        fakeOfficeId = fakeBeep?.officeId?:"",
+                        fakeDeliveredAt = fakeBeep?.deliveryTime?:""
                     )
                 }
             }
