@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 52,
-    "identityHash": "5da713d057f7d73e5f7d09ccab3043bb",
+    "identityHash": "72f58e24cd601af56757a33b78c7076b",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
@@ -56,7 +56,7 @@
       },
       {
         "tableName": "CourierOrderLocalEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `rowId` INTEGER NOT NULL, `routeID` INTEGER NOT NULL, `route` TEXT, `ridMask` INTEGER, `gate` TEXT NOT NULL, `minCost` TEXT NOT NULL, `minVolume` INTEGER NOT NULL, `minBoxesCount` INTEGER NOT NULL, `reservedDuration` INTEGER NOT NULL, `reservedAt` TEXT NOT NULL, `taskDistance` TEXT NOT NULL, PRIMARY KEY(`order_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `rowId` INTEGER NOT NULL, `routeID` INTEGER NOT NULL, `route` TEXT, `ridMask` INTEGER, `gate` TEXT NOT NULL, `minCost` TEXT NOT NULL, `minVolume` INTEGER NOT NULL, `minBoxesCount` INTEGER NOT NULL, `reservedDuration` TEXT NOT NULL, `reservedAt` TEXT NOT NULL, `taskDistance` TEXT NOT NULL, PRIMARY KEY(`order_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -115,7 +115,7 @@
           {
             "fieldPath": "reservedDuration",
             "columnName": "reservedDuration",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -266,7 +266,7 @@
       },
       {
         "tableName": "boxes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`box_id` TEXT NOT NULL, `address` TEXT NOT NULL, `office_id` INTEGER NOT NULL, `loading_at` TEXT NOT NULL, `delivered_at` TEXT NOT NULL, `fake_office_id` TEXT NOT NULL, `fake_delivered_at` TEXT NOT NULL, PRIMARY KEY(`box_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`box_id` TEXT NOT NULL, `address` TEXT NOT NULL, `office_id` INTEGER NOT NULL, `loading_at` TEXT NOT NULL, `delivered_at` TEXT NOT NULL, PRIMARY KEY(`box_id`))",
         "fields": [
           {
             "fieldPath": "boxId",
@@ -295,18 +295,6 @@
           {
             "fieldPath": "deliveredAt",
             "columnName": "delivered_at",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fakeOfficeId",
-            "columnName": "fake_office_id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "fakeDeliveredAt",
-            "columnName": "fake_delivered_at",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -390,7 +378,7 @@
       },
       {
         "tableName": "courier_order",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `gate` TEXT NOT NULL, `min_price` TEXT NOT NULL, `route` TEXT NOT NULL, `min_volume` INTEGER NOT NULL, `min_boxes` INTEGER NOT NULL, `count_offices` INTEGER NOT NULL, `wb_user_id` INTEGER NOT NULL, `car_number` TEXT NOT NULL, `reserved_at` TEXT NOT NULL, `started_at` TEXT NOT NULL, `reserve_duration` TEXT NOT NULL, `status` TEXT NOT NULL, `cost` INTEGER NOT NULL, `src_id` INTEGER NOT NULL, `src_name` TEXT NOT NULL, `src_address` TEXT NOT NULL, `src_long` REAL NOT NULL, `src_lat` REAL NOT NULL, PRIMARY KEY(`order_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `gate` TEXT NOT NULL, `min_price` TEXT, `route` TEXT, `min_volume` INTEGER NOT NULL, `min_boxes` INTEGER NOT NULL, `count_offices` INTEGER NOT NULL, `wb_user_id` INTEGER NOT NULL, `car_number` TEXT NOT NULL, `reserved_at` TEXT NOT NULL, `started_at` TEXT NOT NULL, `reserve_duration` TEXT NOT NULL, `status` TEXT NOT NULL, `cost` INTEGER NOT NULL, `src_id` INTEGER NOT NULL, `src_name` TEXT NOT NULL, `src_address` TEXT NOT NULL, `src_long` REAL NOT NULL, `src_lat` REAL NOT NULL, PRIMARY KEY(`order_id`))",
         "fields": [
           {
             "fieldPath": "orderId",
@@ -414,13 +402,13 @@
             "fieldPath": "minCost",
             "columnName": "min_price",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "route",
             "columnName": "route",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "minVolume",
@@ -526,7 +514,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5da713d057f7d73e5f7d09ccab3043bb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '72f58e24cd601af56757a33b78c7076b')"
     ]
   }
 }

@@ -31,9 +31,10 @@ class CourierLoaderViewModel(
     private val locRepo: CourierLocalRepository,
     private val remoteRepo: AppRemoteRepository,
     private val deviceManager: DeviceManager,
-    private val sharedWorker: SharedWorker,
+    private val resourceProvider: CourierLoaderResourceProvider,
     private val settingsManager: SettingsManager,
     private val userManager: UserManager,
+    private val sharedWorker: SharedWorker
 ) : NetworkViewModel() {
 
     private val _drawerHeader = MutableLiveData<UserInfoEntity>()
@@ -52,7 +53,7 @@ class CourierLoaderViewModel(
     init {
         initDrawer()
         initVersion()
-
+        checkRootState()
         sharedWorker.saveMediate(AppPreffsKeys.FRAGMENT_MANAGER,"fromSms")
     }
 
@@ -86,6 +87,11 @@ class CourierLoaderViewModel(
         if (res)
             toAppUpdate()
         return res
+    }
+
+    private fun checkRootState() {
+        if (resourceProvider.isRooted()) {
+        }
     }
 
     private fun checkUserState(version: String) {
@@ -220,7 +226,6 @@ private fun toRegistration(phone: String) {
 
         } catch (e: Exception) {
             logException(e,"toRegistration")
-            //onTechEventLog("getUserDocs", e)
             onRxError(e)
         }
     }

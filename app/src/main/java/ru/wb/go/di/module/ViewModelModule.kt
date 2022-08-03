@@ -66,6 +66,7 @@ val viewModelModule = module {
             sharedWorker = get(),
             settingsManager = get(),
             userManager = get(),
+            sharedWorker = get()
         )
     }
     viewModel { CourierVersionControlViewModel(get(), get()) }

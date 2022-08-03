@@ -127,7 +127,7 @@ fun toLocalComplexOrderEntity(
             srcAddress = myTaskResponse.srcOffice.fullAddress,
             srcLongitude = myTaskResponse.srcOffice.long,
             srcLatitude = myTaskResponse.srcOffice.lat,
-            route = myTaskResponse.route ?: "не указан"
+            route = myTaskResponse.route
         ),
         offices = remoteOffices
     )

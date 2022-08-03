@@ -5,10 +5,10 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CourierTimerEntity(
-    val route:String,
+    val route:String?,
     val name: String,
     val orderId: Int,
-    val price: String,
+    val price: String?,
     val boxesCount: Int,
     val volume: Int,
     val countPvz: Int,

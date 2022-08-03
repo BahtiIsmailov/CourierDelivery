@@ -245,6 +245,7 @@
     <string name="courier_orders_order">\u0020- %1$d</string>
     <string name="orderCost">от %1$s ₽</string>
     <string name="orderCargo">от %1$d шт.</string>
+
     <string name="orderCardCargo">от %2$d шт. / %1$d м\u00B3</string>
 
     <string name="itemOfficeCount">%1$d ПВЗ ~</string>
