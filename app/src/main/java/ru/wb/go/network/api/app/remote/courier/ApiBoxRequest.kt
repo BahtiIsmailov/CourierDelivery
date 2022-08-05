@@ -8,7 +8,7 @@ data class ApiBoxRequest(
     val dstOfficeID: Int,
     val loadingAt: String,
     val deliveredAt: String?,
-    val fakeBeep: FakeBeep
+    val fakeBeep: FakeBeep?
 )
 
 fun LocalBoxEntity.convertToApiBoxRequest(): ApiBoxRequest {
@@ -16,5 +16,10 @@ fun LocalBoxEntity.convertToApiBoxRequest(): ApiBoxRequest {
         "" -> null
         else -> this.deliveredAt
     }
-    return ApiBoxRequest(this.boxId, this.officeId, this.loadingAt, deliver,FakeBeep(this.fakeOfficeId,this.fakeDeliveredAt))
+    val fakeBeep = when(this.fakeOfficeId){
+        null -> null
+        else -> FakeBeep(this.fakeOfficeId,this.fakeDeliveredAt)
+    }
+
+    return ApiBoxRequest(this.boxId, this.officeId, this.loadingAt, deliver,fakeBeep)
 }

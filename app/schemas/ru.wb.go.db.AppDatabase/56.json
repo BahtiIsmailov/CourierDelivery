@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 54,
-    "identityHash": "7c112f9d5438002489799612fc7c9686",
+    "version": 56,
+    "identityHash": "cf9a7717a8af566eabb064407acd360d",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
@@ -322,7 +322,7 @@
       },
       {
         "tableName": "offices",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`office_id` INTEGER NOT NULL, `office_name` TEXT NOT NULL, `address` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `count_boxes` INTEGER NOT NULL, `delivered_boxes` INTEGER NOT NULL, `is_online` INTEGER NOT NULL, `is_visited` INTEGER NOT NULL, PRIMARY KEY(`office_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`office_id` INTEGER NOT NULL, `office_name` TEXT NOT NULL, `address` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `count_boxes` INTEGER NOT NULL, `delivered_boxes` INTEGER NOT NULL, `is_online` INTEGER NOT NULL, `is_visited` INTEGER NOT NULL, `fake_delivery_at` TEXT NOT NULL, `fake_office_id` INTEGER NOT NULL, PRIMARY KEY(`office_id`))",
         "fields": [
           {
             "fieldPath": "officeId",
@@ -375,6 +375,18 @@
           {
             "fieldPath": "isVisited",
             "columnName": "is_visited",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fakeDeliveryAt",
+            "columnName": "fake_delivery_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fakeOfficeId",
+            "columnName": "fake_office_id",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -526,7 +538,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7c112f9d5438002489799612fc7c9686')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cf9a7717a8af566eabb064407acd360d')"
     ]
   }
 }

@@ -22,4 +22,8 @@ data class LocalOfficeEntity(
     val isOnline:Boolean,
     @ColumnInfo(name = "is_visited")
     val isVisited:Boolean,
+    @ColumnInfo(name = "fake_delivery_at")
+    val fakeDeliveryAt:String?,
+    @ColumnInfo(name = "fake_office_id")
+    val fakeOfficeId: Int?
 )

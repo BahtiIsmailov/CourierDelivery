@@ -94,7 +94,7 @@ class AppRemoteRepositoryImpl(
     override suspend fun taskBoxes(taskID: String): List<LocalBoxEntity> {
         return withContext(Dispatchers.IO) {
             autentificatorIntercept.initNameOfMethod("taskBoxes")
-            val response = remoteRepo.taskBoxes(apiVersion(), taskID)
+            val response = remoteRepo.taskBoxes(apiDemoVersion(), taskID)
             response.data.map {
                 with(it) {
                     LocalBoxEntity(
@@ -103,8 +103,8 @@ class AppRemoteRepositoryImpl(
                         officeId = dstOfficeID,
                         loadingAt = loadingAt,
                         deliveredAt = deliveredAt ?: "",
-                        fakeOfficeId = fakeBeep?.officeId?:"",
-                        fakeDeliveredAt = fakeBeep?.deliveryTime?:""
+                        fakeOfficeId = fakeBeep?.office?.id,
+                        fakeDeliveredAt = fakeBeep?.dt
                     )
                 }
             }

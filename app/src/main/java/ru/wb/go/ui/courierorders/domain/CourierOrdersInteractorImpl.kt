@@ -230,7 +230,9 @@ class CourierOrdersInteractorImpl(
             srcAddress = warehouseLocalEntity.fullAddress,
             srcLongitude = warehouseLocalEntity.longitude,
             srcLatitude = warehouseLocalEntity.latitude,
-            route = route ?: "не указан"
+            route = route ?: "не указан",
+            fakeOfficeId = null,
+            fakeDeliveredAt = null
         )
     }
 

@@ -190,13 +190,6 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-
-    override suspend fun getOffices(): List<LocalOfficeEntity> {
-        return withContext(Dispatchers.IO){
-            courierOrderDao.getOffices()
-        }
-    }
-
     override fun getOfficesFlowable(): Flow<List<LocalOfficeEntity>> {
         return courierOrderDao.getOfficesFlowable()
             .flowOn(Dispatchers.IO)
@@ -259,9 +252,21 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-    override suspend fun setFailedBoxes(fakeOfficeID: String, loadingAt: String, boxId: String) {
+    override suspend fun setFailedBoxes(fakeOfficeID: Int, loadingAt: String, boxId: String,officeId: Int) {
         withContext(Dispatchers.IO){
-            courierLoadingBoxDao.setFailedBoxes(fakeOfficeID, loadingAt, boxId)
+            courierLoadingBoxDao.setTransactionToFailedBoxes(fakeOfficeID, loadingAt, boxId, officeId)
+        }
+    }
+
+    override suspend fun getOffices():List<LocalOfficeEntity> {
+        return withContext(Dispatchers.IO){
+            courierLoadingBoxDao.getOffices()
+        }
+    }
+
+    override suspend fun isBoxesExist(boxId: String): String {
+        return withContext(Dispatchers.IO){
+            courierLoadingBoxDao.isBoxesExist(boxId)
         }
     }
 

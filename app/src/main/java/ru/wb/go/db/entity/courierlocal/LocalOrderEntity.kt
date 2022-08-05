@@ -44,5 +44,9 @@ data class LocalOrderEntity(
     val srcLongitude: Double,
     @ColumnInfo(name = "src_lat")
     val srcLatitude: Double,
+    @ColumnInfo(name = "fake_office_id")
+    val fakeOfficeId: Int?,
+    @ColumnInfo(name = "fake_delivered_at")
+    val fakeDeliveredAt:String?
 
 )

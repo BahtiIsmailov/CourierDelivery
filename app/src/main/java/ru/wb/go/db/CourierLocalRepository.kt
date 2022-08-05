@@ -64,7 +64,7 @@ interface CourierLocalRepository {
 
     suspend fun getFailedBoxes(): List<LocalBoxEntity>
 
-    suspend fun setFailedBoxes(fakeOfficeID: String, loadingAt: String,boxId:String)
+    suspend fun setFailedBoxes(fakeOfficeID: Int, loadingAt: String, boxId: String,officeId: Int)
 
     fun getBoxesLiveData(): Flow<List<LocalBoxEntity>>
 
@@ -85,6 +85,8 @@ interface CourierLocalRepository {
     suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity>
 
     suspend fun clearOrder()
+
+    suspend fun isBoxesExist(boxId: String):String
 
     suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity>
 

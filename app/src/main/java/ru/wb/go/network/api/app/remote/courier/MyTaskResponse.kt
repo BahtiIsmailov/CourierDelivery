@@ -1,5 +1,7 @@
 package ru.wb.go.network.api.app.remote.courier
 
+import ru.wb.go.ui.courierunloading.data.FakeBeep
+
 data class MyTaskResponse(
     val id: Int,
     val ridMask:Long?,
@@ -16,5 +18,5 @@ data class MyTaskResponse(
     val startedAt: String?,
     val reservedDuration: String,
     val status: String?,
-    val cost: String?,
+    val cost: String?
 )

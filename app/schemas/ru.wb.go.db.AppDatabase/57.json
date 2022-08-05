@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 54,
-    "identityHash": "7c112f9d5438002489799612fc7c9686",
+    "version": 57,
+    "identityHash": "3f596c6172a9b86ef94872ea219463c7",
     "entities": [
       {
         "tableName": "CourierWarehouseLocalEntity",
@@ -266,7 +266,7 @@
       },
       {
         "tableName": "boxes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`box_id` TEXT NOT NULL, `address` TEXT NOT NULL, `office_id` INTEGER NOT NULL, `loading_at` TEXT NOT NULL, `delivered_at` TEXT NOT NULL, `fake_office_id` INTEGER NOT NULL, `fake_delivered_at` TEXT NOT NULL, PRIMARY KEY(`box_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`box_id` TEXT NOT NULL, `address` TEXT NOT NULL, `office_id` INTEGER NOT NULL, `loading_at` TEXT NOT NULL, `delivered_at` TEXT NOT NULL, `fake_office_id` INTEGER, `fake_delivered_at` TEXT, PRIMARY KEY(`box_id`))",
         "fields": [
           {
             "fieldPath": "boxId",
@@ -302,13 +302,13 @@
             "fieldPath": "fakeOfficeId",
             "columnName": "fake_office_id",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "fakeDeliveredAt",
             "columnName": "fake_delivered_at",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -322,7 +322,7 @@
       },
       {
         "tableName": "offices",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`office_id` INTEGER NOT NULL, `office_name` TEXT NOT NULL, `address` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `count_boxes` INTEGER NOT NULL, `delivered_boxes` INTEGER NOT NULL, `is_online` INTEGER NOT NULL, `is_visited` INTEGER NOT NULL, PRIMARY KEY(`office_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`office_id` INTEGER NOT NULL, `office_name` TEXT NOT NULL, `address` TEXT NOT NULL, `longitude` REAL NOT NULL, `latitude` REAL NOT NULL, `count_boxes` INTEGER NOT NULL, `delivered_boxes` INTEGER NOT NULL, `is_online` INTEGER NOT NULL, `is_visited` INTEGER NOT NULL, `fake_delivery_at` TEXT, `fake_office_id` INTEGER, PRIMARY KEY(`office_id`))",
         "fields": [
           {
             "fieldPath": "officeId",
@@ -377,6 +377,18 @@
             "columnName": "is_visited",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "fakeDeliveryAt",
+            "columnName": "fake_delivery_at",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fakeOfficeId",
+            "columnName": "fake_office_id",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -390,7 +402,7 @@
       },
       {
         "tableName": "courier_order",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `gate` TEXT NOT NULL, `min_price` TEXT, `route` TEXT, `min_volume` INTEGER NOT NULL, `min_boxes` INTEGER NOT NULL, `count_offices` INTEGER NOT NULL, `wb_user_id` INTEGER NOT NULL, `car_number` TEXT NOT NULL, `reserved_at` TEXT NOT NULL, `started_at` TEXT NOT NULL, `reserve_duration` TEXT NOT NULL, `status` TEXT NOT NULL, `cost` INTEGER NOT NULL, `src_id` INTEGER NOT NULL, `src_name` TEXT NOT NULL, `src_address` TEXT NOT NULL, `src_long` REAL NOT NULL, `src_lat` REAL NOT NULL, PRIMARY KEY(`order_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_id` INTEGER NOT NULL, `route_id` INTEGER NOT NULL, `gate` TEXT NOT NULL, `min_price` TEXT, `route` TEXT, `min_volume` INTEGER NOT NULL, `min_boxes` INTEGER NOT NULL, `count_offices` INTEGER NOT NULL, `wb_user_id` INTEGER NOT NULL, `car_number` TEXT NOT NULL, `reserved_at` TEXT NOT NULL, `started_at` TEXT NOT NULL, `reserve_duration` TEXT NOT NULL, `status` TEXT NOT NULL, `cost` INTEGER NOT NULL, `src_id` INTEGER NOT NULL, `src_name` TEXT NOT NULL, `src_address` TEXT NOT NULL, `src_long` REAL NOT NULL, `src_lat` REAL NOT NULL, `fake_office_id` INTEGER, `fake_delivered_at` TEXT, PRIMARY KEY(`order_id`))",
         "fields": [
           {
             "fieldPath": "orderId",
@@ -511,6 +523,18 @@
             "columnName": "src_lat",
             "affinity": "REAL",
             "notNull": true
+          },
+          {
+            "fieldPath": "fakeOfficeId",
+            "columnName": "fake_office_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fakeDeliveredAt",
+            "columnName": "fake_delivered_at",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -526,7 +550,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7c112f9d5438002489799612fc7c9686')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3f596c6172a9b86ef94872ea219463c7')"
     ]
   }
 }

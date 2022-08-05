@@ -76,7 +76,9 @@ fun initLocalOrderEntity(): LocalOrderEntity {
         srcAddress = "",
         srcLongitude = 0.0,
         srcLatitude = 0.0,
-        route = ""
+        route = "",
+        fakeDeliveredAt = null,
+        fakeOfficeId = null
     )
 }
 
@@ -93,7 +95,9 @@ fun toMyTaskResponse(myTaskResponse: MyTaskResponse): MutableList<LocalOfficeEnt
                 countBoxes = 0,
                 deliveredBoxes = 0,
                 isVisited = false,
-                isOnline = false
+                isOnline = false,
+                fakeOfficeId = null,
+                fakeDeliveryAt = null
             )
         )
     }
@@ -127,7 +131,9 @@ fun toLocalComplexOrderEntity(
             srcAddress = myTaskResponse.srcOffice.fullAddress,
             srcLongitude = myTaskResponse.srcOffice.long,
             srcLatitude = myTaskResponse.srcOffice.lat,
-            route = myTaskResponse.route
+            route = myTaskResponse.route,
+            fakeOfficeId = null,
+            fakeDeliveredAt = null
         ),
         offices = remoteOffices
     )
@@ -143,8 +149,8 @@ fun toListLocalBoxEntity(courierTaskBoxesResponse: CourierTaskBoxesResponse): Li
                 officeId = dstOfficeID,
                 loadingAt = loadingAt,
                 deliveredAt = deliveredAt ?: "",
-                fakeOfficeId = fakeBeep?.officeId?:"",
-                fakeDeliveredAt = fakeBeep?.deliveryTime?:""
+                fakeOfficeId = fakeBeep?.office?.id,
+                fakeDeliveredAt = fakeBeep?.dt
             )
         }
     }
@@ -250,7 +256,9 @@ fun toLocalOrderEntity():LocalOrderEntity {
         srcAddress = "",
         srcLongitude = 0.0,
         srcLatitude = 0.0,
-        route = ""
+        route = "",
+        fakeDeliveredAt = null,
+        fakeOfficeId = null
     )
 }
 
@@ -264,7 +272,9 @@ fun toLocalOfficeEntity(myDstOfficeResponse: MyDstOfficeResponse):LocalOfficeEnt
         countBoxes = 0,
         deliveredBoxes = 0,
         isVisited = false,
-        isOnline = false
+        isOnline = false,
+        fakeOfficeId = null,
+        fakeDeliveryAt = null
     )
 }
 fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {

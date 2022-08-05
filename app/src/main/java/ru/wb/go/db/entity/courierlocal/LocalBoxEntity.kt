@@ -18,7 +18,7 @@ data class LocalBoxEntity(
     @ColumnInfo(name = "delivered_at")
     val deliveredAt: String,
     @ColumnInfo(name = "fake_office_id")
-    val fakeOfficeId: String,
+    val fakeOfficeId: Int?,
     @ColumnInfo(name = "fake_delivered_at")
-    val fakeDeliveredAt:String
+    val fakeDeliveredAt:String?
 )

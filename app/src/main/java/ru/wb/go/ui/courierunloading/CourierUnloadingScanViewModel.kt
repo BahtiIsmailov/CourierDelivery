@@ -169,7 +169,6 @@ class CourierUnloadingScanViewModel(
     private fun observeScanProcess() {
         interactor.observeScanProcess(parameters.officeId)
             .onEach {
-                Log.e("scannerAction","observeScanProcessOnEach : $it")
                 observeScanProcessComplete(it)
 
                 interactor.scannerRepoHoldStart()
@@ -178,6 +177,20 @@ class CourierUnloadingScanViewModel(
             .catch {
                 logException(it,"observeScanProcess")
                 errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeScanProgress() {
+        interactor.scanLoaderProgress()
+            .onEach {
+                _completeButtonEnable.value = when (it) {
+                    CourierUnloadingProgressData.Complete -> true
+                    CourierUnloadingProgressData.Progress -> false
+                }
+            }
+            .catch {
+                logException(it,"observeScanProgress")
             }
             .launchIn(viewModelScope)
     }
@@ -278,20 +291,7 @@ class CourierUnloadingScanViewModel(
         }
     }
 
-    private fun observeScanProgress() {
-        interactor.scanLoaderProgress()
-            .onEach {
-                _completeButtonEnable.value = when (it) {
-                    CourierUnloadingProgressData.Complete -> true
-                    CourierUnloadingProgressData.Progress -> false
-                }
-            }
-            .catch {
-                logException(it,"observeScanProgress")
-                //onTechEventLog("observeScanProcessError", it)
-            }
-            .launchIn(viewModelScope)
-    }
+
 
 
     fun onListClicked() {

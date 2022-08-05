@@ -1,5 +1,6 @@
 package ru.wb.go.ui.courierunloading.domain
 
+import android.util.Log
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import ru.wb.go.db.CourierLocalRepository
@@ -60,11 +61,16 @@ class CourierUnloadingInteractorImpl(
                             EMPTY_ADDRESS,
                         )
                         localRepo.takeBackBox(box)
-                        localRepo.setFailedBoxes(
-                            parsedScan.officeId,
-                            timeManager.getLocalTime(),
-                            parsedScan.boxId
-                        )
+                        if (localRepo.isBoxesExist(parsedScan.boxId) != "") {
+                            localRepo.setFailedBoxes(
+                                parsedScan.officeId.toInt(),
+                                timeManager.getLocalTime(),
+                                box.boxId,
+                                parsedScan.officeId.toInt()
+                            )
+                        }
+//                        localRepo.getOfflineBoxes()
+//                        Log.e("boxesObserver","$boxes")
                         scannerRepo.scannerState(ScannerState.HoldScanError)
                     }
                     else -> {
@@ -75,8 +81,8 @@ class CourierUnloadingInteractorImpl(
                         scannerRepo.scannerState(ScannerState.HoldScanComplete)
                     }
                 }
-                val it = localRepo.findOfficeById(officeId)
-                flowOf(CourierUnloadingProcessData(result, it.deliveredBoxes, it.countBoxes))
+                val currentOffice = localRepo.findOfficeById(officeId)
+                flowOf(CourierUnloadingProcessData(result, currentOffice.deliveredBoxes, currentOffice.countBoxes))
             }
     }
 
@@ -115,8 +121,10 @@ class CourierUnloadingInteractorImpl(
     override suspend fun completeOfficeUnload() {
         val srcOfficeId = localRepo.getSrcOfficeId()
         val boxes = localRepo.getOfflineBoxes()
-        boxes.find { b -> b.deliveredAt != "" }
-        remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes, srcOfficeId ?: 0)
+        Log.e("boxes","$boxes") // сюда уже приходит пустые элементы а нужно их заполнять до
+
+
+        remoteRepo.setIntransitTask(localRepo.getOrderId(), boxes, srcOfficeId ?: 0)//1
         localRepo.setOnlineOffices()
     }
 
