@@ -124,7 +124,7 @@ val viewModelModule = module {
     }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
-            parameters, get(), get(), get(), get()
+            parameters, get(), get(), get(), get(), get()
         )
     }
 

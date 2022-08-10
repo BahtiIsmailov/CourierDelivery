@@ -86,7 +86,7 @@ interface CourierLocalRepository {
 
     suspend fun clearOrder()
 
-    suspend fun isBoxesExist(boxId: String):String
+    suspend fun isBoxesExist(boxId: String):List<String>
 
     suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity>
 

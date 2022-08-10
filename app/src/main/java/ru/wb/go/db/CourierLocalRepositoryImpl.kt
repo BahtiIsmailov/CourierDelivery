@@ -264,7 +264,7 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-    override suspend fun isBoxesExist(boxId: String): String {
+    override suspend fun isBoxesExist(boxId: String): List<String> {
         return withContext(Dispatchers.IO){
             courierLoadingBoxDao.isBoxesExist(boxId)
         }

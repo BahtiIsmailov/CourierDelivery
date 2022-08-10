@@ -25,6 +25,12 @@ class CourierUnloadingResourceProvider(private val context: Context) :
     fun getEmptyAddress(): String =
         context.getString(R.string.courier_unloading_scanner_empty_address)
 
+    fun getDescriptionInformationFailedBeepBox(time:String,place:String) : String{
+        return context.getString(R.string.some_text_for_failed_boxes, timeFormatForFailedBoxes(time), place)
+    }
+    private fun timeFormatForFailedBoxes(time:String):String{
+        return time.replace("T"," • ").replace("г ","г.").dropLast(10)
+    }
     fun getAccepted(deliveredCount: Int, fromCount: Int): String =
         context.getString(R.string.courier_unloading_scanner_accepted, deliveredCount, fromCount)
 

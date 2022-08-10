@@ -72,7 +72,7 @@ interface CourierBoxDao {
     suspend fun getFailedBoxes():List<LocalBoxEntity>
 
     @Query("SELECT delivered_at FROM BOXES WHERE box_id=:boxId")
-    suspend fun isBoxesExist(boxId: String):String
+    suspend fun isBoxesExist(boxId: String):List<String>
 
     @Query("UPDATE boxes SET delivered_at='' WHERE box_id=:boxId ")
     fun clearDelivery(boxId: String)

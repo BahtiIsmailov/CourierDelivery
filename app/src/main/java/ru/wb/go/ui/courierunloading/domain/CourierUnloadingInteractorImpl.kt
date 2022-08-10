@@ -3,6 +3,8 @@ package ru.wb.go.ui.courierunloading.domain
 import android.util.Log
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import ru.wb.go.app.AppPreffsKeys
+import ru.wb.go.app.AppPreffsKeys.OFFICE_NUMBER_UNLOADING
 import ru.wb.go.db.CourierLocalRepository
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.db.entity.courierlocal.LocalBoxEntity
@@ -15,11 +17,13 @@ import ru.wb.go.ui.scanner.domain.ScannerRepository
 import ru.wb.go.ui.scanner.domain.ScannerState
 import ru.wb.go.utils.managers.DeviceManager
 import ru.wb.go.utils.managers.TimeManager
+import ru.wb.go.utils.prefs.SharedWorker
 
 class CourierUnloadingInteractorImpl(
     networkMonitorRepository: NetworkMonitorRepository,
     deviceManager: DeviceManager,
     private val remoteRepo: AppRemoteRepository,
+    private val sharedWorker: SharedWorker,
     private val scannerRepo: ScannerRepository,
     private val timeManager: TimeManager,
     private val localRepo: CourierLocalRepository,
@@ -61,9 +65,10 @@ class CourierUnloadingInteractorImpl(
                             EMPTY_ADDRESS,
                         )
                         localRepo.takeBackBox(box)
-                        if (localRepo.isBoxesExist(parsedScan.boxId) != "") {
+                        val failedOffice = sharedWorker.load(OFFICE_NUMBER_UNLOADING,0)
+                        if (localRepo.isBoxesExist(box.boxId).isNotEmpty()) {
                             localRepo.setFailedBoxes(
-                                parsedScan.officeId.toInt(),
+                                failedOffice,
                                 timeManager.getLocalTime(),
                                 box.boxId,
                                 parsedScan.officeId.toInt()

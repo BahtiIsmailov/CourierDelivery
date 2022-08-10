@@ -254,6 +254,7 @@ val interactorModule = module {
         networkMonitorRepository: NetworkMonitorRepository,
         deviceManager: DeviceManager,
         appRemoteRepository: AppRemoteRepository,
+        sharedWorker: SharedWorker,
         scannerRepository: ScannerRepository,
         timeManager: TimeManager,
         courierLocalRepository: CourierLocalRepository,
@@ -263,6 +264,7 @@ val interactorModule = module {
             networkMonitorRepository,
             deviceManager,
             appRemoteRepository,
+            sharedWorker,
             scannerRepository,
             timeManager,
             courierLocalRepository
@@ -421,7 +423,7 @@ val interactorModule = module {
             get(),
             get(),
             get(),
-
+get()
             )
     }
     factory {
