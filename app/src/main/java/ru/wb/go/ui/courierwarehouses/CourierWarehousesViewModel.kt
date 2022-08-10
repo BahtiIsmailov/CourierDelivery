@@ -1,15 +1,10 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import ru.wb.go.app.AppPreffsKeys
 import ru.wb.go.app.AppPreffsKeys.CLOSE_FRAGMENT_WHEN_ENDED_TIME
 import ru.wb.go.app.AppPreffsKeys.FRAGMENT_MANAGER
 import ru.wb.go.app.AppPreffsKeys.SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP
@@ -32,7 +27,7 @@ import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 import ru.wb.go.utils.prefs.SharedWorker
-import java.time.LocalTime
+import kotlin.math.roundToInt
 
 class CourierWarehousesViewModel(
     private val interactor: CourierWarehousesInteractor,
@@ -86,6 +81,7 @@ class CourierWarehousesViewModel(
         observeMapAction()
         checkDemoMode()
     }
+
     init {
         workWithSharedWorker()
     }
@@ -94,31 +90,35 @@ class CourierWarehousesViewModel(
         _demoState.value = interactor.isDemoMode()
     }
 
-    private fun workWithSharedWorker(){
-        sharedWorker.saveMediate(CLOSE_FRAGMENT_WHEN_ENDED_TIME,"")
+    private fun workWithSharedWorker() {
+        sharedWorker.saveMediate(CLOSE_FRAGMENT_WHEN_ENDED_TIME, "")
         if (sharedWorker.isAllExists(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)) {
             sharedWorker.delete(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)
         }
-        stringFromSms = sharedWorker.load(FRAGMENT_MANAGER,"")
+        stringFromSms = sharedWorker.load(FRAGMENT_MANAGER, "")
     }
 
     private fun observeMapAction() {
-        interactor.observeMapAction()
-            .onEach {
-                when (it) {
-                    is CourierMapAction.ItemClick -> onMapPointClick(it.point)
-                    is CourierMapAction.LocationUpdate -> {
-                        initMapByLocation(it.point)
+        viewModelScope.launch {
+            interactor.observeMapAction()
+                .collect {
+                    try {
+                        when (it) {
+                            is CourierMapAction.ItemClick -> onMapPointClick(it.point)
+                            is CourierMapAction.LocationUpdate -> {
+                                initMapByLocation(it.point)
+                            }
+                            CourierMapAction.MapClick -> showManagerBar()
+                            CourierMapAction.ShowAll -> onShowAllClick()
+                            else -> {}
+                        }
+                    } catch (e: Exception) {
+                        logException(e, "observeMapAction")
                     }
-                    CourierMapAction.MapClick -> showManagerBar()
-                    CourierMapAction.ShowAll -> onShowAllClick()
-                    else -> {}
+
                 }
-            }
-            .catch {
-                logException(it, "observeMapAction")
-            }
-            .launchIn(viewModelScope)
+        }
+
     }
 
     fun updateData() {
@@ -137,10 +137,14 @@ class CourierWarehousesViewModel(
         setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
+                interactor.deleteWarehouses()
                 val response = interactor.getWarehouses()
-                val r = setDataForCourierWarehousesDataBase(response)
+                val warehousesLocalEntity = setDataForCourierWarehousesDataBase(response)
                 setLoader(WaitLoader.Complete)
-                getWarehousesComplete(r.toSet())
+                getWarehousesComplete(warehousesLocalEntity.toSet())
+                warehousesLocalEntity.map {
+                    interactor.saveWarehouses(it)
+                }
             } catch (e: Exception) {
                 logException(e, "getWarehouses")
                 getWarehousesError(e)
@@ -169,14 +173,14 @@ class CourierWarehousesViewModel(
     }
 
 
-    private fun getDistanceFromUser(lat: Double, long: Double): Float {
+    private fun getDistanceFromUser(lat: Double, long: Double): Int {
         val loc1 = Location("")
         loc1.latitude = lat
         loc1.longitude = long
         val loc2 = Location("")
         loc2.latitude = myLocation!!.latitude
         loc2.longitude = myLocation!!.longitude
-        return loc1.distanceTo(loc2)
+        return (loc1.distanceTo(loc2) / 1000).roundToInt()
     }
 
     private fun getWarehousesComplete(it: Set<CourierWarehouseLocalEntity>) {
@@ -269,14 +273,17 @@ class CourierWarehousesViewModel(
     }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
-        if (mapPoint.id != MY_LOCATION_ID) {
-            val indexItemClick = mapPoint.id.toInt()
-            changeSelectedMapPoint(mapPoint)
-            updateMarkers()
-            val isMapSelected = isMapSelected(indexItemClick)
-            changeSelectedWarehouseItemsByMap(indexItemClick, isMapSelected)
-            updateAndScrollToItems(indexItemClick)
-            changeShowDetailsOrder(isMapSelected)
+        viewModelScope.launch {
+            if (mapPoint.id != MY_LOCATION_ID) {
+                val indexItemClick = mapPoint.id.toInt()
+                changeSelectedMapPoint(mapPoint)
+                updateMarkers()
+                val isMapSelected = isMapSelected(indexItemClick)
+                changeSelectedWarehouseItemsByMap(indexItemClick, isMapSelected)
+                updateAndScrollToItems(indexItemClick)
+                val currentWarehouse = interactor.loadWarehousesFromId(warehouseItems.elementAt(indexItemClick).id)
+                changeShowDetailsOrder(isMapSelected,currentWarehouse)
+            }
         }
     }
 
@@ -313,10 +320,13 @@ class CourierWarehousesViewModel(
     }
 
     fun onItemClick(index: Int) {
-        val isSelected = !warehouseItems.elementAt(index).isSelected
-        changeMapMarkers(index, isSelected)
-        changeWarehouseItems(index, isSelected)
-        changeShowDetailsOrder(isSelected)
+        viewModelScope.launch {
+            val isSelected = !warehouseItems.elementAt(index).isSelected
+            changeMapMarkers(index, isSelected)
+            changeWarehouseItems(index, isSelected)
+            val currentWarehouse = interactor.loadWarehousesFromId(warehouseItems.elementAt(index).id)
+            changeShowDetailsOrder(isSelected,currentWarehouse)
+        }
     }
 
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
@@ -340,9 +350,14 @@ class CourierWarehousesViewModel(
         }
     }
 
-    private fun changeShowDetailsOrder(selected: Boolean) {
-        if (selected) _showOrdersState.value = CourierWarehousesShowOrdersState.Enable
-        else _showOrdersState.value = CourierWarehousesShowOrdersState.Disable
+    fun changeShowDetailsOrder(selected: Boolean,warehouseItem:List<CourierWarehouseLocalEntity>?) {
+        if (selected){
+            val distance = resourceProvider.getDistance(warehouseItem?.get(0)?.distanceFromUser.toString())
+            _showOrdersState.value = CourierWarehousesShowOrdersState.Enable(warehouseItem, distance)
+        }
+        else {
+            _showOrdersState.value = CourierWarehousesShowOrdersState.Disable
+        }
     }
 
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {
@@ -361,10 +376,9 @@ class CourierWarehousesViewModel(
     }
 
 
-
     fun onNextFab() {
         viewModelScope.launch {
-            val index = warehouseItems.indexOfFirst {item ->
+            val index = warehouseItems.indexOfFirst { item ->
                 item.isSelected
             }
             assert(index != -1)
@@ -392,13 +406,13 @@ class CourierWarehousesViewModel(
 
     private fun clearFabAndWhList() {
         whSelectedId = null
-        changeShowDetailsOrder(false)
-        if (stringFromSms == "") {
-            interactor.clearCacheMutableSharedFlow()
-        }else{
-            sharedWorker.saveMediate(FRAGMENT_MANAGER,"")
-            stringFromSms = ""
-        }
+        changeShowDetailsOrder(false,null)
+//        if (stringFromSms == "") {
+//            interactor.clearCacheMutableSharedFlow()
+//        }else{
+//            sharedWorker.saveMediate(FRAGMENT_MANAGER,"")
+//            stringFromSms = ""
+//        }
     }
 
     override fun getScreenTag(): String {

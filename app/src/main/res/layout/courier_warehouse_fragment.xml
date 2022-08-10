@@ -8,24 +8,11 @@
     android:background="@color/lvl_1"
     tools:context=".ui.courierwarehouses.CourierWarehousesFragment">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/content_center"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         class="ru.wb.go.ui.couriermap.CourierMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/content_center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        android:layout_height="match_parent"
         tools:layout="@layout/map_fragment" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -56,117 +43,118 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <TextView
-        android:id="@+id/title"
-        style="@style/LargePrimaryMediumText"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@color/lvl_2"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/courier_warehouse_title"
-        app:layout_constraintTop_toBottomOf="@+id/content_center" />
+<!--    <TextView-->
+<!--        android:id="@+id/title"-->
+<!--        style="@style/LargePrimaryMediumText"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="56dp"-->
+<!--        android:background="@color/lvl_2"-->
+<!--        android:gravity="center_vertical"-->
+<!--        android:paddingStart="16dp"-->
+<!--        android:paddingEnd="16dp"-->
+<!--        android:text="@string/courier_warehouse_title"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/content_center" />-->
 
-    <View
-        android:id="@+id/title_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/title"
-        android:layout_gravity="center"
-        android:background="@color/colorDividerSaturated"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+<!--    <View-->
+<!--        android:id="@+id/title_divider"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:background="@color/colorDividerSaturated"-->
+<!--         />-->
 
-    <ImageView
-        android:id="@+id/no_internet_image"
-        android:layout_width="?actionBarSize"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="end"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:scaleType="center"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_inet_failed"
-        tools:ignore="ContentDescription" />
+<!--    <ImageView-->
+<!--        android:id="@+id/no_internet_image"-->
+<!--        android:layout_width="?actionBarSize"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_gravity="end"-->
+<!--        android:background="?selectableItemBackgroundBorderless"-->
+<!--        android:clickable="true"-->
+<!--        android:focusable="true"-->
+<!--        android:scaleType="center"-->
+<!--        android:visibility="gone"-->
+<!--        tools:visibility="visible"-->
+<!--        app:layout_constraintEnd_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:srcCompat="@drawable/ic_inet_failed"-->
+<!--        tools:ignore="ContentDescription" />-->
 
-    <TextView
-        android:id="@+id/version_app"
-        style="@style/SmallSecondaryRegularText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@id/no_internet_image"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="end"
-        android:gravity="center"
-        android:maxLines="1"
-        android:textSize="11sp"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="10.22.3877" />
+<!--    <TextView-->
+<!--        android:id="@+id/version_app"-->
+<!--        style="@style/SmallSecondaryRegularText"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignStart="@id/no_internet_image"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_gravity="end"-->
+<!--        android:gravity="center"-->
+<!--        android:maxLines="1"-->
+<!--        tools:visibility="visible"-->
+<!--        android:textSize="11sp"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintEnd_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        tools:text="10.22.3877" />-->
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refresh"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_divider">
+<!--    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
+<!--        android:id="@+id/refresh"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/title_divider">-->
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+<!--        <FrameLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/items"
-                android:overScrollMode="never"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:clipToPadding="false"
-                tools:listitem="@layout/courier_warehouse_item_layout" />
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/items"-->
+<!--                android:overScrollMode="never"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_gravity="center_vertical"-->
+<!--                android:clipToPadding="false"-->
+<!--                tools:listitem="@layout/courier_warehouse_item_layout" />-->
 
-            <RelativeLayout
-                android:id="@+id/empty_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/title_divider">
+<!--            <RelativeLayout-->
+<!--                android:id="@+id/empty_list"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:visibility="invisible"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/title_divider">-->
 
-                <TextView
-                    android:id="@+id/empty_title"
-                    style="@style/LargeSecondaryRegularText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginRight="24dp"
-                    android:gravity="center"
-                    android:text="@string/courier_warehouse_empty_list" />
+<!--                <TextView-->
+<!--                    android:id="@+id/empty_title"-->
+<!--                    style="@style/LargeSecondaryRegularText"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_centerInParent="true"-->
+<!--                    android:layout_marginLeft="24dp"-->
+<!--                    android:layout_marginRight="24dp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="@string/courier_warehouse_empty_list" />-->
 
-            </RelativeLayout>
+<!--            </RelativeLayout>-->
 
-        </FrameLayout>
+<!--        </FrameLayout>-->
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+<!--    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/show_orders_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:clickable="false"
-        android:focusable="false"
-        android:src="@drawable/ic_next"
-        app:backgroundTint="@color/tertiary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/lvl_1"
-        tools:ignore="ContentDescription" />
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/show_orders_fab"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="16dp"-->
+<!--        android:clickable="false"-->
+<!--        android:focusable="false"-->
+<!--        android:src="@drawable/ic_next"-->
+<!--        app:backgroundTint="@color/tertiary"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:tint="@color/lvl_1"-->
+<!--        tools:ignore="ContentDescription" />-->
 
     <View
         android:id="@+id/hold_layout"
@@ -175,6 +163,7 @@
         android:clickable="true"
         android:focusable="true"
         android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -192,77 +181,80 @@
         tools:ignore="ContentDescription" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/no_internet_layout"
+        android:id="@+id/warehouse_card"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/waewhouse_bottom_sheet_info"
         android:visibility="gone"
+        tools:visibility="visible"
+        android:paddingTop="@dimen/pad16"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/content_center">
+        >
+
+        <TextView
+            android:id="@+id/name_warehouse"
+            style="@style/LargePrimaryMediumText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/pad16"
+            android:layout_marginEnd="56dp"
+            android:layout_marginBottom="8dp"
+            android:maxLines="2"
+            android:text="@string/example1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/km"
+            app:layout_constraintEnd_toStartOf="@+id/card_warehouse_close"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
-            android:id="@+id/no_internet"
+            android:id="@+id/card_warehouse_close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="end"
             android:background="?selectableItemBackgroundBorderless"
-            android:scaleType="center"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/no_internet_title"
+            android:padding="16dp"
+            android:layout_marginTop="-10dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/ic_no_internet_warehouse"
+            app:srcCompat="@drawable/ic_warehouse_detail_close"
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/no_internet_title"
-            style="@style/VeryLargePrimaryRegularText"
+            android:id="@+id/km"
             android:layout_width="wrap_content"
+            android:textSize="14sp"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@id/no_internet"
-            android:layout_marginTop="@dimen/pad12"
-            android:gravity="center"
-            android:text="@string/app_no_internet_warehouse_title"
-            app:layout_constraintBottom_toTopOf="@+id/no_internet_message"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/no_internet"
-            app:layout_constraintVertical_chainStyle="packed" />
+            android:text="@string/warehouse_distance_for_textView"
+            app:layout_constraintBottom_toTopOf="@+id/warehouse_address"
+            app:layout_constraintStart_toStartOf="@id/name_warehouse"
+            android:layout_marginBottom="14dp"
+            />
 
         <TextView
-            android:id="@+id/no_internet_message"
-            style="@style/LargePrimaryMediumText"
-            android:layout_width="wrap_content"
+            android:id="@+id/warehouse_address"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@id/no_internet"
-            android:layout_marginTop="@dimen/pad12"
-            android:text="@string/app_no_internet_warehouse_message"
-            app:layout_constraintBottom_toTopOf="@+id/update"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/no_internet_title"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintBottom_toTopOf="@+id/go_to_order"
+            app:layout_constraintStart_toStartOf="@+id/go_to_order"
+            app:layout_constraintEnd_toEndOf="@id/go_to_order"
+            android:layout_marginBottom="@dimen/pad24"
+            android:textSize="14sp"
+            android:text="@string/example_text_for_address_warehouse"
+            />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/update"
+            android:id="@+id/go_to_order"
             style="@style/AppButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
             android:layout_centerHorizontal="true"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="@dimen/pad16"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="20dp"
             android:enabled="true"
-            android:text="@string/courier_orders_update"
+            android:text="@string/go_to_orders"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

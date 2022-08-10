@@ -1,45 +1,45 @@
 package ru.wb.go.ui.couriermap.domain
 
-import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
 
 class CourierMapRepositoryImpl : CourierMapRepository {
 
 
-    private var mapStateSubject = MutableSharedFlow<CourierMapState>(
-        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    private var mapStateSubject = Channel<CourierMapState>(
+       Int.MAX_VALUE
     )
-    private var mapActionSubject = MutableSharedFlow<CourierMapAction>(
-        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+    private var mapActionSubject = Channel<CourierMapAction>(
+        Int.MAX_VALUE
     )
 
 
     override fun observeMapState(): Flow<CourierMapState> {
-        return mapStateSubject
+        return mapStateSubject.receiveAsFlow()
     }
 
     override fun mapState(state: CourierMapState) {
-        mapStateSubject.tryEmit(state)
+        mapStateSubject.trySend(state)
     }
 
     override fun mapAction(action: CourierMapAction) {
-        mapActionSubject.tryEmit(action) // закинуть в поток
+        mapActionSubject.trySend(action) // закинуть в поток
     }
 
     override fun observeMapAction(): Flow<CourierMapAction> {
-        return mapActionSubject
+        return mapActionSubject.receiveAsFlow()
     }
 
     override fun clearCacheSharedFlow() {
-        mapActionSubject = MutableSharedFlow(
-            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-        )
-        mapStateSubject = MutableSharedFlow(
-            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-        )
+//        mapActionSubject = MutableSharedFlow(
+//            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+//        )
+//        mapStateSubject = MutableSharedFlow(
+//            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
+//        )
     }
 
 }

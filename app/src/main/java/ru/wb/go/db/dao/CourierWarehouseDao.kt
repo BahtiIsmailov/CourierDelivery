@@ -15,6 +15,9 @@ interface CourierWarehouseDao {
     @Query("SELECT * FROM CourierWarehouseLocalEntity")
     suspend fun read():  CourierWarehouseLocalEntity
 
+    @Query("SELECT * FROM CourierWarehouseLocalEntity WHERE warehouse_id=:id")
+    suspend fun loadWarehousesFromId(id:Int):List<CourierWarehouseLocalEntity>
+
     @Query("DELETE FROM CourierWarehouseLocalEntity")
     suspend fun deleteAll()
 }

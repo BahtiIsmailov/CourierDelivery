@@ -156,8 +156,6 @@ class CourierOrdersInteractorImpl(
 
     override fun observeMapAction(): Flow<CourierMapAction> {
         return courierMapRepository.observeMapAction()
-
-
     }
 
     override fun carNumberIsConfirm(): Boolean {

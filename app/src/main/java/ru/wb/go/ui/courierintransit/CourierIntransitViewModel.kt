@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -163,16 +164,16 @@ class CourierIntransitViewModel(
     }
 
     private fun observeMapAction() {
-        interactor.observeMapAction()
-            .onEach {
-                observeMapActionComplete(it)
-            }
-            .catch {
-                logException(it,"observeMapAction")
-                //onTechEventLog("observeMapAction", it)
-            }
-
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            interactor.observeMapAction()
+                .collect{
+                    try {
+                        observeMapActionComplete(it)
+                    }catch (e:Exception){
+                        logException(e,"observeMapAction")
+                    }
+                }
+        }
     }
 
     private fun observeMapActionComplete(it: CourierMapAction) {//!!!!!!!!!

@@ -7,8 +7,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.View.*
+import android.view.animation.AnimationUtils
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -51,12 +54,12 @@ class CourierWarehousesFragment :
         (activity as NavToolbarListener).hideToolbar()
         (activity as NavDrawerListener).unlockNavDrawer()
         (activity as KeyboardListener).panMode()
-        binding.refresh.setColorSchemeResources(
-            R.color.colorPrimary,
-            R.color.colorPrimary,
-            R.color.colorPrimary,
-            R.color.colorPrimary
-        )
+//        binding.refresh.setColorSchemeResources(
+//            R.color.colorPrimary,
+//            R.color.colorPrimary,
+//            R.color.colorPrimary,
+//            R.color.colorPrimary
+//        )
     }
 
 
@@ -70,16 +73,16 @@ class CourierWarehousesFragment :
         viewModel.warehouseState.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierWarehouseItemState.InitItems -> {
-                    binding.emptyList.visibility = GONE
-                    binding.refresh.isRefreshing = false
-                    binding.items.visibility = VISIBLE
+                    //binding.emptyList.visibility = GONE
+                    //binding.refresh.isRefreshing = false
+                    //binding.items.visibility = VISIBLE
                     val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {
                         override fun onItemClick(index: Int) {
                             viewModel.onItemClick(index)
                         }
                     }
                     adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
-                    binding.items.adapter = adapter
+                    //binding.items.adapter = adapter
 
                 }
                 is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
@@ -88,10 +91,10 @@ class CourierWarehousesFragment :
                     adapter?.notifyDataSetChanged()
                 }
                 is CourierWarehouseItemState.Empty -> {
-                    binding.emptyList.visibility = VISIBLE
-                    binding.emptyTitle.text = it.info
-                    binding.refresh.isRefreshing = false
-                    binding.items.visibility = GONE
+                    //binding.emptyList.visibility = VISIBLE
+                    //binding.emptyTitle.text = it.info
+                    //binding.refresh.isRefreshing = false
+                    //binding.items.visibility = GONE
                 }
                 is CourierWarehouseItemState.UpdateItem -> {
                     adapter?.setItem(it.position, it.item)
@@ -101,8 +104,8 @@ class CourierWarehousesFragment :
                     smoothScrollToPosition(it.position)
                 }
                 CourierWarehouseItemState.NoInternet -> {
-                    binding.noInternetLayout.visibility = VISIBLE
-                    binding.items.visibility = GONE
+                    //binding.noInternetLayout.visibility = VISIBLE
+                    //binding.items.visibility = GONE
                 }
             }
         }
@@ -110,12 +113,12 @@ class CourierWarehousesFragment :
         viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
                 WaitLoader.Wait -> {
-                    binding.refresh.isRefreshing = true
+                    //binding.refresh.isRefreshing = true
                     binding.holdLayout.visibility = VISIBLE
-                    binding.noInternetLayout.visibility = INVISIBLE
+                    //binding.noInternetLayout.visibility = INVISIBLE
                 }
                 WaitLoader.Complete -> {
-                    binding.refresh.isRefreshing = false
+                    //binding.refresh.isRefreshing = false
                     binding.holdLayout.visibility = INVISIBLE
                 }
             }
@@ -124,22 +127,27 @@ class CourierWarehousesFragment :
         viewModel.showOrdersState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierWarehousesShowOrdersState.Disable -> {
-                    binding.showOrdersFab.isEnabled = false
-                    binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(
+                    binding.warehouseCard.startAnimation(
+                        AnimationUtils.loadAnimation(
                             requireContext(),
-                            R.color.tertiary
-                        )
-                    )
+                            R.anim.fade_out
+                        ))
+                    binding.warehouseCard.isGone = true
+
                 }
-                CourierWarehousesShowOrdersState.Enable -> {
-                    binding.showOrdersFab.isEnabled = true
-                    binding.showOrdersFab.backgroundTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.colorPrimary
-                        )
-                    )
+                is CourierWarehousesShowOrdersState.Enable -> {
+                    binding.warehouseCard.isVisible = true
+                    it.warehouseItem?.map {warehouseItem ->
+                        binding.nameWarehouse.text = warehouseItem.name
+                        binding.warehouseAddress.text = warehouseItem.fullAddress
+                    }
+                    binding.km.text = it.distance
+                    binding.warehouseCard.startAnimation(
+                            AnimationUtils.loadAnimation(
+                                requireContext(),
+                                R.anim.fade_in
+                            ))
+
                 }
             }
         }
@@ -185,17 +193,26 @@ class CourierWarehousesFragment :
 
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
-        binding.showOrdersFab.setOnClickListener { viewModel.onNextFab() }
-        binding.refresh.setOnRefreshListener { viewModel.updateData() }
-        binding.update.setOnClickListener { viewModel.updateData() }
+        binding.goToOrder.setOnClickListener { viewModel.onNextFab() }
+        //binding.refresh.setOnRefreshListener { viewModel.updateData() }
+        //binding.update.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
+        binding.cardWarehouseClose.setOnClickListener{
+            binding.warehouseCard.startAnimation(
+                AnimationUtils.loadAnimation(
+                requireContext(),
+                R.anim.fade_out
+            ))
+            binding.warehouseCard.isGone = true
+        }
+
     }
 
 
     private fun initRecyclerView() {
-        binding.items.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.items.addItemDecoration(getHorizontalDividerDecoration())
-        binding.items.setHasFixedSize(true)
+        //binding.items.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        //binding.items.addItemDecoration(getHorizontalDividerDecoration())
+        //binding.items.setHasFixedSize(true)
         initSmoothScroller()
     }
 
@@ -228,8 +245,8 @@ class CourierWarehousesFragment :
     private fun smoothScrollToPosition(position: Int) {
         val smoothScroller: SmoothScroller = createSmoothScroller()
         smoothScroller.targetPosition = position
-        val layoutManager = binding.items.layoutManager as? LinearLayoutManager
-        layoutManager?.startSmoothScroll(smoothScroller)
+        //val layoutManager = binding.items.layoutManager as? LinearLayoutManager
+       // layoutManager?.startSmoothScroll(smoothScroller)
     }
 
     private fun createSmoothScroller(): SmoothScroller {

@@ -56,9 +56,9 @@ abstract class BaseServiceFragment<VM : ServicesViewModel, VB : ViewBinding>(
             )
         }
 
-        viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.root.findViewById<TextView>(R.id.version_app).text = it
-        }
+//        viewModel.versionApp.observe(viewLifecycleOwner) {
+//            binding.root.findViewById<TextView>(R.id.version_app).text = it
+//        }
 
     }
 

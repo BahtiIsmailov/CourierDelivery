@@ -13,5 +13,5 @@ data class CourierWarehouseLocalEntity(
     val fullAddress: String,
     val longitude: Double,
     val latitude: Double,
-    val distanceFromUser:Float
+    val distanceFromUser:Int
 )

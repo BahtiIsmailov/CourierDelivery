@@ -4,15 +4,18 @@ import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.*
 import ru.wb.go.ui.courierunloading.data.FakeBeep
+import java.net.IDN
 
 interface CourierLocalRepository {
 
     //==============================================================================================
     //warehouse
     //==============================================================================================
-    suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)
+    suspend fun saveWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
     suspend fun readCurrentWarehouse(): CourierWarehouseLocalEntity
+
+    suspend fun loadWarehousesFromId(id:Int):List<CourierWarehouseLocalEntity>
 
     suspend fun deleteAllWarehouse()
 

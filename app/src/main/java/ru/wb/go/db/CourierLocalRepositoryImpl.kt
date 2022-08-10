@@ -18,7 +18,7 @@ class CourierLocalRepositoryImpl(
     private val courierLoadingBoxDao: CourierBoxDao
 ) : CourierLocalRepository {
 
-    override suspend fun saveCurrentWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity) {
+    override suspend fun saveWarehouse(courierWarehouseEntity: CourierWarehouseLocalEntity) {
         withContext(Dispatchers.IO) {
             courierWarehouseDao.insert(courierWarehouseEntity)
         }
@@ -31,6 +31,11 @@ class CourierLocalRepositoryImpl(
         }
     }
 
+    override suspend fun loadWarehousesFromId(id: Int): List<CourierWarehouseLocalEntity> {
+        return withContext(Dispatchers.IO){
+            courierWarehouseDao.loadWarehousesFromId(id)
+        }
+    }
     override suspend fun getOrderGate(): String? {
         return getOrder()?.gate
 

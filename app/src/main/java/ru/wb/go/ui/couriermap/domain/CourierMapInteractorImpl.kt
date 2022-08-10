@@ -3,6 +3,7 @@ package ru.wb.go.ui.couriermap.domain
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import ru.wb.go.ui.couriermap.CourierMapAction
 import ru.wb.go.ui.couriermap.CourierMapState
@@ -16,9 +17,7 @@ class CourierMapInteractorImpl(
 ) : CourierMapInteractor {
 
 
-    private val prolongHideSubject = MutableSharedFlow<Unit>(
-        extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    private val prolongHideSubject = Channel<Unit>()
 
     private var coroutineScope:CoroutineScope? = null
 
@@ -28,7 +27,7 @@ class CourierMapInteractorImpl(
 
     override fun subscribeMapState(): Flow<CourierMapState> {
         return courierMapRepository.observeMapState()
-            .onEach { // слушает все события с картой
+            .onEach {
                 when (it) {
                     CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
                     is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
@@ -49,7 +48,7 @@ class CourierMapInteractorImpl(
     override fun onForcedLocationUpdate(point: CoordinatePoint) {
         deviceManager.saveLocation("${point.latitude}:${point.longitude}")
 
-        courierMapRepository.mapAction(CourierMapAction.LocationUpdate(point))//1
+        courierMapRepository.mapAction(CourierMapAction.LocationUpdate(point))
     }
 
     override fun showAll() {
@@ -68,7 +67,8 @@ class CourierMapInteractorImpl(
 
 
     private fun prolongHideTimerManager() {
-        prolongHideSubject.tryEmit(Unit) // отправляет акшн в рх как стэйт флоу
+        prolongHideSubject.trySend(Unit)
+
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -76,7 +76,7 @@ class CourierMapInteractorImpl(
         if (coroutineScope == null) {
             coroutineScope = CoroutineScope(SupervisorJob())
             // ссылка на слушателя если запущен то ничего ен делаем а если
-            prolongHideSubject
+            prolongHideSubject.receiveAsFlow()
                 .mapLatest {
                     delay(HIDE_DELAY)
                 }
@@ -89,7 +89,7 @@ class CourierMapInteractorImpl(
 
     }
 
-    private suspend fun hideManagerBar() {
+    private fun hideManagerBar() {
         courierMapRepository.mapState(CourierMapState.HideManagerBar)
     }
 

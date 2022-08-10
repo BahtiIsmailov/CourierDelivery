@@ -2,7 +2,6 @@ package ru.wb.go.ui.couriermap
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
@@ -34,8 +33,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.osmdroid.api.IMapController
 import org.osmdroid.config.Configuration
@@ -55,7 +53,7 @@ import ru.wb.go.utils.map.MapPoint
 import java.io.File
 
 
-class CourierMapFragment : Fragment()  {
+class CourierMapFragment : Fragment() {
 
     private val viewModel by viewModel<CourierMapViewModel>()
 
@@ -125,7 +123,7 @@ class CourierMapFragment : Fragment()  {
         googleApiClient =
             GoogleApiClient.Builder(requireActivity())
                 .addApi(LocationServices.API)
-                .addConnectionCallbacks(object: GoogleApiClient.ConnectionCallbacks{
+                .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
                     override fun onConnected(p0: Bundle?) {
                         if (isLocationPermissionGranted()) {
                             updateLastLocation()
@@ -148,7 +146,7 @@ class CourierMapFragment : Fragment()  {
     }
 
     private fun startGoogleApiClient() {
-        googleApiClient?.let { googleApiClient->
+        googleApiClient?.let { googleApiClient ->
             if (!googleApiClient.isConnected) googleApiClient.connect()
         }
     }
@@ -167,8 +165,11 @@ class CourierMapFragment : Fragment()  {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
             ) || isRequestAccessLocation
-        ) updateLocation()
-        else launchPermissionsRequest()
+        )
+            updateLocation()
+        else
+            launchPermissionsRequest()
+
     }
 
     private fun launchPermissionsRequest() {
@@ -271,72 +272,72 @@ class CourierMapFragment : Fragment()  {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-        viewModel.clearMap.observe(viewLifecycleOwner) {
-            Log.e("courierMap","clearMap")
+        viewModel.clearMap.observeEvent {
+            Log.e("courierMap", "clearMap")
             clearMap()//2
         }
 
-        viewModel.zoomToBoundingBoxOffsetY.observe(viewLifecycleOwner) {
-            Log.e("courierMap","zoomToBoundingBoxOffsetY")//2
+        viewModel.zoomToBoundingBoxOffsetY.observeEvent {
+            Log.e("courierMap", "zoomToBoundingBoxOffsetY")//2
             checkMapViewAndZoomToBoundingBoxOffsetY(it)
         }
 
-        viewModel.updateMarkersWithAnimateToPositions.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMarkersWithAnimateToPositions")
+        viewModel.updateMarkersWithAnimateToPositions.observeEvent {
+            Log.e("courierMap", "updateMarkersWithAnimateToPositions")
             updateMarkersWithAnimateToPositions(it)
         }
 
-        viewModel.updateMarkersWithAnimateToPosition.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMarkersWithAnimateToPosition")
+        viewModel.updateMarkersWithAnimateToPosition.observeEvent {
+            Log.e("courierMap", "updateMarkersWithAnimateToPosition")
             updateMarkersWithAnimateToPosition(it)
         }
 
-        viewModel.navigateToPoint.observe(viewLifecycleOwner) {
-            Log.e("courierMap","navigateToPoint")
+        viewModel.navigateToPoint.observeEvent {
+            Log.e("courierMap", "navigateToPoint")
             navigateToPoint(it.point)
         }
 
-        viewModel.updateMarkers.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMarkers")//1,2,2,2
+        viewModel.updateMarkers.observeEvent {
+            Log.e("courierMap", "updateMarkers")//1,2,2,2
             updateMarkers(it.points)
         }
 
-        viewModel.updateMarkersWithIndex.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMarkersWithIndex")//2
+        viewModel.updateMarkersWithIndex.observeEvent {
+            Log.e("courierMap", "updateMarkersWithIndex")//2
             updateMarkersWithIndex(it.points)
         }
-        viewModel.navigateToMarker.observe(viewLifecycleOwner) {
-            Log.e("courierMap","navigateToMarker")
+        viewModel.navigateToMarker.observeEvent {
+            Log.e("courierMap", "navigateToMarker")
             navigateToMarker(it.id)
         }
 
-        viewModel.navigateToPointZoom.observe(viewLifecycleOwner) {
-            Log.e("courierMap","navigateToPointZoom")
+        viewModel.navigateToPointZoom.observeEvent {
+            Log.e("courierMap", "navigateToPointZoom")
             navigateToPointZoom(it.point)
         }
 
-        viewModel.navigateToMyLocation.observe(viewLifecycleOwner) {
-            Log.e("courierMap","navigateToMyLocation")//1
+        viewModel.navigateToMyLocation.observeEvent {
+            Log.e("courierMap", "navigateToMyLocation")//1
             navigateToMyLocation()
         }
 
-        viewModel.updateMyLocationPoint.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMyLocationPoint")//1,2,2,2
+        viewModel.updateMyLocationPoint.observeEvent {
+            Log.e("courierMap", "updateMyLocationPoint")//1,2,2,2
             updateMyLocationPoint(it.point)
         }
 
-        viewModel.zoomToBoundingBox.observe(viewLifecycleOwner) {
-            Log.e("courierMap","zoomToBoundingBox")//2,2
+        viewModel.zoomToBoundingBox.observeEvent {
+            Log.e("courierMap", "zoomToBoundingBox")//2,2
             zoomToCenterBoundingBox(it.boundingBox, it.animate)
         }
 
-        viewModel.updateMyLocation.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMyLocation")//1
+        viewModel.updateMyLocation.observeEvent {
+            Log.e("courierMap", "updateMyLocation")//1
             updateMyLocation()
         }
 
-        viewModel.visibleManagerBar.observe(viewLifecycleOwner) {
-            Log.e("courierMap","visibleManagerBar")//1,2,2
+        viewModel.visibleManagerBar.observeEvent {
+            Log.e("courierMap", "visibleManagerBar")//1,2,2
             visibleManagerBar(it)
         }
 
@@ -672,7 +673,7 @@ class CourierMapFragment : Fragment()  {
         }
     }
 
-    private val updateMapMarkerWithIndex = {item: CourierMapMarker ->
+    private val updateMapMarkerWithIndex = { item: CourierMapMarker ->
 
         with(item) {
             addMapMarker( // если поставить дебаг он отображает и склады и местоположение
@@ -717,7 +718,7 @@ class CourierMapFragment : Fragment()  {
         binding.map.overlays.add(markerMap)
     }
 
-     private fun findMapPointById(id: String) =
+    private fun findMapPointById(id: String) =
         binding.map.overlays
             .filterIsInstance<Marker>()
             .find { it.id == id }
@@ -744,7 +745,10 @@ class CourierMapFragment : Fragment()  {
             is CourierVisibilityManagerBar.Visible -> {
                 if (binding.managerLayout.visibility == View.VISIBLE) return
                 binding.managerLayout.visibility = View.VISIBLE
-                val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right) // анимация с скрыванием кнопок боковых
+                val animation = AnimationUtils.loadAnimation(
+                    context,
+                    R.anim.slide_in_right
+                ) // анимация с скрыванием кнопок боковых
                 binding.managerLayout.startAnimation(animation)
 
             }
@@ -834,7 +838,7 @@ class CourierMapFragment : Fragment()  {
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
-        googleApiClient?.let {googleApiClient->
+        googleApiClient?.let { googleApiClient ->
             if (isLocationPermissionGranted()) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(
                     googleApiClient, locationRequest, locationListener()
@@ -855,7 +859,6 @@ class CourierMapFragment : Fragment()  {
         { viewModel.onForcedLocationUpdate(CoordinatePoint(it.latitude, it.longitude)) }
 
 
-
     private fun getBitmapIndexMarker(index: String, @DrawableRes res: Int): Bitmap? {
         val bitmap = convertDrawableToBitmap(res)
         bitmap?.let {
@@ -865,8 +868,10 @@ class CourierMapFragment : Fragment()  {
             paint.style = Paint.Style.FILL
 
             paint.textAlign = Paint.Align.CENTER
-            paint.color = ResourcesCompat.getColor(resources,
-                R.color.button_app_primary_pressed, null)
+            paint.color = ResourcesCompat.getColor(
+                resources,
+                R.color.button_app_primary_pressed, null
+            )
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             paint.textSize = TEXT_SIZE_INDEX_MARKER
 
@@ -921,7 +926,8 @@ class CourierMapFragment : Fragment()  {
         val width = mapView.width
         val height = mapView.height
         val pScreenWidth = width - (leftPx + rightPx)
-        val pScreenHeight = (height - (topPx + bottomPx)).coerceAtLeast(1) // не даст значению стать меньше 2
+        val pScreenHeight =
+            (height - (topPx + bottomPx)).coerceAtLeast(1) // не даст значению стать меньше 2
         val nextZoom = MapView.getTileSystem()
             .getBoundingBoxZoom(this, pScreenWidth, pScreenHeight)
 
@@ -943,14 +949,14 @@ class CourierMapFragment : Fragment()  {
         val lonPerPx = (southEast.longitude - northWest.longitude) / width
         val latPerPx = (southEast.latitude - northWest.latitude) / height
 
-        val boundingBox =  try{
+        val boundingBox = try {
             BoundingBox(
                 latNorth - topPx * latPerPx,
                 lonEast + rightPx * lonPerPx,
                 latSouth + bottomPx * latPerPx,
                 lonWest - leftPx * lonPerPx
             )
-        }catch (e:Exception){
+        } catch (e: Exception) {
             BoundingBox(
                 0.0,
                 0.0,
@@ -962,5 +968,11 @@ class CourierMapFragment : Fragment()  {
 
     }
 
-
+    fun <T> Flow<T>.observeEvent(observer: (T) -> Unit) {
+        lifecycleScope.launchWhenStarted {
+            this@observeEvent.collect { event ->
+                observer.invoke(event)
+            }
+        }
+    }
 }

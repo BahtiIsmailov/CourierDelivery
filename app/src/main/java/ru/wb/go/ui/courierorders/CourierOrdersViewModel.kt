@@ -41,7 +41,6 @@ import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 import ru.wb.go.utils.prefs.SharedWorker
-import java.text.DecimalFormat
 
 class CourierOrdersViewModel(
     private val parameters: CourierOrderParameters,
@@ -157,7 +156,7 @@ class CourierOrdersViewModel(
                             ),
                             courierOrderLocalEntity.reservedDuration.toString(),
                             if (boxCountWithRouteId == 0) courierOrderLocalEntity.minBoxesCount
-                            else  boxCountWithRouteId
+                            else boxCountWithRouteId
                         ),
                         resourceProvider.getConfirmPositiveDialog(),
                         resourceProvider.getConfirmNegativeDialog()
@@ -167,27 +166,25 @@ class CourierOrdersViewModel(
     }
 
 
-
-
     fun restoreDetails() {
         setLoader(WaitLoader.Wait)
-        interactor.freeOrdersLocal()
-            .onEach {
-                this.orderLocalDataEntities = it
-            }
-            .onEach {
-                addressLabel()
-                convertAndSaveOrderPointMarkers(this.orderLocalDataEntities)
-                updateOrderAndWarehouseMarkers()
-                showAllAndOrderItems()
-                initOrderDetails(interactor.selectedRowOrder())
-                setLoader(WaitLoader.Complete)
-            }
-            .catch {
-                logException(it, "restoreDetails")
-                initOrdersError(it)
-            }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            interactor.freeOrdersLocal()
+                .collect{
+                    try {
+                        orderLocalDataEntities = it
+                        addressLabel()
+                        convertAndSaveOrderPointMarkers(orderLocalDataEntities)
+                        updateOrderAndWarehouseMarkers()
+                        showAllAndOrderItems()
+                        initOrderDetails(interactor.selectedRowOrder())
+                        setLoader(WaitLoader.Complete)
+                    }catch (e:Exception){
+                        logException(e, "restoreDetails")
+                        initOrdersError(e)
+                    }
+                }
+        }
     }
 
     private fun checkDemoMode() {
@@ -195,12 +192,17 @@ class CourierOrdersViewModel(
     }
 
     private fun observeMapAction() {
-        interactor.observeMapAction()
-            .onEach {
-                observeMapActionComplete(it)
-            }
-            .catch {}
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            interactor.observeMapAction()
+                .collect {
+                    try {
+                        observeMapActionComplete(it)
+                    } catch (e: Exception) {
+
+                    }
+
+                }
+        }
     }
 
 
@@ -559,7 +561,7 @@ class CourierOrdersViewModel(
         _orderItems.value = CourierOrderItemState.ScrollTo(index)
     }
 
-    fun clearMap() {
+    private fun clearMap() {
         interactor.mapState(CourierMapState.ClearMap)
     }
 
@@ -649,7 +651,7 @@ class CourierOrdersViewModel(
             val carNumber = carNumberFormat(interactor.carNumber())
             val carTypeIcon = resourceProvider.getTypeIcons(interactor.carType())
             val itemId = (idView + 1).toString()
-           // val coast = DecimalFormat("#,###.##").format(minCost)
+            // val coast = DecimalFormat("#,###.##").format(minCost)
             _orderDetails.value =
                 CourierOrderDetailsInfoUIState.InitOrderDetails(
                     carNumber = carNumber,
