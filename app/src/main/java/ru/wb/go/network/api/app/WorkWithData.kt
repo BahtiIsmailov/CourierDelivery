@@ -76,7 +76,9 @@ fun initLocalOrderEntity(): LocalOrderEntity {
         srcAddress = "",
         srcLongitude = 0.0,
         srcLatitude = 0.0,
-        route = ""
+        route = "",
+        fakeDeliveredAt = null,
+        fakeOfficeId = null
     )
 }
 
@@ -93,7 +95,9 @@ fun toMyTaskResponse(myTaskResponse: MyTaskResponse): MutableList<LocalOfficeEnt
                 countBoxes = 0,
                 deliveredBoxes = 0,
                 isVisited = false,
-                isOnline = false
+                isOnline = false,
+                fakeOfficeId = null,
+                fakeDeliveryAt = null
             )
         )
     }
@@ -109,25 +113,27 @@ fun toLocalComplexOrderEntity(
     return LocalComplexOrderEntity(
         order = LocalOrderEntity(
             orderId = myTaskResponse.id,
-            routeID = myTaskResponse.routeID ?: 0,
+            routeID = 0,
             gate = myTaskResponse.gate ?: "",
             minCost = myTaskResponse.minCost,
             minVolume = myTaskResponse.minVolume,
             minBoxes = myTaskResponse.minBoxesCount,
             countOffices = remoteOffices.size,
-            wbUserID = myTaskResponse.wbUserID,
-            carNumber = myTaskResponse.carNumber,
-            reservedAt = myTaskResponse.reservedAt,
+            wbUserID = myTaskResponse.wbUserID?:0,
+            carNumber = myTaskResponse.carNumber?:"",
+            reservedAt = myTaskResponse.reservedAt?:"",
             startedAt = myTaskResponse.startedAt ?: "",
             reservedDuration = myTaskResponse.reservedDuration,
             status = myTaskResponse.status ?: "",
-            cost = (myTaskResponse.cost ?: 0) / AppRemoteRepositoryImpl.COST_DIVIDER,
+            cost = (myTaskResponse.cost?.toInt() ?: 0) / AppRemoteRepositoryImpl.COST_DIVIDER,
             srcId = myTaskResponse.srcOffice.id,
             srcName = myTaskResponse.srcOffice.name,
             srcAddress = myTaskResponse.srcOffice.fullAddress,
             srcLongitude = myTaskResponse.srcOffice.long,
             srcLatitude = myTaskResponse.srcOffice.lat,
-            route = myTaskResponse.route
+            route = myTaskResponse.route,
+            fakeOfficeId = null,
+            fakeDeliveredAt = null
         ),
         offices = remoteOffices
     )
@@ -142,7 +148,9 @@ fun toListLocalBoxEntity(courierTaskBoxesResponse: CourierTaskBoxesResponse): Li
                 address = "",
                 officeId = dstOfficeID,
                 loadingAt = loadingAt,
-                deliveredAt = deliveredAt ?: ""
+                deliveredAt = deliveredAt ?: "",
+                fakeOfficeId = fakeBeep?.office?.id,
+                fakeDeliveredAt = fakeBeep?.dt
             )
         }
     }
@@ -248,7 +256,9 @@ fun toLocalOrderEntity():LocalOrderEntity {
         srcAddress = "",
         srcLongitude = 0.0,
         srcLatitude = 0.0,
-        route = ""
+        route = "",
+        fakeDeliveredAt = null,
+        fakeOfficeId = null
     )
 }
 
@@ -262,7 +272,9 @@ fun toLocalOfficeEntity(myDstOfficeResponse: MyDstOfficeResponse):LocalOfficeEnt
         countBoxes = 0,
         deliveredBoxes = 0,
         isVisited = false,
-        isOnline = false
+        isOnline = false,
+        fakeOfficeId = null,
+        fakeDeliveryAt = null
     )
 }
 fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseResponse): CourierWarehouseLocalEntity {

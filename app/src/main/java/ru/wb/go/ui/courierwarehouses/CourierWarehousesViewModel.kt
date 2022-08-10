@@ -99,9 +99,6 @@ class CourierWarehousesViewModel(
         if (sharedWorker.isAllExists(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)) {
             sharedWorker.delete(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)
         }
-        if (!sharedWorker.isAllExists(FRAGMENT_MANAGER)){
-            sharedWorker.saveMediate(FRAGMENT_MANAGER,"fromSms")
-        }
         stringFromSms = sharedWorker.load(FRAGMENT_MANAGER,"")
     }
 
@@ -143,7 +140,7 @@ class CourierWarehousesViewModel(
                 val response = interactor.getWarehouses()
                 val r = setDataForCourierWarehousesDataBase(response)
                 setLoader(WaitLoader.Complete)
-                getWarehousesComplete(r)
+                getWarehousesComplete(r.toSet())
             } catch (e: Exception) {
                 logException(e, "getWarehouses")
                 getWarehousesError(e)
@@ -154,7 +151,7 @@ class CourierWarehousesViewModel(
     }
 
 
-    private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): List<CourierWarehouseLocalEntity> {
+    private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): Set<CourierWarehouseLocalEntity> {
         courierWarehouseResponse.data.forEach {
             warehouseEntities.add(
                 CourierWarehouseLocalEntity(
@@ -167,7 +164,7 @@ class CourierWarehousesViewModel(
                 )
             )
         }
-        return warehouseEntities.toList()
+        return warehouseEntities
 
     }
 
@@ -182,7 +179,7 @@ class CourierWarehousesViewModel(
         return loc1.distanceTo(loc2)
     }
 
-    private fun getWarehousesComplete(it: List<CourierWarehouseLocalEntity>) {
+    private fun getWarehousesComplete(it: Set<CourierWarehouseLocalEntity>) {
         sortedWarehouseEntitiesByCourierLocation(it)
         convertAndSaveItemsPointsMarkers()
         updateMyLocation()
@@ -201,7 +198,7 @@ class CourierWarehousesViewModel(
     }
 
 
-    private fun sortedWarehouseEntitiesByCourierLocation(it: List<CourierWarehouseLocalEntity>) {
+    private fun sortedWarehouseEntitiesByCourierLocation(it: Set<CourierWarehouseLocalEntity>) {
         warehouseEntities = it.sortedBy { warehouse -> warehouse.distanceFromUser }.toMutableSet()
     }
 
@@ -221,7 +218,7 @@ class CourierWarehousesViewModel(
                 item.longitude
             )
             val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
-            mapMarkers.add(mapMarker)// arrive latitude b longitotude
+            mapMarkers.add(mapMarker)
         }
     }
 
@@ -363,6 +360,21 @@ class CourierWarehousesViewModel(
             CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
     }
 
+
+
+    fun onNextFab() {
+        viewModelScope.launch {
+            val index = warehouseItems.indexOfFirst {item ->
+                item.isSelected
+            }
+            assert(index != -1)
+            clearFabAndWhList()
+            val oldEntity = warehouseEntities.elementAt(index).copy()
+            interactor.clearAndSaveCurrentWarehouses(oldEntity)
+            navigateToCourierOrders(oldEntity)
+        }
+    }
+
     private fun navigateToCourierOrders(oldEntity: CourierWarehouseLocalEntity) {
         _navigationState.value =
             CourierWarehousesNavigationState.NavigateToCourierOrders(
@@ -372,18 +384,6 @@ class CourierWarehousesViewModel(
                 oldEntity.name
             )
     }
-
-    fun onNextFab() {
-        viewModelScope.launch {
-            val index = warehouseItems.indexOfFirst { item -> item.isSelected }
-            assert(index != -1)
-            clearFabAndWhList()
-            val oldEntity = warehouseEntities.elementAt(index).copy()
-            interactor.clearAndSaveCurrentWarehouses(oldEntity)
-            navigateToCourierOrders(oldEntity)
-        }
-    }
-
 
 
     private fun onShowAllClick() {

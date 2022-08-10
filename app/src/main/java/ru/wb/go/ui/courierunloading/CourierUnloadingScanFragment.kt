@@ -1,25 +1,31 @@
 package ru.wb.go.ui.courierunloading
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierUnloadingFragmentBinding
+import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
@@ -162,18 +168,17 @@ class CourierUnloadingScanFragment :
 
         val navigationObserver = Observer<CourierUnloadingScanNavAction> { state ->
             when (state) {
-                is CourierUnloadingScanNavAction.NavigateToIntransit ->
+                CourierUnloadingScanNavAction.NavigateToIntransit ->
                     findNavController().navigate(
                         CourierUnloadingScanFragmentDirections.actionCourierUnloadingScanFragmentToCourierIntransitFragment()
                     )
-                is CourierUnloadingScanNavAction.HideUnloadingItems -> {
+                CourierUnloadingScanNavAction.HideUnloadingItems -> {
                     bottomSheetDetails.state = BottomSheetBehavior.STATE_HIDDEN
                     binding.completeButton.visibility = VISIBLE
                 }
                 is CourierUnloadingScanNavAction.InitAndShowUnloadingItems -> {
-                    binding.boxDetails.adapter = RemainBoxAdapter(requireContext(), state.items)
-                    bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
-                    binding.completeButton.visibility = GONE
+                    binding.boxDetails.adapter = RemainBoxAdapter(requireContext(), state.items, state.localBoxEntity)
+                    showBottomSheet()
                 }
             }
         }
@@ -182,9 +187,9 @@ class CourierUnloadingScanFragment :
 
         viewModel.beepEvent.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is CourierUnloadingScanBeepState.BoxAdded -> beepSuccess()
-                is CourierUnloadingScanBeepState.UnknownBox -> beepUnknownBox()
-                is CourierUnloadingScanBeepState.UnknownQR -> beepUnknownQR()
+                CourierUnloadingScanBeepState.BoxAdded -> beepSuccess()
+                CourierUnloadingScanBeepState.UnknownBox -> beepUnknownBox()
+                CourierUnloadingScanBeepState.UnknownQR -> beepUnknownQR()
             }
         }
 
@@ -352,13 +357,28 @@ class CourierUnloadingScanFragment :
     }
 
     private fun initListener() {
+        binding.counterLayoutCl.setOnClickListener {
+            viewModel.onListClicked()
+
+        }
         binding.counterLayout.setOnClickListener { viewModel.onListClicked() }
         binding.totalBoxes.setOnClickListener { viewModel.onListClicked() }
         binding.completeButton.setOnClickListener { viewModel.onCompleteUnloadClick() }
         binding.detailsClose.setOnClickListener { viewModel.onCloseDetailsClick() }
     }
 
-
+    private fun showBottomSheet(){
+        binding.completeButton.visibility = GONE
+        binding.detailsLayout.visibility = RecyclerView.VISIBLE
+        val bottomSheetDetails = bottomSheetDetails
+        bottomSheetDetails.skipCollapsed = true
+        bottomSheetDetails.addBottomSheetCallback(bottomSheetDetailsCallback)
+        bottomSheetDetails.state = BottomSheetBehavior.STATE_EXPANDED
+        lifecycleScope.launch {
+            delay(1000)
+            viewModel.holdSplashScanner()
+        }
+    }
 
     private fun beepSuccess() {
         // TODO: 11.10.2021 unused

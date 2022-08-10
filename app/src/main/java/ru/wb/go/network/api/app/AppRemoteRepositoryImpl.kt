@@ -64,6 +64,7 @@ class AppRemoteRepositoryImpl(
 //                } else
                 Log.e("exceptioneithRoute","$e")
                     LocalComplexOrderEntity(toLocalOrderEntity().copy(orderId = -2), listOf())
+
             }
         }
     }
@@ -93,7 +94,7 @@ class AppRemoteRepositoryImpl(
     override suspend fun taskBoxes(taskID: String): List<LocalBoxEntity> {
         return withContext(Dispatchers.IO) {
             autentificatorIntercept.initNameOfMethod("taskBoxes")
-            val response = remoteRepo.taskBoxes(apiVersion(), taskID)
+            val response = remoteRepo.taskBoxes(apiDemoVersion(), taskID)
             response.data.map {
                 with(it) {
                     LocalBoxEntity(
@@ -101,7 +102,9 @@ class AppRemoteRepositoryImpl(
                         address = "",
                         officeId = dstOfficeID,
                         loadingAt = loadingAt,
-                        deliveredAt = deliveredAt ?: ""
+                        deliveredAt = deliveredAt ?: "",
+                        fakeOfficeId = fakeBeep?.office?.id,
+                        fakeDeliveredAt = fakeBeep?.dt
                     )
                 }
             }

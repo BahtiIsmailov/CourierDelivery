@@ -80,6 +80,8 @@
     <dimen name="pad8">8dp</dimen>
     <dimen name="pad12">12dp</dimen>
     <dimen name="pad16">16dp</dimen>
+    <dimen name="pad18">18dp</dimen>
+    <dimen name="pad20">20dp</dimen>
     <dimen name="pad24">24dp</dimen>
     <dimen name="pad26">26dp</dimen>
     <dimen name="pad28">28dp</dimen>

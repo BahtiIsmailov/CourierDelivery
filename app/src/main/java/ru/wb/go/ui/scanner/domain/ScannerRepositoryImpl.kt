@@ -26,8 +26,7 @@ class ScannerRepositoryImpl(private val timeFormatter: TimeFormatter
         onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private var scannerStateSubject = MutableSharedFlow<ScannerState>(
-        replay = 1,
-        extraBufferCapacity = Int.MAX_VALUE,
+        extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 

@@ -69,7 +69,7 @@ class CourierLoaderViewModel(
                 appVersionUpdateComplete(response)
             } catch (e: Exception) {
                 logException(e,"initVersion")
-                appVersionUpdateError(e)
+                appVersionUpdateError()
             }
         }
     }
@@ -78,7 +78,7 @@ class CourierLoaderViewModel(
         checkUserState(version)
     }
 
-    private fun appVersionUpdateError(throwable: Throwable) {
+    private fun appVersionUpdateError() {
         checkUserState("0.0.0")
     }
 
@@ -102,7 +102,6 @@ class CourierLoaderViewModel(
             checkNewInstallation()
 
             val order = locRepo.getOrder()
-
 
             if (order == null && goToUpdate(version)) {
                 return@launch
@@ -137,7 +136,6 @@ class CourierLoaderViewModel(
                 _navigationDrawerState.value = res
             } catch (e: Exception) {
                 logException(e,"toApp")
-                //onTechEventLog("getMyTask", e)
                 onRxError(e)
             }
         }

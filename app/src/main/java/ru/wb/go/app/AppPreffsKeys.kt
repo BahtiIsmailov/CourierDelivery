@@ -31,5 +31,6 @@ object AppPreffsKeys {
     const val READ_ALL_BOXES_SYNC_SIZE = "count_of_load_boxes"
     const val CLOSE_FRAGMENT_WHEN_ENDED_TIME = "close_fragment_when_end_time"
     const val SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP = "save_local_time_when_user_delete_app"
+    const val OFFICE_NUMBER_UNLOADING = "office_number_when_unloading"
 
 }

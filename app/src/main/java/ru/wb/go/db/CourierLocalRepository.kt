@@ -3,6 +3,7 @@ package ru.wb.go.db
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.*
+import ru.wb.go.ui.courierunloading.data.FakeBeep
 
 interface CourierLocalRepository {
 
@@ -61,6 +62,10 @@ interface CourierLocalRepository {
 
     suspend fun getBoxes(): List<LocalBoxEntity>
 
+    suspend fun getFailedBoxes(): List<LocalBoxEntity>
+
+    suspend fun setFailedBoxes(fakeOfficeID: Int, loadingAt: String, boxId: String,officeId: Int)
+
     fun getBoxesLiveData(): Flow<List<LocalBoxEntity>>
 
     suspend fun loadBoxOnboard(box: LocalBoxEntity, isNew: Boolean)
@@ -80,6 +85,8 @@ interface CourierLocalRepository {
     suspend fun loadingBoxBoxesGroupByOffice(): List<LocalLoadingBoxEntity>
 
     suspend fun clearOrder()
+
+    suspend fun isBoxesExist(boxId: String):List<String>
 
     suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity>
 

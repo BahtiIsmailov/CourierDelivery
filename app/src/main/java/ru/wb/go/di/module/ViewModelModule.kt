@@ -63,10 +63,10 @@ val viewModelModule = module {
             locRepo = get(),
             remoteRepo = get(),
             deviceManager = get(),
-            resourceProvider = get(),
+            sharedWorker = get(),
             settingsManager = get(),
             userManager = get(),
-            sharedWorker = get()
+            resourceProvider = get()
         )
     }
     viewModel { CourierVersionControlViewModel(get(), get()) }
@@ -124,7 +124,7 @@ val viewModelModule = module {
     }
     viewModel { (parameters: CourierUnloadingScanParameters) ->
         CourierUnloadingScanViewModel(
-            parameters, get(), get(), get(), get()
+            parameters, get(), get(), get(), get(), get()
         )
     }
 

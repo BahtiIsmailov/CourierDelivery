@@ -1,5 +1,8 @@
 package ru.wb.go.ui.courierunloading.domain
 
+import ru.wb.go.ui.courierunloading.data.FakeBeep
+import java.time.LocalTime
+
 sealed class CourierUnloadingScanBoxData {
 
     data class BoxAdded(val qrCode: String, val address: String) : CourierUnloadingScanBoxData()

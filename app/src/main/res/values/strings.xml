@@ -563,6 +563,8 @@
     <string name="courier_billing_account_selector_title">Перевод</string>
     <string name="courier_billing_account_selector_balance">%1$s ₽</string>
     <string name="courier_billing_account_selector_format">%1$s ****%2$s</string>
+
+    <string name="some_text_for_failed_boxes">%1$s — Была попытка выгрузки на ПВЗ %2$s</string>
     <string name="courier_billing_account_selector_short_format">%1$s… ••••%2$s</string>
     <string name="courier_billing_account_selector_long_format">%1$s ••••%2$s</string>
     <string name="courier_billing_account_selector_amount_button_init">Вывести</string>
@@ -632,5 +634,6 @@
     <string name="route">Маршрут </string>
     <string name="user_id">1231231223</string>
     <string name="inet">Интернет:</string>
+
 
 </resources>

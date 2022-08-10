@@ -10,6 +10,7 @@ import ru.wb.go.network.api.app.entity.accounts.AccountEntity
 import ru.wb.go.network.api.app.entity.accounts.BankAccountsEntity
 import ru.wb.go.network.api.app.entity.bank.BankEntity
 import ru.wb.go.network.api.app.remote.courier.StartTaskResponse
+import ru.wb.go.ui.courierunloading.data.FakeBeep
 
 interface AppRemoteRepository {
 
@@ -18,8 +19,6 @@ interface AppRemoteRepository {
     suspend fun getCourierDocuments(): CourierDocumentsEntity
 
     suspend fun tasksMy(): LocalComplexOrderEntity
-
-
 
     suspend fun reserveTask(taskID: String, carNumber: String)
 

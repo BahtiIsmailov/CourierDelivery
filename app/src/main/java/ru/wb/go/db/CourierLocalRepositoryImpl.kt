@@ -10,6 +10,7 @@ import ru.wb.go.db.dao.CourierWarehouseDao
 import ru.wb.go.db.entity.TaskStatus
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
 import ru.wb.go.db.entity.courierlocal.*
+import ru.wb.go.ui.courierunloading.data.FakeBeep
 
 class CourierLocalRepositoryImpl(
     private val courierWarehouseDao: CourierWarehouseDao,
@@ -189,13 +190,6 @@ class CourierLocalRepositoryImpl(
         }
     }
 
-
-    override suspend fun getOffices(): List<LocalOfficeEntity> {
-        return withContext(Dispatchers.IO){
-            courierOrderDao.getOffices()
-        }
-    }
-
     override fun getOfficesFlowable(): Flow<List<LocalOfficeEntity>> {
         return courierOrderDao.getOfficesFlowable()
             .flowOn(Dispatchers.IO)
@@ -250,6 +244,30 @@ class CourierLocalRepositoryImpl(
          return withContext(Dispatchers.IO){
              courierLoadingBoxDao.getBoxes()
          }
+    }
+
+    override suspend fun getFailedBoxes(): List<LocalBoxEntity> {
+        return withContext(Dispatchers.IO){
+            courierLoadingBoxDao.getFailedBoxes()
+        }
+    }
+
+    override suspend fun setFailedBoxes(fakeOfficeID: Int, loadingAt: String, boxId: String,officeId: Int) {
+        withContext(Dispatchers.IO){
+            courierLoadingBoxDao.setTransactionToFailedBoxes(fakeOfficeID, loadingAt, boxId, officeId)
+        }
+    }
+
+    override suspend fun getOffices():List<LocalOfficeEntity> {
+        return withContext(Dispatchers.IO){
+            courierLoadingBoxDao.getOffices()
+        }
+    }
+
+    override suspend fun isBoxesExist(boxId: String): List<String> {
+        return withContext(Dispatchers.IO){
+            courierLoadingBoxDao.isBoxesExist(boxId)
+        }
     }
 
     override suspend fun getRemainBoxes(officeId: Int): List<LocalBoxEntity> {
