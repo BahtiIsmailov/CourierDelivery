@@ -9,7 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.R
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.SupportListener
@@ -60,6 +62,14 @@ abstract class BaseServiceFragment<VM : ServicesViewModel, VB : ViewBinding>(
 //            binding.root.findViewById<TextView>(R.id.version_app).text = it
 //        }
 
+    }
+
+    fun <T> Flow<T>.observeEvent(observer: (T) -> Unit) {
+        lifecycleScope.launchWhenStarted {
+            this@observeEvent.collect { event ->
+                observer.invoke(event)
+            }
+        }
     }
 
     override fun onDestroyView() {

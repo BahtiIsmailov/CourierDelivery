@@ -47,13 +47,14 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
+import ru.wb.go.utils.base.BaseFragment
 import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
 import java.io.File
 
 
-class CourierMapFragment : Fragment() {
+class CourierMapFragment : BaseFragment() {
 
     private val viewModel by viewModel<CourierMapViewModel>()
 
@@ -968,11 +969,5 @@ class CourierMapFragment : Fragment() {
 
     }
 
-    fun <T> Flow<T>.observeEvent(observer: (T) -> Unit) {
-        lifecycleScope.launchWhenStarted {
-            this@observeEvent.collect { event ->
-                observer.invoke(event)
-            }
-        }
-    }
+
 }

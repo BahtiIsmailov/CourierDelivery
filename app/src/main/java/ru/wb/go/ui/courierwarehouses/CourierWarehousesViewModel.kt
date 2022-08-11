@@ -4,6 +4,8 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.wb.go.app.AppPreffsKeys.CLOSE_FRAGMENT_WHEN_ENDED_TIME
 import ru.wb.go.app.AppPreffsKeys.FRAGMENT_MANAGER
@@ -61,6 +63,9 @@ class CourierWarehousesViewModel(
     val demoState: LiveData<Boolean>
         get() = _demoState
 
+    private val _selectedMapPointForFragment = Channel<MapPoint>()
+    val selectedMapPointForFragment = _selectedMapPointForFragment.receiveAsFlow()
+
     private var warehouseEntities = mutableSetOf<CourierWarehouseLocalEntity>()
     private var warehouseItems = mutableSetOf<CourierWarehouseItem>()
     private var mapMarkers = mutableSetOf<CourierMapMarker>()
@@ -75,6 +80,7 @@ class CourierWarehousesViewModel(
 
     private var whSelectedId: Int? = null
     private var stringFromSms: String? = null
+
 
 
     fun resumeInit() {
@@ -104,7 +110,10 @@ class CourierWarehousesViewModel(
                 .collect {
                     try {
                         when (it) {
-                            is CourierMapAction.ItemClick -> onMapPointClick(it.point)
+                            is CourierMapAction.ItemClick -> {
+                                onMapPointClick(it.point)
+                                _selectedMapPointForFragment.trySend(it.point)
+                            }
                             is CourierMapAction.LocationUpdate -> {
                                 initMapByLocation(it.point)
                             }
@@ -272,7 +281,7 @@ class CourierWarehousesViewModel(
 
     }
 
-    private fun onMapPointClick(mapPoint: MapPoint) {
+    fun onMapPointClick(mapPoint: MapPoint) {
         viewModelScope.launch {
             if (mapPoint.id != MY_LOCATION_ID) {
                 val indexItemClick = mapPoint.id.toInt()
@@ -292,9 +301,16 @@ class CourierWarehousesViewModel(
             item.icon =
                 if (item.point.id == mapPoint.id &&
                     item.icon == resourceProvider.getWarehouseMapIcon()
-                )
+                ) {
                     resourceProvider.getWarehouseMapSelectedIcon()
-                else resourceProvider.getWarehouseMapIcon()
+                }
+                else if(item.point.id == mapPoint.id &&
+                    item.icon == resourceProvider.getWarehouseMapSelectedIcon()){
+                    resourceProvider.getWarehouseMapIcon()
+                }
+                else {
+                    resourceProvider.getWarehouseMapIcon()
+                }
         }
     }
 
@@ -350,7 +366,7 @@ class CourierWarehousesViewModel(
         }
     }
 
-    fun changeShowDetailsOrder(selected: Boolean,warehouseItem:List<CourierWarehouseLocalEntity>?) {
+    private fun changeShowDetailsOrder(selected: Boolean, warehouseItem:List<CourierWarehouseLocalEntity>?) {
         if (selected){
             val distance = resourceProvider.getDistance(warehouseItem?.get(0)?.distanceFromUser.toString())
             _showOrdersState.value = CourierWarehousesShowOrdersState.Enable(warehouseItem, distance)

@@ -30,6 +30,7 @@ import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
+import ru.wb.go.utils.map.MapPoint
 import kotlin.math.log
 
 
@@ -39,7 +40,7 @@ class CourierWarehousesFragment :
     ) {
 
     override val viewModel by viewModel<CourierWarehousesViewModel>()
-
+    private var mapPointfromViewModel:MapPoint? = null
 
     @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,6 +67,10 @@ class CourierWarehousesFragment :
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
          var adapter: CourierWarehousesAdapter? = null
+
+        viewModel.selectedMapPointForFragment.observeEvent { mapPoint ->
+            mapPointfromViewModel = mapPoint
+        }
         viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
             showDialogInfo(it)
         }
@@ -198,6 +203,7 @@ class CourierWarehousesFragment :
         //binding.update.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.cardWarehouseClose.setOnClickListener{
+            viewModel.onMapPointClick(mapPointfromViewModel!!)
             binding.warehouseCard.startAnimation(
                 AnimationUtils.loadAnimation(
                 requireContext(),
