@@ -199,11 +199,6 @@ class CourierOrdersInteractorImpl(
         return convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
     }
 
-    override fun clearedSharedFlow() {
-        courierMapRepository.clearCacheSharedFlow()
-    }
-
-
     private fun convertToLocalOrderEntity(
         orderEntity: CourierOrderLocalDataEntity,
         warehouseLocalEntity: CourierWarehouseLocalEntity

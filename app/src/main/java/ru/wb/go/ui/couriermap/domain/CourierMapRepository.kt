@@ -14,6 +14,4 @@ interface CourierMapRepository {
 
     fun mapState(state: CourierMapState)
 
-    fun clearCacheSharedFlow()
-
 }

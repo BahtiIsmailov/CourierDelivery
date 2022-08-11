@@ -161,6 +161,7 @@ class CourierOrdersFragment :
 
     override fun onResume() {
         super.onResume()
+        viewModel.updateOrders(getHalfHeightDisplay())
 //        if (isOrdersExpanded()) viewModel.updateOrders(getHalfHeightDisplay())
 //        else if (isOrderDetailsExpanded()) viewModel.restoreDetails()
     }
@@ -210,7 +211,7 @@ class CourierOrdersFragment :
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-//        binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
+        binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
 //
 //        binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
 //        binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
@@ -219,7 +220,7 @@ class CourierOrdersFragment :
 //        binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
 //        binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
 //        binding.carNumberEmpty.setOnClickListener { viewModel.onChangeCarNumberClick() }
-        binding.showOrderFab.setOnClickListener { viewModel.onNextFab() }
+//        binding.showOrderFab.setOnClickListener { viewModel.onNextFab() }
     }
 
     private fun fadeOut(view: View): ObjectAnimator {
@@ -332,12 +333,12 @@ class CourierOrdersFragment :
         viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
                 WaitLoader.Wait -> {
-                    binding.showOrderFab.isClickable = false
+                    //binding.showOrderFab.isClickable = false
 //                    binding.holdLayout.visibility = VISIBLE
 //                    binding.orderProgress.visibility = VISIBLE
                 }
                 WaitLoader.Complete -> {
-                    binding.showOrderFab.isClickable = true
+                   // binding.showOrderFab.isClickable = true
 //                    binding.holdLayout.visibility = GONE
 //                    binding.orderProgress.visibility = GONE
                 }
@@ -409,22 +410,26 @@ class CourierOrdersFragment :
         viewModel.showOrderState.observe(viewLifecycleOwner) {
             when (it) {
                 CourierOrderShowOrdersState.Disable -> {
-                    with(binding.showOrderFab){
-                         isEnabled = false
-                         //isClickable = false
-                         backgroundTintList = colorFab(R.color.tertiary)
-                    }
+//                    with(binding.showOrderFab){
+//                         isEnabled = false
+//                         //isClickable = false
+//                         backgroundTintList = colorFab(R.color.tertiary)
+//                    }
 
                 }
                 CourierOrderShowOrdersState.Enable -> {
-                    with(binding.showOrderFab) {
-                         isEnabled = true
-                         //isClickable = true
-                         backgroundTintList = colorFab(R.color.colorPrimary)
-                    }
+//                    with(binding.showOrderFab) {
+//                         isEnabled = true
+//                         //isClickable = true
+//                         backgroundTintList = colorFab(R.color.colorPrimary)
+//                    }
                 }
-                CourierOrderShowOrdersState.Invisible -> binding.showOrderFab.visibility = INVISIBLE
-                CourierOrderShowOrdersState.Visible -> binding.showOrderFab.visibility = VISIBLE
+                CourierOrderShowOrdersState.Invisible ->{
+//                      binding.showOrderFab.visibility = INVISIBLE
+                }
+                    CourierOrderShowOrdersState.Visible -> {
+                        //binding.showOrderFab.visibility = VISIBLE
+                    }
             }
         }
 

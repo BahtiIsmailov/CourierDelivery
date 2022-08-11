@@ -58,10 +58,6 @@ class CourierWarehousesInteractorImpl(
         courierMapRepository.mapAction(action)
     }
 
-    override fun clearCacheMutableSharedFlow() {
-        courierMapRepository.clearCacheSharedFlow()
-    }
-
     override suspend fun loadWarehousesFromId(id: Int): List<CourierWarehouseLocalEntity> {
         return courierLocalRepository.loadWarehousesFromId(id)
     }

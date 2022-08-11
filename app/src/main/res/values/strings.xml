@@ -639,6 +639,7 @@
     <string name="inet">Интернет:</string>
     <string name="example1">Склад Коледино</string>
     <string name="example_text_for_address_warehouse">МО, Подольский район, деревня Коледино, улица Троицкая, дом 20</string>
+    <string name="back_from_order">Назад</string>
 
 
 </resources>

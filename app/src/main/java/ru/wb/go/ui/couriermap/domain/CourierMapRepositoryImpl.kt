@@ -33,13 +33,5 @@ class CourierMapRepositoryImpl : CourierMapRepository {
         return mapActionSubject.receiveAsFlow()
     }
 
-    override fun clearCacheSharedFlow() {
-//        mapActionSubject = MutableSharedFlow(
-//            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-//        )
-//        mapStateSubject = MutableSharedFlow(
-//            extraBufferCapacity = Int.MAX_VALUE, onBufferOverflow = BufferOverflow.DROP_OLDEST
-//        )
-    }
 
 }

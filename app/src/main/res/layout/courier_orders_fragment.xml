@@ -121,6 +121,48 @@
 <!--                    app:layout_constraintTop_toTopOf="parent"-->
 <!--                    tools:text="РЦ Петрозаводск" />-->
 
+    <LinearLayout
+        android:id="@+id/close_orders"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/pad16"
+        android:layout_marginStart="@dimen/pad16"
+        android:background="@drawable/scanner_loading_box_corner"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="3dp"
+            android:src="@drawable/ic_arrow_back_from_order"
+            tools:ignore="ContentDescription" />
+
+
+        <TextView
+            android:id="@+id/total_boxes"
+            style="@style/LargePrimaryRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:background="@drawable/dash_underline"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/back_from_order" />
+
+
+    </LinearLayout>
 <!--                <ImageView-->
 <!--                    android:id="@+id/close_orders"-->
 <!--                    android:layout_width="wrap_content"-->
@@ -540,18 +582,18 @@
 
 <!--    </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/show_order_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:clickable="false"
-        android:focusable="false"
-        android:src="@drawable/ic_next"
-        app:backgroundTint="@color/tertiary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/lvl_1"
-        tools:ignore="ContentDescription" />
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/show_order_fab"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="16dp"-->
+<!--        android:clickable="false"-->
+<!--        android:focusable="false"-->
+<!--        android:src="@drawable/ic_next"-->
+<!--        app:backgroundTint="@color/tertiary"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:tint="@color/lvl_1"-->
+<!--        tools:ignore="ContentDescription" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

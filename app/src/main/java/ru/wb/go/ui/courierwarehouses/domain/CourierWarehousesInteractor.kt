@@ -27,7 +27,7 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     fun mapAction(action: CourierMapAction)
 
-    fun clearCacheMutableSharedFlow()
+
 
     suspend fun loadWarehousesFromId(id:Int):List<CourierWarehouseLocalEntity>
 
