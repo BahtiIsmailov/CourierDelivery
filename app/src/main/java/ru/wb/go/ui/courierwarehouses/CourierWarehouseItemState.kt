@@ -18,4 +18,6 @@ sealed class CourierWarehouseItemState {
     data class ScrollTo(val position: Int) :
         CourierWarehouseItemState()
 
+    object Success : CourierWarehouseItemState()
+
 }

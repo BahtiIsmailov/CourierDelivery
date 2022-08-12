@@ -8,8 +8,10 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.viewbinding.ViewBinding
 import kotlinx.coroutines.flow.Flow
 import ru.wb.go.R
@@ -77,4 +79,10 @@ abstract class BaseServiceFragment<VM : ServicesViewModel, VB : ViewBinding>(
         _binding = null
     }
 
+    fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
+        val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
+        ResourcesCompat.getDrawable(resources, R.drawable.divider_line, null)
+            ?.let { decoration.setDrawable(it) }
+        return decoration
+    }
 }

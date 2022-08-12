@@ -16,11 +16,8 @@ import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.exceptions.TimeoutException
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
-import ru.wb.go.ui.couriermap.CourierMapAction
+import ru.wb.go.ui.couriermap.*
 import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.MY_LOCATION_ID
-import ru.wb.go.ui.couriermap.CourierMapMarker
-import ru.wb.go.ui.couriermap.CourierMapState
-import ru.wb.go.ui.couriermap.Empty
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
@@ -29,6 +26,7 @@ import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
 import ru.wb.go.utils.prefs.SharedWorker
+import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
 class CourierWarehousesViewModel(
@@ -149,11 +147,13 @@ class CourierWarehousesViewModel(
                 interactor.deleteWarehouses()
                 val response = interactor.getWarehouses()
                 val warehousesLocalEntity = setDataForCourierWarehousesDataBase(response)
+                _warehouseState.value = CourierWarehouseItemState.Success
                 setLoader(WaitLoader.Complete)
                 getWarehousesComplete(warehousesLocalEntity.toSet())
                 warehousesLocalEntity.map {
                     interactor.saveWarehouses(it)
                 }
+
             } catch (e: Exception) {
                 logException(e, "getWarehouses")
                 getWarehousesError(e)
@@ -202,7 +202,7 @@ class CourierWarehousesViewModel(
 
     private fun getWarehousesError(it: Throwable) {
         setLoader(WaitLoader.Complete)
-        if (it is NoInternetException || it is TimeoutException) {
+        if (it is NoInternetException || it is TimeoutException || it is UnknownHostException) {
             _warehouseState.value = CourierWarehouseItemState.NoInternet
         } else {
             errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
@@ -269,7 +269,7 @@ class CourierWarehousesViewModel(
 
     }
 
-    private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) {
+    private fun zoomMarkersFromBoundingBox(myLocation: CoordinatePoint) { // приближает к маркеру
         if (coordinatePoints.isNotEmpty()) {
             val boundingBox = MapEnclosingCircle().minimumBoundingBoxRelativelyMyLocation(
                 coordinatePoints, myLocation, RADIUS_KM
@@ -284,6 +284,8 @@ class CourierWarehousesViewModel(
     fun onMapPointClick(mapPoint: MapPoint) {
         viewModelScope.launch {
             if (mapPoint.id != MY_LOCATION_ID) {
+
+                //zoomMarkersFromBoundingBox(CoordinatePoint(mapPoint.lat,mapPoint.long))
                 val indexItemClick = mapPoint.id.toInt()
                 changeSelectedMapPoint(mapPoint)
                 updateMarkers()
@@ -302,6 +304,7 @@ class CourierWarehousesViewModel(
                 if (item.point.id == mapPoint.id &&
                     item.icon == resourceProvider.getWarehouseMapIcon()
                 ) {
+                    interactor.mapState(CourierMapState.NavigateToPoint(CoordinatePoint(mapPoint.lat,mapPoint.long)))
                     resourceProvider.getWarehouseMapSelectedIcon()
                 }
                 else if(item.point.id == mapPoint.id &&

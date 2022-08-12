@@ -13,27 +13,21 @@ import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
 import android.util.DisplayMetrics
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
-import ru.wb.go.adapters.DefaultAdapterDelegate
 import ru.wb.go.databinding.CourierOrdersFragmentBinding
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.ui.BaseServiceFragment
@@ -42,14 +36,9 @@ import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment.Companion.COURIER_CAR_NUMBER_ID_EDIT_KEY
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
-import ru.wb.go.ui.courierorders.CourierOrdersFragment.Companion.DIALOG_REGISTRATION_RESULT_TAG
-import ru.wb.go.ui.courierorders.delegates.CourierOrderDelegate
-import ru.wb.go.ui.courierorders.delegates.OnCourierOrderCallback
-import ru.wb.go.ui.courierwarehouses.getHorizontalDividerDecoration
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
-import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
@@ -76,8 +65,8 @@ class CourierOrdersFragment :
 //    private val bottomSheetOrders: BottomSheetBehavior<FrameLayout>
 //        get() = BottomSheetBehavior.from(binding.ordersLayout)
 //
-//    private val bottomSheetOrderDetails: BottomSheetBehavior<ConstraintLayout>
-//        get() = BottomSheetBehavior.from(binding.orderDetailsLayout)
+    private val bottomSheetOrderDetails: BottomSheetBehavior<ConstraintLayout>
+        get() = BottomSheetBehavior.from(binding.orderDetailsLayout)
 
 //    private val bottomSheetOrderAddresses: BottomSheetBehavior<FrameLayout>
 //        get() = BottomSheetBehavior.from(binding.orderAddresses)
@@ -105,13 +94,13 @@ class CourierOrdersFragment :
 
     private fun onBackPressedCallback() = object : OnBackPressedCallback(true) {
         override  fun handleOnBackPressed() {
-//            when {
+            when {
 //                isOrdersExpanded() -> {
 //                    viewModel.onCloseOrdersClick()
 //                }
-//                isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
+                isOrderDetailsExpanded() -> { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
 //                isOrderAddressesExpanded() -> viewModel.onShowOrderDetailsClick()
-//            }
+            }
         }
     }
 
@@ -161,9 +150,8 @@ class CourierOrdersFragment :
 
     override fun onResume() {
         super.onResume()
-        viewModel.updateOrders(getHalfHeightDisplay())
-//        if (isOrdersExpanded()) viewModel.updateOrders(getHalfHeightDisplay())
-//        else if (isOrderDetailsExpanded()) viewModel.restoreDetails()
+        viewModel.updateOrders(getHalfHeightDisplay())//if (isOrdersExpanded())
+        if (isOrderDetailsExpanded()) viewModel.restoreDetails()
     }
 
 
@@ -289,10 +277,10 @@ class CourierOrdersFragment :
                 CourierOrdersNavigationState.CloseAddressesDetail -> {
                     //fadeIn(binding.addressDetailLayout).start()
                 }
-                CourierOrdersNavigationState.OnMapClick ->{}
-//                    if (isOrderDetailsExpanded()) {
-//                        viewModel.onMapClickWithDetail()
-//                    }
+                CourierOrdersNavigationState.OnMapClick ->
+                    if (isOrderDetailsExpanded()) {
+                        viewModel.onMapClickWithDetail()
+                    }
                 CourierOrdersNavigationState.CourierLoader ->
                     findNavController().navigate(
                         CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierLoaderFragment()
@@ -333,14 +321,14 @@ class CourierOrdersFragment :
         viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
                 WaitLoader.Wait -> {
-                    //binding.showOrderFab.isClickable = false
-//                    binding.holdLayout.visibility = VISIBLE
-//                    binding.orderProgress.visibility = VISIBLE
+                   // binding.showOrderFab.isClickable = false
+                    binding.holdLayout.visibility = VISIBLE
+                    binding.progress.isVisible = true
                 }
                 WaitLoader.Complete -> {
                    // binding.showOrderFab.isClickable = true
-//                    binding.holdLayout.visibility = GONE
-//                    binding.orderProgress.visibility = GONE
+                    binding.holdLayout.visibility = GONE
+                    binding.progress.isGone = true
                 }
             }
         }
@@ -466,8 +454,8 @@ class CourierOrdersFragment :
         }
 
         viewModel.visibleShowAll.observe(viewLifecycleOwner) {
-//            if (isOrdersExpanded()) viewModel.onShowAllOrdersClick(getHalfHeightDisplay())
-//            else if (isOrderDetailsExpanded()) viewModel.onShowAllOrderDetailsClick()
+            viewModel.onShowAllOrdersClick(getHalfHeightDisplay())//if (isOrdersExpanded())
+            if (isOrderDetailsExpanded()) viewModel.onShowAllOrderDetailsClick()
         }
 
     }
@@ -500,8 +488,8 @@ class CourierOrdersFragment :
 //    private fun isOrdersExpanded() =
 //        bottomSheetOrders.state == BottomSheetBehavior.STATE_EXPANDED
 
-//    private fun isOrderDetailsExpanded() =
-//        bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED
+    private fun isOrderDetailsExpanded() =
+        bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED
 
 //    private fun isOrderAddressesExpanded() =
 //        bottomSheetOrderAddresses.state == BottomSheetBehavior.STATE_EXPANDED
@@ -528,7 +516,7 @@ class CourierOrdersFragment :
 
     private fun showBottomSheetOrders() {
 //        bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
-//        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
 //        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
@@ -537,13 +525,13 @@ class CourierOrdersFragment :
         binding.toRegistration.visibility = if (isDemo) VISIBLE else INVISIBLE
         binding.supportApp.visibility = if (isDemo) INVISIBLE else VISIBLE
 //        bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
-//        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
 //        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun showBottomSheetOrderAddresses() {
 //        bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
-//        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
+       bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
 //        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_EXPANDED
         addBottomSheetCallbackOrderAddressesListener()
     }

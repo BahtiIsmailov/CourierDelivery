@@ -108,9 +108,13 @@ class CourierWarehousesFragment :
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
                 }
+                CourierWarehouseItemState.Success -> {
+                    binding.noInternetLayout.isGone = true
+                    binding.holdLayout.isGone = true
+                }
                 CourierWarehouseItemState.NoInternet -> {
-                    //binding.noInternetLayout.visibility = VISIBLE
-                    //binding.items.visibility = GONE
+                    binding.noInternetLayout.isVisible = true
+                    binding.holdLayout.isVisible = true
                 }
             }
         }
@@ -118,13 +122,12 @@ class CourierWarehousesFragment :
         viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
             when (state) {
                 WaitLoader.Wait -> {
-                    //binding.refresh.isRefreshing = true
-                    binding.holdLayout.visibility = VISIBLE
-                    //binding.noInternetLayout.visibility = INVISIBLE
+                    binding.progress.isVisible = true
+                    binding.holdLayout.isVisible = true
                 }
                 WaitLoader.Complete -> {
-                    //binding.refresh.isRefreshing = false
-                    binding.holdLayout.visibility = INVISIBLE
+                    binding.progress.isGone = true
+                    binding.holdLayout.isGone = true
                 }
             }
         }
@@ -200,7 +203,7 @@ class CourierWarehousesFragment :
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.goToOrder.setOnClickListener { viewModel.onNextFab() }
         //binding.refresh.setOnRefreshListener { viewModel.updateData() }
-        //binding.update.setOnClickListener { viewModel.updateData() }
+        binding.updateWhenNoInternet.setOnClickListener { viewModel.updateData() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.cardWarehouseClose.setOnClickListener{
             viewModel.onMapPointClick(mapPointfromViewModel!!)
@@ -266,10 +269,5 @@ class CourierWarehousesFragment :
 }
 
 
-fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
-    val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
-    ResourcesCompat.getDrawable(resources, R.drawable.divider_line, null)
-        ?.let { decoration.setDrawable(it) }
-    return decoration
-}
+
 

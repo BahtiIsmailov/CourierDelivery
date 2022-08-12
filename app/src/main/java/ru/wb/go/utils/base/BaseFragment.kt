@@ -16,4 +16,7 @@ abstract class BaseFragment : Fragment() {
             }
         }
     }
+    fun<T> LiveData<T>.observe(observer: (T) -> Unit) {
+        this.observe(viewLifecycleOwner, observer)
+    }
 }

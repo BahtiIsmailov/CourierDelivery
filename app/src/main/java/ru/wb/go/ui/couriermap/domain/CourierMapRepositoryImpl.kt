@@ -10,10 +10,10 @@ class CourierMapRepositoryImpl : CourierMapRepository {
 
 
     private var mapStateSubject = Channel<CourierMapState>(
-       Int.MAX_VALUE
+       capacity = Channel.UNLIMITED
     )
     private var mapActionSubject = Channel<CourierMapAction>(
-        Int.MAX_VALUE
+        capacity = Channel.UNLIMITED
     )
 
 
@@ -26,7 +26,7 @@ class CourierMapRepositoryImpl : CourierMapRepository {
     }
 
     override fun mapAction(action: CourierMapAction) {
-        mapActionSubject.trySend(action) // закинуть в поток
+        mapActionSubject.trySend(action)
     }
 
     override fun observeMapAction(): Flow<CourierMapAction> {

@@ -110,7 +110,6 @@ class CourierMapFragment : BaseFragment() {
         initObservable()
         initListeners()
         initMapView()
-        viewModel.subscribeMapState()
     }
 
     private fun createLocationRequest() {

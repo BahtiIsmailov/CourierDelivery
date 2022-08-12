@@ -268,7 +268,7 @@
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_empty_address">Список пуст</string>
-    <string name="courier_orders_automobile">ТС • \u0020</string>
+    <string name="courier_orders_automobile">Номер ТС • \u0020</string>
     <string name="courier_orders_address_title">Адреса доставки</string>
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>

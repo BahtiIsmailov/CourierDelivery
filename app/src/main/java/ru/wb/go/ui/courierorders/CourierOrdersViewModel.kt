@@ -111,6 +111,14 @@ class CourierOrdersViewModel(
 
     private var height = 0
 
+
+//    2022-08-11 11:23:57.375 3518-3518/ru.wb.go.debug E/courierMap: clearMap
+//    2022-08-11 11:23:57.377 3518-3518/ru.wb.go.debug E/courierMap: updateMarkers
+//    2022-08-11 11:23:57.398 3518-3518/ru.wb.go.debug E/courierMap: visibleManagerBar
+//    2022-08-11 11:23:57.400 3518-3518/ru.wb.go.debug E/courierMap: updateMarkersWithIndex
+//    2022-08-11 11:23:57.405 3518-3518/ru.wb.go.debug E/courierMap: zoomToBoundingBoxOffsetY
+
+
     fun init() {
         checkDemoMode()
         observeMapAction()
@@ -131,6 +139,7 @@ class CourierOrdersViewModel(
                 anchorTaskError(e)
             } finally {
                 val localOderEntity = interactor.courierLocalOrderEntity()
+                interactor.mapState(CourierMapState.NavigateToPointZoom(CoordinatePoint(localOderEntity.srcLatitude,localOderEntity.srcLongitude)))
                 logCourierAndOrderData(localOderEntity)
             }
         }
@@ -562,7 +571,7 @@ class CourierOrdersViewModel(
     }
 
     private fun clearMap() {
-        interactor.mapState(CourierMapState.ClearMap)
+        interactor.mapState(CourierMapState.ClearMap)//1
     }
 
     private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {

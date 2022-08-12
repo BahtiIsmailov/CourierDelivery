@@ -31,7 +31,7 @@ class CourierMapInteractorImpl(
                 when (it) {
                     CourierMapState.ShowManagerBar -> prolongHideTimerManager() // если клик по карте то отображается плюс и минус справа
                     is CourierMapState.UpdateMarkers -> hideManagerBar()// вызывается каждый раз когда ты нажимаешь на варихаус
-                    else -> {}
+                    else -> { }
                 }
             }
     }
