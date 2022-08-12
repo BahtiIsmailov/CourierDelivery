@@ -37,7 +37,7 @@ class CourierOrdersResourceProvider(private val context: Context) :
 
     fun getWarehouseMapSelectedIcon() = R.drawable.ic_courier_map_warehouse_select
     fun getOrderMapNoneBorderIcon() = R.drawable.ic_courier_map_order_none_border
-    fun getOrderMapIcon() = R.drawable.ic_courier_map_order
+    fun getOrderMapIcon() = R.drawable.ic_order_item_for_order_fragment
     fun getOrderMapSelectedIcon() = R.drawable.ic_courier_map_order_selected
 
     fun getCarNumber(carNumber: String): String {

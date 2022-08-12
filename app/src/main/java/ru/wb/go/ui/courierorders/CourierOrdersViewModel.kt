@@ -139,7 +139,7 @@ class CourierOrdersViewModel(
                 anchorTaskError(e)
             } finally {
                 val localOderEntity = interactor.courierLocalOrderEntity()
-                interactor.mapState(CourierMapState.NavigateToPointZoom(CoordinatePoint(localOderEntity.srcLatitude,localOderEntity.srcLongitude)))
+                //interactor.mapState(CourierMapState.NavigateToPointZoom(CoordinatePoint(localOderEntity.srcLatitude,localOderEntity.srcLongitude)))
                 logCourierAndOrderData(localOderEntity)
             }
         }

@@ -870,13 +870,13 @@ class CourierMapFragment : BaseFragment() {
             paint.textAlign = Paint.Align.CENTER
             paint.color = ResourcesCompat.getColor(
                 resources,
-                R.color.button_app_primary_pressed, null
+                R.color.lvl_1, null
             )
             paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             paint.textSize = TEXT_SIZE_INDEX_MARKER
 
             val xPos = (canvas.width / 2).toFloat()
-            val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2)
+            val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2 - 20)
             canvas.drawText(index, xPos, yPos, paint)
             return bitmap
         }
