@@ -259,7 +259,7 @@ class CourierMapFragment : BaseFragment() {
 
         viewModel.onItemClick(with(marker) {
             MapPoint(id, position.latitude, position.longitude,
-                when (id.split(marker.id)[1]) {
+                when (id.split(" ")[1]) {
                     "Warehouse" -> PointType.WAREHOUSE
                     "Order" -> PointType.ORDER
                     "Cluster" -> PointType.CLUSTER
@@ -310,7 +310,7 @@ class CourierMapFragment : BaseFragment() {
         }
 
         viewModel.updateMarkers.observeEvent {
-            Log.e("courierMap", "updateMarkers")//1,2,2,2
+            Log.e("courierMap", "updateMarkers")
             updateMarkers(it.points)
         }
 
@@ -474,7 +474,7 @@ class CourierMapFragment : BaseFragment() {
 
     private fun findMapMarkersByFilterId(showPoints: List<CourierMapMarker>): MutableList<Marker> {
         val markerFilters = mutableListOf<(Marker) -> Boolean>()
-        showPoints.forEach { markerFilters.add(generateFilterMarker(it.point.id.split(" ")[0])) }
+        showPoints.forEach { markerFilters.add(generateFilterMarker(it.point.id)) }
         val findMapMarkers = mutableListOf<Marker>()
         binding.map.overlays
             .filterIsInstance<Marker>()
@@ -527,7 +527,7 @@ class CourierMapFragment : BaseFragment() {
 
         with(withAnimateToPositions) {
 
-            pointsTo.forEach { removeMarkerById(it.point.id.split(" ")[0]) }
+            pointsTo.forEach { removeMarkerById(it.point.id) }
             val markersRestore = mutableListOf<Marker>()
             binding.map.overlays
                 .filterIsInstance<Marker>()
@@ -678,10 +678,13 @@ class CourierMapFragment : BaseFragment() {
 
     private val updateMapMarker = { item: CourierMapMarker ->
         with(item) {
-            val findPoint = findMapPointById(point.id.split(" ")[0])
-            if (findPoint == null)
-                addMapMarker(point.id+" Warehouse", point.lat, point.long, getIcon(item.icon))
-            else updateMapMarker(findPoint, point.id, point.lat, point.long, getIcon(item.icon))
+            val findPoint = findMapPointById(point.id)
+            if (findPoint == null) {
+                addMapMarker(point.id + " Warehouse", point.lat, point.long, getIcon(item.icon))
+            }
+            else {
+                updateMapMarker(findPoint, point.id+ " Warehouse", point.lat, point.long, getIcon(item.icon))
+            }
         }
     }
 
@@ -691,7 +694,7 @@ class CourierMapFragment : BaseFragment() {
                 point.id+" Order",
                 point.lat,
                 point.long,
-                BitmapDrawable(resources, getBitmapIndexMarker(point.id.split(" ")[0], icon))
+                BitmapDrawable(resources, getBitmapIndexMarker(point.id, icon))
             )
         }
     }
@@ -731,7 +734,7 @@ class CourierMapFragment : BaseFragment() {
     private fun findMapPointById(id: String) =
         binding.map.overlays
             .filterIsInstance<Marker>()
-            .find { it.id == id }
+            .find {  it.id.split(" ")[0] == id}
 
     private fun visibleManagerBar(courierVisibilityManagerBar: CourierVisibilityManagerBar) {
         when (courierVisibilityManagerBar) {
@@ -813,7 +816,7 @@ class CourierMapFragment : BaseFragment() {
     }
 
     private fun addMyLocationPoint(latitude: Double, longitude: Double) {
-        val point = MapPoint(MY_LOCATION_ID, latitude, longitude)
+        val point = MapPoint(MY_LOCATION_ID, latitude, longitude,null)
         val mapMarker = Empty(point, R.drawable.ic_warehouse_my_location)
         updateMapMarker(mapMarker)
         binding.map.invalidate()

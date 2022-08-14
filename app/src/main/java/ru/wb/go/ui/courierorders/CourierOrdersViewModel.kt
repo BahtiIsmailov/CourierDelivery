@@ -40,6 +40,7 @@ import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapEnclosingCircle
 import ru.wb.go.utils.map.MapPoint
+import ru.wb.go.utils.map.PointType
 import ru.wb.go.utils.prefs.SharedWorker
 
 class CourierOrdersViewModel(
@@ -302,7 +303,7 @@ class CourierOrdersViewModel(
     }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
-        if (mapPoint.id.split(" ")[0].startsWith(ADDRESS_MAP_PREFIX)) addressMapClick(mapPoint)
+        if (mapPoint.id.split(" ")[0].startsWith(ADDRESS_MAP_PREFIX) && mapPoint.type == PointType.ORDER) addressMapClick(mapPoint)
         else if (mapPoint.id != WAREHOUSE_ID) orderMapClick(mapPoint)
     }
 
@@ -341,7 +342,7 @@ class CourierOrdersViewModel(
 
 
     private fun updateAddressMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers))
+        interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers.toMutableSet()))
     }
 
     private fun changeSelectedAddressMapPointAndItemByMap(mapPointId: String) {
@@ -399,7 +400,7 @@ class CourierOrdersViewModel(
         val addressMapMarkers = mutableListOf<CourierMapMarker>()
         val warehouseLatitude = parameters.warehouseLatitude
         val warehouseLongitude = parameters.warehouseLongitude
-        val warehouseMapPoint = MapPoint(WAREHOUSE_ID, warehouseLatitude, warehouseLongitude)
+        val warehouseMapPoint = MapPoint(WAREHOUSE_ID, warehouseLatitude, warehouseLongitude, null)
         val warehouseMapMarker =
             Empty(warehouseMapPoint, resourceProvider.getWarehouseMapSelectedIcon())
         addressMapMarkers.add(warehouseMapMarker)
@@ -416,7 +417,7 @@ class CourierOrdersViewModel(
                 )
             )
             addressCoordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
-            val mapPoint = MapPoint("$ADDRESS_MAP_PREFIX$index", item.latitude, item.longitude)
+            val mapPoint = MapPoint("$ADDRESS_MAP_PREFIX$index", item.latitude, item.longitude,null)
             val mapMarker = Empty(
                 mapPoint,
                 if (item.isUnusualTime) resourceProvider.getOfficeMapTimeIcon() else resourceProvider.getOfficeMapIcon()
@@ -447,7 +448,7 @@ class CourierOrdersViewModel(
         val orderMapMarkers = mutableListOf<CourierMapMarker>()
         val warehouseLatitude = parameters.warehouseLatitude
         val warehouseLongitude = parameters.warehouseLongitude
-        val warehouseMapPoint = MapPoint(WAREHOUSE_ID, warehouseLatitude, warehouseLongitude)
+        val warehouseMapPoint = MapPoint(WAREHOUSE_ID, warehouseLatitude, warehouseLongitude,null)
         val warehouseMapMarker =
             Empty(warehouseMapPoint, resourceProvider.getWarehouseMapSelectedIcon())
         orderMapMarkers.add(warehouseMapMarker)
@@ -465,7 +466,7 @@ class CourierOrdersViewModel(
             val centerGroupPoint =
                 CoordinatePoint(boundingBox.centerLatitude, boundingBox.centerLongitude)
             orderCenterGroupPoints.add(centerGroupPoint)
-            val mapPoint = MapPoint(idPoint, centerGroupPoint.latitude, centerGroupPoint.longitude)
+            val mapPoint = MapPoint(idPoint, centerGroupPoint.latitude, centerGroupPoint.longitude,null)
             val mapMarker = Empty(mapPoint, resourceProvider.getOrderMapIcon())
             orderMapMarkers.add(mapMarker)
         }
@@ -489,7 +490,7 @@ class CourierOrdersViewModel(
         clearMap()
         val warehouseMapMarker = mutableListOf(orderMapMarkers.first())
         val orders = orderMapMarkers.toMutableList().apply { removeFirst() }
-        interactor.mapState(CourierMapState.UpdateMarkers(warehouseMapMarker))
+        interactor.mapState(CourierMapState.UpdateMarkers(warehouseMapMarker.toMutableSet()))
         interactor.mapState(CourierMapState.UpdateMarkersWithIndex(orders))
     }
 

@@ -1,6 +1,7 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -229,7 +230,8 @@ class CourierWarehousesViewModel(
                 val mapPoint = MapPoint(
                     index.toString(),
                     item.latitude,
-                    item.longitude
+                    item.longitude,
+                    PointType.WAREHOUSE
                 )
                 val mapMarker = Empty(mapPoint, resourceProvider.getWarehouseMapIcon())
                 mapMarkers.add(mapMarker)
@@ -265,7 +267,7 @@ class CourierWarehousesViewModel(
 
 
         private fun updateMarkersWithMyLocation(myLocation: CoordinatePoint) {
-            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
             interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation))
 
         }
@@ -283,11 +285,12 @@ class CourierWarehousesViewModel(
         }
 
         fun onMapPointClick(mapPoint: MapPoint) {
+            val id  = mapPoint.id.split(" ")[0]
             viewModelScope.launch {
-                if (mapPoint.id.split(" ")[0] != MY_LOCATION_ID && mapPoint.type == PointType.WAREHOUSE) {
+                if (id != MY_LOCATION_ID && mapPoint.type == PointType.WAREHOUSE) {
 
                     //zoomMarkersFromBoundingBox(CoordinatePoint(mapPoint.lat,mapPoint.long))
-                    val indexItemClick = mapPoint.id.toInt()
+                    val indexItemClick = id.toInt()
                     changeSelectedMapPoint(mapPoint)
                     updateMarkers()
                     val isMapSelected = isMapSelected(indexItemClick)
@@ -302,8 +305,8 @@ class CourierWarehousesViewModel(
 
         private fun changeSelectedMapPoint(mapPoint: MapPoint) {
             mapMarkers.forEach { item ->
-                item.icon =
-                    if (item.point.id == mapPoint.id &&
+                 item.icon =
+                    if (item.point.id == mapPoint.id.split(" ")[0] &&
                         item.icon == resourceProvider.getWarehouseMapIcon()
                     ) {
                         interactor.mapState(
@@ -315,7 +318,7 @@ class CourierWarehousesViewModel(
                             )
                         )
                         resourceProvider.getWarehouseMapSelectedIcon()
-                    } else if (item.point.id == mapPoint.id &&
+                    } else if (item.point.id == mapPoint.id.split(" ")[0] &&
                         item.icon == resourceProvider.getWarehouseMapSelectedIcon()
                     ) {
                         resourceProvider.getWarehouseMapIcon()
@@ -342,7 +345,7 @@ class CourierWarehousesViewModel(
             mapMarkers.elementAt(indexItemClick).icon == resourceProvider.getWarehouseMapSelectedIcon()
 
         private fun updateMarkers() {
-            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers))
             interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation!!))
         }
 

@@ -174,7 +174,7 @@ class CourierMapViewModel(
                 )
 
 
-                is CourierMapState.UpdateMarkers -> _updateMarkers.send(UpdateMarkers(it.points))
+                is CourierMapState.UpdateMarkers -> _updateMarkers.send(UpdateMarkers(it.points.toList()))
 
 
                 is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.send(

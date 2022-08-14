@@ -251,7 +251,7 @@ class CourierIntransitViewModel(
     }
 
     private fun updateMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableSet()))
     }
 
     private fun changeSelectedItemsByMarker(indexItemClick: Int, isMarkerSelected: Boolean) {
@@ -340,7 +340,7 @@ class CourierIntransitViewModel(
 //
 //                _currentItemBackgroundForBottomSheet.value = type
 
-                val mapPoint = MapPoint(index.toString(), latitude, longitude)
+                val mapPoint = MapPoint(index.toString(), latitude, longitude,null)
                 mapMarker = Intransit(mapPoint, iconMap, type)
 
                 items.add(item)
@@ -376,7 +376,7 @@ class CourierIntransitViewModel(
         if (mapMarkers.isEmpty()) {
             interactor.mapState(CourierMapState.NavigateToPoint(moscowCoordinatePoint()))
         } else {
-            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableSet()))
             val boundingBox =
                 MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
             interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
@@ -516,7 +516,7 @@ class CourierIntransitViewModel(
     }
 
     private fun updateMarkers(isSelected: Boolean, selectIndex: Int) {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableSet()))
         if (isSelected)
             interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
