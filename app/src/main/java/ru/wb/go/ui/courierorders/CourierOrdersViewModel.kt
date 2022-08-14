@@ -201,17 +201,13 @@ class CourierOrdersViewModel(
     }
 
     private fun observeMapAction() {
-        viewModelScope.launch {
-            interactor.observeMapAction()
-                .collect {
-                    try {
-                        observeMapActionComplete(it)
-                    } catch (e: Exception) {
+        interactor.observeMapAction()
+            .onEach {
+                observeMapActionComplete(it)
+            }
+            .catch{ }
+            .launchIn(viewModelScope)
 
-                    }
-
-                }
-        }
     }
 
 
@@ -306,12 +302,12 @@ class CourierOrdersViewModel(
     }
 
     private fun onMapPointClick(mapPoint: MapPoint) {
-        if (mapPoint.id.startsWith(ADDRESS_MAP_PREFIX)) addressMapClick(mapPoint)
+        if (mapPoint.id.split(" ")[0].startsWith(ADDRESS_MAP_PREFIX)) addressMapClick(mapPoint)
         else if (mapPoint.id != WAREHOUSE_ID) orderMapClick(mapPoint)
     }
 
     private fun orderMapClick(mapPoint: MapPoint) {
-        val itemIndex = mapPoint.id.toInt() - 1
+        val itemIndex = mapPoint.id.split(" ")[0].toInt() - 1
         saveRowOrder(itemIndex)
         val isSelected = changeSelectedOrderItems(itemIndex)
         changeMapMarkers(itemIndex, isSelected)
@@ -322,14 +318,14 @@ class CourierOrdersViewModel(
     }
 
     private fun addressMapClick(mapPoint: MapPoint) {
-        changeSelectedAddressMapPointAndItemByMap(mapPoint.id)
+        changeSelectedAddressMapPointAndItemByMap(mapPoint.id.split(" ")[0])
         updateAddressMarkers()
         updateShowingAddressDetail(getIdMapWithoutPrefix(mapPoint))
         initAddressItems(orderAddressItems)
     }
 
     private fun getIdMapWithoutPrefix(mapPoint: MapPoint) =
-        mapPoint.id.replace(ADDRESS_MAP_PREFIX, "").toInt()
+        mapPoint.id.split(" ")[0].replace(ADDRESS_MAP_PREFIX, "").toInt()
 
     private fun updateShowingAddressDetail(idMapClick: Int) {
         val address = orderAddressItems[idMapClick]

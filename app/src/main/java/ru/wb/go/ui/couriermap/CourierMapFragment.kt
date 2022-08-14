@@ -51,6 +51,7 @@ import ru.wb.go.utils.base.BaseFragment
 import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
+import ru.wb.go.utils.map.PointType
 import java.io.File
 
 
@@ -255,7 +256,18 @@ class CourierMapFragment : BaseFragment() {
     }
 
     private val onMarkerClickListener = { marker: Marker, _: MapView ->
-        viewModel.onItemClick(with(marker) { MapPoint(id, position.latitude, position.longitude) })
+
+        viewModel.onItemClick(with(marker) {
+            MapPoint(id, position.latitude, position.longitude,
+                when (id.split(marker.id)[1]) {
+                    "Warehouse" -> PointType.WAREHOUSE
+                    "Order" -> PointType.ORDER
+                    "Cluster" -> PointType.CLUSTER
+                    "OrderItem" -> PointType.ORDER_ITEM
+                    else -> throw Exception("Unknown point type")
+                })
+            }
+        )
         true
     }
 
@@ -462,7 +474,7 @@ class CourierMapFragment : BaseFragment() {
 
     private fun findMapMarkersByFilterId(showPoints: List<CourierMapMarker>): MutableList<Marker> {
         val markerFilters = mutableListOf<(Marker) -> Boolean>()
-        showPoints.forEach { markerFilters.add(generateFilterMarker(it.point.id)) }
+        showPoints.forEach { markerFilters.add(generateFilterMarker(it.point.id.split(" ")[0])) }
         val findMapMarkers = mutableListOf<Marker>()
         binding.map.overlays
             .filterIsInstance<Marker>()
@@ -515,7 +527,7 @@ class CourierMapFragment : BaseFragment() {
 
         with(withAnimateToPositions) {
 
-            pointsTo.forEach { removeMarkerById(it.point.id) }
+            pointsTo.forEach { removeMarkerById(it.point.id.split(" ")[0]) }
             val markersRestore = mutableListOf<Marker>()
             binding.map.overlays
                 .filterIsInstance<Marker>()
@@ -666,21 +678,20 @@ class CourierMapFragment : BaseFragment() {
 
     private val updateMapMarker = { item: CourierMapMarker ->
         with(item) {
-            val findPoint = findMapPointById(point.id)
+            val findPoint = findMapPointById(point.id.split(" ")[0])
             if (findPoint == null)
-                addMapMarker(point.id, point.lat, point.long, getIcon(item.icon))
+                addMapMarker(point.id+" Warehouse", point.lat, point.long, getIcon(item.icon))
             else updateMapMarker(findPoint, point.id, point.lat, point.long, getIcon(item.icon))
         }
     }
 
     private val updateMapMarkerWithIndex = { item: CourierMapMarker ->
-
         with(item) {
             addMapMarker( // если поставить дебаг он отображает и склады и местоположение
-                point.id,
+                point.id+" Order",
                 point.lat,
                 point.long,
-                BitmapDrawable(resources, getBitmapIndexMarker(point.id, icon))
+                BitmapDrawable(resources, getBitmapIndexMarker(point.id.split(" ")[0], icon))
             )
         }
     }
@@ -709,7 +720,6 @@ class CourierMapFragment : BaseFragment() {
     ) {
         val markerMap = Marker(binding.map)
         markerMap.setOnMarkerClickListener(onMarkerClickListener)
-
         markerMap.id = id
         markerMap.icon = icon
 //        markerMap.isDraggable = true позволяет перетаскивать флажок местоположения

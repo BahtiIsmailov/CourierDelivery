@@ -164,16 +164,15 @@ class CourierIntransitViewModel(
     }
 
     private fun observeMapAction() {
-        viewModelScope.launch {
-            interactor.observeMapAction()
-                .collect{
-                    try {
-                        observeMapActionComplete(it)
-                    }catch (e:Exception){
-                        logException(e,"observeMapAction")
-                    }
+        interactor.observeMapAction()
+            .onEach {
+                observeMapActionComplete(it)
+            }
+            .catch{
+                    logException(it,"observeMapAction")
                 }
-        }
+            .launchIn(viewModelScope)
+
     }
 
     private fun observeMapActionComplete(it: CourierMapAction) {//!!!!!!!!!
@@ -198,7 +197,7 @@ class CourierIntransitViewModel(
 
     private fun onMapPointClick(mapPoint: MapPoint) {
         //onTechEventLog("onItemPointClick")
-        val mapPointClickId = mapPoint.id
+        val mapPointClickId = mapPoint.id.split(" ")[0]
         if (mapPointClickId != CourierMapFragment.MY_LOCATION_ID) {
             val indexItemClick = mapPointClickId.toInt()
             val isMarkerSelected = invertMarkerSelected(indexItemClick)
@@ -217,7 +216,7 @@ class CourierIntransitViewModel(
         mapMarkers.forEach { item ->
             val normalIcon = getNormalMapIcon(item.type)
             item.icon =
-                if (item.point.id == mapPointClickId)
+                if (item.point.id.split(" ")[0] == mapPointClickId)
                     if (isSelected) {
                         changeEnableNavigator(true)
                         getSelectedMapIcon(item.type)
@@ -507,7 +506,7 @@ class CourierIntransitViewModel(
     private fun changeSelectedMarkers(isSelected: Boolean, selectIndex: Int) {
         mapMarkers.forEach { item ->
             with(item) {
-                icon = if (point.id == selectIndex.toString()) {
+                icon = if (point.id.split(" ")[0] == selectIndex.toString()) {
                     if (isSelected) getSelectedMapIcon(type) else getNormalMapIcon(type)
                 } else {
                     getNormalMapIcon(type)
