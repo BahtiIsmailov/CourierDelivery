@@ -14,8 +14,10 @@ abstract class BaseFragment : Fragment() {
             this@observeEvent.collect { event ->
                 observer.invoke(event)
             }
+
         }
     }
+
     fun<T> LiveData<T>.observe(observer: (T) -> Unit) {
         this.observe(viewLifecycleOwner, observer)
     }

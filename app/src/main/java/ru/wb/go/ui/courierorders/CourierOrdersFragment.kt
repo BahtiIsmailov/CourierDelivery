@@ -298,7 +298,7 @@ class CourierOrdersFragment :
 //                    binding.emptyList.visibility = GONE
 //                    binding.orderProgress.visibility = GONE
 //                    binding.orders.visibility = VISIBLE
-                    displayItems(state.items)
+//                    displayItems(state.items)
                 }
                 is CourierOrderItemState.Empty -> {
 //                    binding.emptyList.visibility = VISIBLE

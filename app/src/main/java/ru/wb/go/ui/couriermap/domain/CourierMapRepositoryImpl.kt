@@ -1,5 +1,6 @@
 package ru.wb.go.ui.couriermap.domain
 
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -12,7 +13,7 @@ class CourierMapRepositoryImpl : CourierMapRepository {
        capacity = Channel.UNLIMITED
     )
     private var mapActionSubject = Channel<CourierMapAction>(
-        capacity = Channel.UNLIMITED
+        capacity = Channel.UNLIMITED, onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
 

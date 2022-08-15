@@ -284,71 +284,71 @@ class CourierMapFragment : BaseFragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-        viewModel.clearMap.observeEvent {
+        viewModel.clearMap.observe {
             Log.e("courierMap", "clearMap")
             clearMap()
         }
 
-        viewModel.zoomToBoundingBoxOffsetY.observeEvent {
+        viewModel.zoomToBoundingBoxOffsetY.observe {
             Log.e("courierMap", "zoomToBoundingBoxOffsetY")
             checkMapViewAndZoomToBoundingBoxOffsetY(it)
         }
 
-        viewModel.updateMarkersWithAnimateToPositions.observeEvent {
+        viewModel.updateMarkersWithAnimateToPositions.observe {
             Log.e("courierMap", "updateMarkersWithAnimateToPositions")
             updateMarkersWithAnimateToPositions(it)
         }
 
-        viewModel.updateMarkersWithAnimateToPosition.observeEvent {
+        viewModel.updateMarkersWithAnimateToPosition.observe {
             Log.e("courierMap", "updateMarkersWithAnimateToPosition")
             updateMarkersWithAnimateToPosition(it)
         }
 
-        viewModel.navigateToPoint.observeEvent {
+        viewModel.navigateToPoint.observe {
             Log.e("courierMap", "navigateToPoint")
             navigateToPoint(it.point)
         }
 
-        viewModel.updateMarkers.observeEvent {
+        viewModel.updateMarkers.observe {
             Log.e("courierMap", "updateMarkers")
             updateMarkers(it.points)
         }
 
-        viewModel.updateMarkersWithIndex.observeEvent {
+        viewModel.updateMarkersWithIndex.observe {
             Log.e("courierMap", "updateMarkersWithIndex")//2
             updateMarkersWithIndex(it.points)
         }
-        viewModel.navigateToMarker.observeEvent {
+        viewModel.navigateToMarker.observe {
             Log.e("courierMap", "navigateToMarker")
             navigateToMarker(it.id)
         }
 
-        viewModel.navigateToPointZoom.observeEvent {
+        viewModel.navigateToPointZoom.observe {
             Log.e("courierMap", "navigateToPointZoom")
             navigateToPointZoom(it.point)
         }
 
-        viewModel.navigateToMyLocation.observeEvent {
+        viewModel.navigateToMyLocation.observe {
             Log.e("courierMap", "navigateToMyLocation")
             navigateToMyLocation()
         }
 
-        viewModel.updateMyLocationPoint.observeEvent {
+        viewModel.updateMyLocationPoint.observe {
             Log.e("courierMap", "updateMyLocationPoint")
             updateMyLocationPoint(it.point)
         }
 
-        viewModel.zoomToBoundingBox.observeEvent {
+        viewModel.zoomToBoundingBox.observe {
             Log.e("courierMap", "zoomToBoundingBox")
             zoomToCenterBoundingBox(it.boundingBox, it.animate)
         }
 
-        viewModel.updateMyLocation.observeEvent {
+        viewModel.updateMyLocation.observe {
             Log.e("courierMap", "updateMyLocation")
             updateMyLocation()
         }
 
-        viewModel.visibleManagerBar.observeEvent {
+        viewModel.visibleManagerBar.observe {
             Log.e("courierMap", "visibleManagerBar")
             visibleManagerBar(it)
         }
@@ -420,7 +420,9 @@ class CourierMapFragment : BaseFragment() {
         )
 
         val showMarkers = findMapMarkersByFilterId(withAnimateToPosition.pointsShow)
-        showMarkers.forEach { it.setOnMarkerClickListener(onMarkerClickListener) }
+        showMarkers.forEach {
+            it.setOnMarkerClickListener(onMarkerClickListener)
+        }
         val animateMarkersTo = findMapMarkersByFilterId(withAnimateToPosition.pointsFrom)
 
         val fromGeoPoints = mutableListOf<GeoPoint>()
