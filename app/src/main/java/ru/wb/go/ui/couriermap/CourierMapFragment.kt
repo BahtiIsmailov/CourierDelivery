@@ -286,11 +286,11 @@ class CourierMapFragment : BaseFragment() {
     private fun initObservable() {
         viewModel.clearMap.observeEvent {
             Log.e("courierMap", "clearMap")
-            clearMap()//2
+            clearMap()
         }
 
         viewModel.zoomToBoundingBoxOffsetY.observeEvent {
-            Log.e("courierMap", "zoomToBoundingBoxOffsetY")//2
+            Log.e("courierMap", "zoomToBoundingBoxOffsetY")
             checkMapViewAndZoomToBoundingBoxOffsetY(it)
         }
 
@@ -329,27 +329,27 @@ class CourierMapFragment : BaseFragment() {
         }
 
         viewModel.navigateToMyLocation.observeEvent {
-            Log.e("courierMap", "navigateToMyLocation")//1
+            Log.e("courierMap", "navigateToMyLocation")
             navigateToMyLocation()
         }
 
         viewModel.updateMyLocationPoint.observeEvent {
-            Log.e("courierMap", "updateMyLocationPoint")//1,2,2,2
+            Log.e("courierMap", "updateMyLocationPoint")
             updateMyLocationPoint(it.point)
         }
 
         viewModel.zoomToBoundingBox.observeEvent {
-            Log.e("courierMap", "zoomToBoundingBox")//2,2
+            Log.e("courierMap", "zoomToBoundingBox")
             zoomToCenterBoundingBox(it.boundingBox, it.animate)
         }
 
         viewModel.updateMyLocation.observeEvent {
-            Log.e("courierMap", "updateMyLocation")//1
+            Log.e("courierMap", "updateMyLocation")
             updateMyLocation()
         }
 
         viewModel.visibleManagerBar.observeEvent {
-            Log.e("courierMap", "visibleManagerBar")//1,2,2
+            Log.e("courierMap", "visibleManagerBar")
             visibleManagerBar(it)
         }
 
@@ -485,10 +485,6 @@ class CourierMapFragment : BaseFragment() {
 
     private fun clearMap() {
         binding.map.overlay.clear()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapViewModel.ZoomToBoundingBoxOffsetY) {
@@ -690,7 +686,7 @@ class CourierMapFragment : BaseFragment() {
 
     private val updateMapMarkerWithIndex = { item: CourierMapMarker ->
         with(item) {
-            addMapMarker( // если поставить дебаг он отображает и склады и местоположение
+            addMapMarker(
                 point.id+" Order",
                 point.lat,
                 point.long,

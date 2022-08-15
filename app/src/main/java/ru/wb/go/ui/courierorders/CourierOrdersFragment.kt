@@ -36,9 +36,12 @@ import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment.Companion.COURIER_CAR_NUMBER_ID_EDIT_KEY
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
+import ru.wb.go.ui.courierorders.CourierOrdersFragment.Companion.DIALOG_CONFIRM_SCORE_RESULT_TAG
+import ru.wb.go.ui.courierorders.CourierOrdersFragment.Companion.DIALOG_REGISTRATION_RESULT_TAG
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
+import ru.wb.go.ui.dialogs.DialogInfoStyle
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.managers.ErrorDialogData
 
@@ -113,7 +116,7 @@ class CourierOrdersFragment :
         initListeners()
         initStateObserves()
         initReturnDialogResult()
-        viewModel.init()
+
     }
 
     private fun initReturnDialogResult() {
@@ -151,7 +154,7 @@ class CourierOrdersFragment :
     override fun onResume() {
         super.onResume()
         viewModel.updateOrders(getHalfHeightDisplay())//if (isOrdersExpanded())
-        if (isOrderDetailsExpanded()) viewModel.restoreDetails()
+       // if (isOrderDetailsExpanded()) viewModel.restoreDetails()
     }
 
 
@@ -200,12 +203,11 @@ class CourierOrdersFragment :
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
-//
-//        binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
-//        binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-//        binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
-//        binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
-//        binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
+        binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
+        binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
+        binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
+        binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
+        binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
 //        binding.addressesClose.setOnClickListener { viewModel.onShowOrderDetailsClick() }
 //        binding.carNumberEmpty.setOnClickListener { viewModel.onChangeCarNumberClick() }
 //        binding.showOrderFab.setOnClickListener { viewModel.onNextFab() }
@@ -455,7 +457,9 @@ class CourierOrdersFragment :
 
         viewModel.visibleShowAll.observe(viewLifecycleOwner) {
             viewModel.onShowAllOrdersClick(getHalfHeightDisplay())//if (isOrdersExpanded())
-            if (isOrderDetailsExpanded()) viewModel.onShowAllOrderDetailsClick()
+            if (isOrderDetailsExpanded()) {
+                viewModel.onShowAllOrderDetailsClick()
+            }
         }
 
     }
@@ -600,18 +604,18 @@ class CourierOrdersFragment :
 //                    })
 //            )
         }
-    }
+
 
 
     private fun showRegistrationDialogConfirmInfo() {
-//        DialogConfirmInfoFragment.newInstance(
-//            resultTag = DIALOG_REGISTRATION_RESULT_TAG,
-//            type = DialogInfoStyle.INFO.ordinal,
-//            title = getString(R.string.demo_registration_title_dialog),
-//            message = getString(R.string.demo_registration_message_dialog),
-//            positiveButtonName = getString(R.string.demo_registration_positive_dialog),
-//            negativeButtonName = getString(R.string.demo_registration_negative_dialog)
-//        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
+        DialogConfirmInfoFragment.newInstance(
+            resultTag = DIALOG_REGISTRATION_RESULT_TAG,
+            type = DialogInfoStyle.INFO.ordinal,
+            title = getString(R.string.demo_registration_title_dialog),
+            message = getString(R.string.demo_registration_message_dialog),
+            positiveButtonName = getString(R.string.demo_registration_positive_dialog),
+            negativeButtonName = getString(R.string.demo_registration_negative_dialog)
+        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
 
     private fun showDialogConfirmScoreInfo(
@@ -621,16 +625,16 @@ class CourierOrdersFragment :
         positiveButtonName: String,
         negativeButtonName: String
     ) {
-//        DialogConfirmInfoFragment.newInstance(
-//            DIALOG_CONFIRM_SCORE_RESULT_TAG,
-//            type,
-//            title,
-//            message,
-//            positiveButtonName,
-//            negativeButtonName
-//        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
+        DialogConfirmInfoFragment.newInstance(
+            DIALOG_CONFIRM_SCORE_RESULT_TAG,
+            type,
+            title,
+            message,
+            positiveButtonName,
+            negativeButtonName
+        ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
-
+}
 
 
 @Parcelize

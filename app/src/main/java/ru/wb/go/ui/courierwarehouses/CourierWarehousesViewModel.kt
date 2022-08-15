@@ -290,7 +290,7 @@ class CourierWarehousesViewModel(
                 if (id != MY_LOCATION_ID && mapPoint.type == PointType.WAREHOUSE) {
 
                     //zoomMarkersFromBoundingBox(CoordinatePoint(mapPoint.lat,mapPoint.long))
-                    val indexItemClick = id.toInt()
+                    val indexItemClick = id.toIntOrNull() ?: return@launch
                     changeSelectedMapPoint(mapPoint)
                     updateMarkers()
                     val isMapSelected = isMapSelected(indexItemClick)

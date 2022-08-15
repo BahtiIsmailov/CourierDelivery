@@ -19,7 +19,9 @@ class CourierMapViewModel(
 
     object ClearMap
 
-    private val _clearMap = Channel<ClearMap>()
+    private val _clearMap = Channel<ClearMap>(
+        Channel.UNLIMITED
+    )
     val clearMap = _clearMap.receiveAsFlow()
 
     data class ZoomToBoundingBoxOffsetY(
@@ -40,7 +42,9 @@ class CourierMapViewModel(
     )
 
     private val _updateMarkersWithAnimateToPositions =
-        Channel<UpdateMarkersWithAnimateToPositions>()
+        Channel<UpdateMarkersWithAnimateToPositions>(
+            Channel.UNLIMITED
+        )
     val updateMarkersWithAnimateToPositions = _updateMarkersWithAnimateToPositions.receiveAsFlow()
 
     data class UpdateMarkersWithAnimateToPosition(
@@ -52,7 +56,9 @@ class CourierMapViewModel(
     )
 
     private val _updateMarkersWithAnimateToPosition =
-        Channel<UpdateMarkersWithAnimateToPosition>()
+        Channel<UpdateMarkersWithAnimateToPosition>(
+            Channel.UNLIMITED
+        )
     val updateMarkersWithAnimateToPosition = _updateMarkersWithAnimateToPosition.receiveAsFlow()
 
     data class NavigateToPoint(val point: CoordinatePoint)
@@ -130,8 +136,8 @@ class CourierMapViewModel(
 
     private fun subscribeMapState() {
         interactor.subscribeMapState()
-            .onEach {
-                subscribeMapStateComplete(it)
+            .onEach { mapState ->
+                subscribeMapStateComplete(mapState)
             }
             .catch {
                 logException(it, "subscribeMapState")
@@ -157,9 +163,11 @@ class CourierMapViewModel(
                 )
 
 
-                is CourierMapState.ZoomToBoundingBoxOffsetY -> _zoomToBoundingBoxOffsetY.send(
-                    ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
-                )
+                is CourierMapState.ZoomToBoundingBoxOffsetY ->{
+                    _zoomToBoundingBoxOffsetY.send(
+                        ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
+                    )
+                }
 
 
                 is CourierMapState.NavigateToMarker -> _navigateToMarker.send(NavigateToMarker(it.id))
