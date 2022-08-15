@@ -8,7 +8,6 @@ import ru.wb.go.ui.couriermap.CourierMapState
 
 class CourierMapRepositoryImpl : CourierMapRepository {
 
-
     private var mapStateSubject = Channel<CourierMapState>(
        capacity = Channel.UNLIMITED
     )

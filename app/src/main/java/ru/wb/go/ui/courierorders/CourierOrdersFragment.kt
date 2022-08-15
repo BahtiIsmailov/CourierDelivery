@@ -116,6 +116,7 @@ class CourierOrdersFragment :
         initListeners()
         initStateObserves()
         initReturnDialogResult()
+        viewModel.updateOrders(getHalfHeightDisplay())
 
     }
 
@@ -153,7 +154,7 @@ class CourierOrdersFragment :
 
     override fun onResume() {
         super.onResume()
-        viewModel.updateOrders(getHalfHeightDisplay())//if (isOrdersExpanded())
+        //viewModel.updateOrders(getHalfHeightDisplay())//if (isOrdersExpanded())
        // if (isOrderDetailsExpanded()) viewModel.restoreDetails()
     }
 

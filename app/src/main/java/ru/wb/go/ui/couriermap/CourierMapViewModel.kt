@@ -1,7 +1,9 @@
 package ru.wb.go.ui.couriermap
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -19,9 +21,7 @@ class CourierMapViewModel(
 
     object ClearMap
 
-    private val _clearMap = Channel<ClearMap>(
-        Channel.UNLIMITED
-    )
+    private val _clearMap = Channel<ClearMap>()
     val clearMap = _clearMap.receiveAsFlow()
 
     data class ZoomToBoundingBoxOffsetY(
@@ -42,9 +42,7 @@ class CourierMapViewModel(
     )
 
     private val _updateMarkersWithAnimateToPositions =
-        Channel<UpdateMarkersWithAnimateToPositions>(
-            Channel.UNLIMITED
-        )
+        Channel<UpdateMarkersWithAnimateToPositions>()
     val updateMarkersWithAnimateToPositions = _updateMarkersWithAnimateToPositions.receiveAsFlow()
 
     data class UpdateMarkersWithAnimateToPosition(
@@ -56,77 +54,55 @@ class CourierMapViewModel(
     )
 
     private val _updateMarkersWithAnimateToPosition =
-        Channel<UpdateMarkersWithAnimateToPosition>(
-            Channel.UNLIMITED
-        )
+        Channel<UpdateMarkersWithAnimateToPosition>()
     val updateMarkersWithAnimateToPosition = _updateMarkersWithAnimateToPosition.receiveAsFlow()
 
     data class NavigateToPoint(val point: CoordinatePoint)
 
-    private val _navigateToPoint = Channel<NavigateToPoint>(
-        Channel.UNLIMITED
-    )
+    private val _navigateToPoint = Channel<NavigateToPoint>()
     val navigateToPoint = _navigateToPoint.receiveAsFlow()
 
     data class NavigateToMarker(val id: String)
 
-    private val _navigateToMarker = Channel<NavigateToMarker>(
-        Channel.UNLIMITED
-    )
+    private val _navigateToMarker = Channel<NavigateToMarker>()
     val navigateToMarker = _navigateToMarker.receiveAsFlow()
 
     data class NavigateToPointZoom(val point: CoordinatePoint)
 
-    private val _navigateToPointZoom = Channel<NavigateToPointZoom>(
-        Channel.UNLIMITED
-    )
+    private val _navigateToPointZoom = Channel<NavigateToPointZoom>()
     val navigateToPointZoom = _navigateToPointZoom.receiveAsFlow()
 
     object NavigateToMyLocation
 
-    private val _navigateToMyLocation = Channel<NavigateToMyLocation>(
-        Channel.UNLIMITED
-    )
+    private val _navigateToMyLocation = Channel<NavigateToMyLocation>()
     val navigateToMyLocation = _navigateToMyLocation.receiveAsFlow()
 
     data class UpdateMarkers(val points: List<CourierMapMarker>)
 
-    private val _updateMarkers = Channel<UpdateMarkers>(
-        Channel.UNLIMITED
-    )
+    private val _updateMarkers = Channel<UpdateMarkers>()
     val updateMarkers = _updateMarkers.receiveAsFlow()
 
     data class UpdateMarkersWithIndex(val points: List<CourierMapMarker>)
 
-    private val _updateMarkersWithIndex = Channel<UpdateMarkersWithIndex>(
-        Channel.UNLIMITED
-    )
+    private val _updateMarkersWithIndex = Channel<UpdateMarkersWithIndex>()
     val updateMarkersWithIndex = _updateMarkersWithIndex.receiveAsFlow()
 
     object UpdateMyLocation
 
-    private val _updateMyLocation = Channel<UpdateMyLocation>(
-        Channel.UNLIMITED
-    )
+    private val _updateMyLocation = Channel<UpdateMyLocation>()
     val updateMyLocation = _updateMyLocation.receiveAsFlow()
 
     data class UpdateMyLocationPoint(val point: CoordinatePoint)
 
-    private val _updateMyLocationPoint = Channel<UpdateMyLocationPoint>(
-        Channel.UNLIMITED
-    )
+    private val _updateMyLocationPoint = Channel<UpdateMyLocationPoint>()
     val updateMyLocationPoint = _updateMyLocationPoint.receiveAsFlow()
 
     data class ZoomToBoundingBox(val boundingBox: BoundingBox, val animate: Boolean)
 
-    private val _zoomToBoundingBox = Channel<ZoomToBoundingBox>(
-        Channel.UNLIMITED
-    )
+    private val _zoomToBoundingBox = Channel<ZoomToBoundingBox>()
     val zoomToBoundingBox = _zoomToBoundingBox.receiveAsFlow()
 
-    private val _visibleManagerBar = Channel<CourierVisibilityManagerBar>(
-        Channel.UNLIMITED
-    )
+    private val _visibleManagerBar = Channel<CourierVisibilityManagerBar>()
     val visibleManagerBar = _visibleManagerBar.receiveAsFlow()
 
 
@@ -143,16 +119,17 @@ class CourierMapViewModel(
                 logException(it, "subscribeMapState")
             }
             .launchIn(viewModelScope)
-
     }
 
     private fun subscribeMapStateComplete(it: CourierMapState) {
         viewModelScope.launch {
+
+
             when (it) {
-                is CourierMapState.NavigateToPoint -> _navigateToPoint.send(NavigateToPoint(it.point))
+                is CourierMapState.NavigateToPoint -> _navigateToPoint.trySend(NavigateToPoint(it.point))
 
 
-                is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.send(
+                is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.trySend(
                     UpdateMarkersWithAnimateToPositions(
                         it.pointsHide,
                         it.pointFrom,
@@ -163,42 +140,44 @@ class CourierMapViewModel(
                 )
 
 
-                is CourierMapState.ZoomToBoundingBoxOffsetY ->{
-                    _zoomToBoundingBoxOffsetY.send(
+                is CourierMapState.ZoomToBoundingBoxOffsetY -> {
+                    Log.e("courierMap", "${it.boundingBox} ${it.animate}, ${it.offsetY}")
+                    _zoomToBoundingBoxOffsetY.trySend(
                         ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
                     )
+
                 }
 
 
-                is CourierMapState.NavigateToMarker -> _navigateToMarker.send(NavigateToMarker(it.id))
+                is CourierMapState.NavigateToMarker -> _navigateToMarker.trySend(NavigateToMarker(it.id))
 
 
-                is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.send(
+                is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.trySend(
                     NavigateToPointZoom(it.point)
                 )
 
-                CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.send(
+                CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.trySend(
                     NavigateToMyLocation
                 )
 
 
-                is CourierMapState.UpdateMarkers -> _updateMarkers.send(UpdateMarkers(it.points.toList()))
+                is CourierMapState.UpdateMarkers -> _updateMarkers.trySend(UpdateMarkers(it.points.toList()))
 
 
-                is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.send(
+                is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.trySend(
                     UpdateMarkersWithIndex(it.points)
                 )
 
 
-                CourierMapState.UpdateMyLocation -> _updateMyLocation.send(UpdateMyLocation)
+                CourierMapState.UpdateMyLocation -> _updateMyLocation.trySend(UpdateMyLocation)
 
 
-                is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.send(
+                is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.trySend(
                     UpdateMyLocationPoint(it.point)
                 )
 
 
-                is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.send(
+                is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.trySend(
                     ZoomToBoundingBox(
                         it.boundingBox,
                         it.animate
@@ -206,7 +185,7 @@ class CourierMapViewModel(
                 )
 
 
-                is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.send(
+                is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.trySend(
                     UpdateMarkersWithAnimateToPosition(
                         it.pointsShow,
                         it.pointsFrom,
@@ -215,17 +194,17 @@ class CourierMapViewModel(
                         it.offsetY
                     )
                 )
-                CourierMapState.ClearMap -> _clearMap.send(ClearMap)
-                CourierMapState.ShowManagerBar -> _visibleManagerBar.send(
+                CourierMapState.ClearMap -> _clearMap.trySend(ClearMap)
+                CourierMapState.ShowManagerBar -> _visibleManagerBar.trySend(
                     CourierVisibilityManagerBar.Visible
                 )
-                CourierMapState.HideManagerBar -> _visibleManagerBar.send(
+                CourierMapState.HideManagerBar -> _visibleManagerBar.trySend(
                     CourierVisibilityManagerBar.Hide
                 )
             }
         }
-
     }
+
 
     fun onItemClick(point: MapPoint) {
         interactor.markerClick(point)
