@@ -979,5 +979,36 @@ class CourierMapFragment : BaseFragment() {
 
     }
 
+    private fun makeCluster(
+        mapView: MapView,
+        markerData: List<MapPoint>
+    ){
+        // get and clear old overlays
+        val overlays: MutableList<Overlay> = mapView.overlays
+        overlays.clear()
+
+        // create and set up a clusterer
+
+//        clusterer.setIcon(BitmapFactory.decodeResource(resources, R.drawable.ic_courier_map_order_selected))
+//        clusterer.setRadius(85)
+//        clusterer.mTextAnchorU = 0.70f
+//        clusterer.mTextAnchorV = 0.27f
+//        clusterer.textPaint.textSize = 14.0f
+
+
+        val markerDrawable: Drawable = resources.getDrawable(R.drawable.ic_order_details_office,requireContext().theme)
+
+        // for each entry, create and set up a marker
+//        for (info in markerData) {
+//            val mr = Marker(mapView)
+//            mr.position = GeoPoint(info.lat, info.long)
+//            mr.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+//            mr.title = info.id
+//            mr.icon = markerDrawable
+//            clusterer.add(mr)
+//            overlays.add(clusterer)
+//        }
+    }
+
 
 }

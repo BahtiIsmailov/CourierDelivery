@@ -319,6 +319,7 @@ class CourierOrdersViewModel(
         //updateOrderAndWarehouseMarkers()
         //changeOrderItems()
         scrollTo(itemIndex)
+        onNextFab()
         //changeShowDetailsOrder(isSelected)
     }
 
@@ -592,7 +593,6 @@ class CourierOrdersViewModel(
         orderMapMarkers.filter { it.point.id != WAREHOUSE_ID }.forEachIndexed { index, item ->
             item.icon = if (index == clickItemIndex) {
                 if (isSelected) {
-                    onNextFab()
                     resourceProvider.getOrderMapSelectedIcon()
                 } else {
                     resourceProvider.getOrderMapIcon()
@@ -619,7 +619,7 @@ class CourierOrdersViewModel(
         return isSelected
     }
 
-    fun onNextFab() {
+    private fun onNextFab() {
         _showOrderState.value = CourierOrderShowOrdersState.Invisible
 //    _navigationState.value =
 //        CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
@@ -640,16 +640,18 @@ class CourierOrdersViewModel(
             removeWarehouseFromAddressMapMarker()
         }
         val hideOrderMarkers = orderMapMarkers.toMutableList()
-        hideOrderMarkers.removeFirst()
-//        interactor.mapState(
-//            CourierMapState.UpdateMarkersWithAnimateToPositions(
-//                pointsHide = hideOrderMarkers,
-//                pointFrom = hideOrderMarkers[itemIndex],
-//                pointsTo = addressMapMarkers,
-//                animateTo = addressesBoundingBox(),
-//                offsetY = DETAILS_HEIGHT
-//            )
-//        )
+        //hideOrderMarkers.removeFirst()
+        repeat(2) {
+            interactor.mapState(
+                CourierMapState.UpdateMarkersWithAnimateToPositions(
+                    pointsHide = hideOrderMarkers,
+                    pointFrom = hideOrderMarkers[itemIndex],
+                    pointsTo = addressMapMarkers,
+                    animateTo = addressesBoundingBox(),
+                    offsetY = DETAILS_HEIGHT
+                )
+            )
+        }
     }
 
     private fun removeWarehouseFromAddressMapMarker() {
@@ -842,4 +844,5 @@ class CourierOrdersViewModel(
     data class Label(val label: String)
 
 }
+
 

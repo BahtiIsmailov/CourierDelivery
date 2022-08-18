@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
-import ru.wb.go.ui.SingleLiveEvent
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
@@ -45,7 +44,7 @@ class CourierMapViewModel(
 
     private val _updateMarkersWithAnimateToPositions =
         MutableLiveData<UpdateMarkersWithAnimateToPositions>()
-    val updateMarkersWithAnimateToPositions = _updateMarkersWithAnimateToPositions
+    val updateMarkersWithAnimateToPositions: LiveData<UpdateMarkersWithAnimateToPositions> get() = _updateMarkersWithAnimateToPositions
 
     data class UpdateMarkersWithAnimateToPosition(
         val pointsShow: List<CourierMapMarker>,
@@ -124,84 +123,80 @@ class CourierMapViewModel(
     }
 
     private fun subscribeMapStateComplete(it: CourierMapState) {
-            when (it) {
-                is CourierMapState.NavigateToPoint -> {
-                    _navigateToPoint.value = NavigateToPoint(it.point)
-                }
+        when (it) {
+            is CourierMapState.NavigateToPoint -> {
+                _navigateToPoint.value = NavigateToPoint(it.point)
+            }
 
 
-                is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.value =
-                    UpdateMarkersWithAnimateToPositions(
-                        it.pointsHide,
-                        it.pointFrom,
-                        it.pointsTo,
-                        it.animateTo,
-                        it.offsetY
-                    )
+            is CourierMapState.UpdateMarkersWithAnimateToPositions -> _updateMarkersWithAnimateToPositions.value =
+                UpdateMarkersWithAnimateToPositions(
+                    it.pointsHide,
+                    it.pointFrom,
+                    it.pointsTo,
+                    it.animateTo,
+                    it.offsetY
+                )
 
 
+            is CourierMapState.ZoomToBoundingBoxOffsetY -> {
+                _zoomToBoundingBoxOffsetY.value =
+                    ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
 
-                is CourierMapState.ZoomToBoundingBoxOffsetY -> {
-                    _zoomToBoundingBoxOffsetY.value =
-                        ZoomToBoundingBoxOffsetY(it.boundingBox, it.animate, it.offsetY)
-
-
-                }
-
-
-                is CourierMapState.NavigateToMarker -> _navigateToMarker.value = NavigateToMarker(it.id)
-
-
-                is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
-                    NavigateToPointZoom(it.point)
-
-
-                CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
-                    NavigateToMyLocation
-
-
-
-                is CourierMapState.UpdateMarkers -> _updateMarkers.value = UpdateMarkers(it.points.toList())
-
-
-                is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =
-                    UpdateMarkersWithIndex(it.points)
-
-
-
-                CourierMapState.UpdateMyLocation -> _updateMyLocation.value = UpdateMyLocation
-
-
-                is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.value =
-                    UpdateMyLocationPoint(it.point)
-
-
-
-                is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
-                    ZoomToBoundingBox(
-                        it.boundingBox,
-                        it.animate
-                    )
-
-
-
-                is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
-                    UpdateMarkersWithAnimateToPosition(
-                        it.pointsShow,
-                        it.pointsFrom,
-                        it.pointTo,
-                        it.animateTo,
-                        it.offsetY
-                    )
-
-                CourierMapState.ClearMap -> _clearMap.value = ClearMap
-                CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
-                    CourierVisibilityManagerBar.Visible
-
-                CourierMapState.HideManagerBar -> _visibleManagerBar.value =
-                    CourierVisibilityManagerBar.Hide
 
             }
+
+
+            is CourierMapState.NavigateToMarker -> _navigateToMarker.value = NavigateToMarker(it.id)
+
+
+            is CourierMapState.NavigateToPointZoom -> _navigateToPointZoom.value =
+                NavigateToPointZoom(it.point)
+
+
+            CourierMapState.NavigateToMyLocation -> _navigateToMyLocation.value =
+                NavigateToMyLocation
+
+
+            is CourierMapState.UpdateMarkers -> _updateMarkers.value =
+                UpdateMarkers(it.points.toList())
+
+
+            is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =
+                UpdateMarkersWithIndex(it.points)
+
+
+            CourierMapState.UpdateMyLocation -> _updateMyLocation.value = UpdateMyLocation
+
+
+            is CourierMapState.UpdateMyLocationPoint -> _updateMyLocationPoint.value =
+                UpdateMyLocationPoint(it.point)
+
+
+            is CourierMapState.ZoomToBoundingBox -> _zoomToBoundingBox.value =
+                ZoomToBoundingBox(
+                    it.boundingBox,
+                    it.animate
+                )
+
+
+            is CourierMapState.UpdateMarkersWithAnimateToPosition -> _updateMarkersWithAnimateToPosition.value =
+                UpdateMarkersWithAnimateToPosition(
+                    it.pointsShow,
+                    it.pointsFrom,
+                    it.pointTo,
+                    it.animateTo,
+                    it.offsetY
+                )
+
+            CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
+                CourierVisibilityManagerBar.Visible
+
+            CourierMapState.HideManagerBar -> _visibleManagerBar.value =
+                CourierVisibilityManagerBar.Hide
+
+        }
     }
 
 

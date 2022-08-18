@@ -261,12 +261,20 @@ class CourierOrdersFragment :
                 CourierOrdersNavigationState.NavigateToWarehouse -> {
                     findNavController().popBackStack(R.id.courierOrdersFragment,true)
                 }
-                CourierOrdersNavigationState.NavigateToOrders -> showBottomSheetOrders()
-                is CourierOrdersNavigationState.NavigateToOrderDetails ->
+                CourierOrdersNavigationState.NavigateToOrders -> {
+                    showBottomSheetOrders()
+                }
+                is CourierOrdersNavigationState.NavigateToOrderDetails ->{
                     showBottomSheetOrderDetails(it.isDemo)
-                CourierOrdersNavigationState.NavigateToAddresses -> showAddresses()
-                CourierOrdersNavigationState.NavigateToRegistrationDialog ->
+                }
+
+                CourierOrdersNavigationState.NavigateToAddresses -> {
+                    showAddresses()
+                }
+                CourierOrdersNavigationState.NavigateToRegistrationDialog ->{
                     showRegistrationDialogConfirmInfo()
+                }
+
                 CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
 //                    ResourcesCompat.getDrawable(resources, it.icon, null)
