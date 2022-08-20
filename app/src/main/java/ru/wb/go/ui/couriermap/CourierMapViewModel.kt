@@ -1,15 +1,11 @@
 package ru.wb.go.ui.couriermap
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.osmdroid.util.BoundingBox
 import ru.wb.go.ui.NetworkViewModel
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
@@ -23,7 +19,7 @@ class CourierMapViewModel(
     object ClearMap
 
     private val _clearMap = MutableLiveData<ClearMap>()
-    val clearMap = _clearMap
+    val clearMap:LiveData<ClearMap> get() = _clearMap
 
     data class ZoomToBoundingBoxOffsetY(
         val boundingBox: BoundingBox,
@@ -189,7 +185,9 @@ class CourierMapViewModel(
                     it.offsetY
                 )
 
-            CourierMapState.ClearMap -> _clearMap.value = ClearMap
+            CourierMapState.ClearMap -> {
+                _clearMap.value = ClearMap
+            }
             CourierMapState.ShowManagerBar -> _visibleManagerBar.value =
                 CourierVisibilityManagerBar.Visible
 

@@ -162,6 +162,9 @@ class CourierWarehousesViewModel(
 
 
     fun updateData(flag:Boolean) {
+        if (flag){
+            clearMap()
+        }
         getWarehouses(flag)
     }
 
@@ -232,7 +235,7 @@ class CourierWarehousesViewModel(
         return (loc1.distanceTo(loc2) / 1000).roundToInt()
     }
 
-    private fun getWarehousesComplete(it: Set<CourierWarehouseLocalEntity>,flag: Boolean) {
+    private fun getWarehousesComplete(it: Set<CourierWarehouseLocalEntity>, flag: Boolean) {
         sortedWarehouseEntitiesByCourierLocation(it)
         convertAndSaveItemsPointsMarkers()
         if (!flag) {

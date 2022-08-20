@@ -125,9 +125,11 @@ class CourierWarehousesFragment :
             when (state) {
                 WaitLoader.Wait -> {
                     binding.progress.isVisible = true
+                    binding.holdLayout.isVisible = true
                 }
                 WaitLoader.Complete -> {
                     binding.progress.isGone = true
+                    binding.holdLayout.isGone = true
                 }
             }
         }
