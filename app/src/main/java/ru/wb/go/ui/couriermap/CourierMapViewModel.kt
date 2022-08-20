@@ -78,12 +78,12 @@ class CourierMapViewModel(
     private val _navigateToMyLocation = MutableLiveData<NavigateToMyLocation>()
     val navigateToMyLocation = _navigateToMyLocation
 
-    data class UpdateMarkers(val points: List<CourierMapMarker>)
+    data class UpdateMarkers(val points: Set<CourierMapMarker>)
 
     private val _updateMarkers = MutableLiveData<UpdateMarkers>()
     val updateMarkers = _updateMarkers
 
-    data class UpdateMarkersWithIndex(val points: List<CourierMapMarker>)
+    data class UpdateMarkersWithIndex(val points: Set<CourierMapMarker>)
 
     private val _updateMarkersWithIndex = MutableLiveData<UpdateMarkersWithIndex>()
     val updateMarkersWithIndex = _updateMarkersWithIndex
@@ -159,7 +159,7 @@ class CourierMapViewModel(
 
 
             is CourierMapState.UpdateMarkers -> _updateMarkers.value =
-                UpdateMarkers(it.points.toList())
+                UpdateMarkers(it.points)
 
 
             is CourierMapState.UpdateMarkersWithIndex -> _updateMarkersWithIndex.value =

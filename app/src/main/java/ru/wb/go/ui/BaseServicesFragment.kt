@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.viewbinding.ViewBinding
@@ -72,6 +73,10 @@ abstract class BaseServiceFragment<VM : ServicesViewModel, VB : ViewBinding>(
                 observer.invoke(event)
             }
         }
+    }
+
+    fun<T> LiveData<T>.observe(observer: (T) -> Unit) {
+        this.observe(viewLifecycleOwner, observer)
     }
 
     override fun onDestroyView() {

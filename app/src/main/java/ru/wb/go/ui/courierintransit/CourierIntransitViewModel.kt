@@ -378,7 +378,7 @@ class CourierIntransitViewModel(
         } else {
             interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableSet()))
             val boundingBox =
-                MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+                MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints.toMutableSet())
             interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
         }
 
@@ -542,7 +542,7 @@ class CourierIntransitViewModel(
     }
 
     private fun zoomMarkersFromBoundingBox() {
-        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints.toMutableSet())
         interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
     }
 

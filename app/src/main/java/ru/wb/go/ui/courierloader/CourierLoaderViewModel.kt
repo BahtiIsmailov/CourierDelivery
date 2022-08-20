@@ -54,7 +54,6 @@ class CourierLoaderViewModel(
         initDrawer()
         initVersion()
         checkRootState()
-        sharedWorker.saveMediate(AppPreffsKeys.FRAGMENT_MANAGER,"fromSms")
     }
 
     private fun initDrawer() {

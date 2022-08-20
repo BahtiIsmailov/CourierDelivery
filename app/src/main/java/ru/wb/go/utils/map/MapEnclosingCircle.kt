@@ -43,14 +43,14 @@ class MapEnclosingCircle {
         return BoundingBox(maxLatPoint, maxLongPoint, minLatPoint, minLongPoint)
     }
 
-    fun allCoordinatePointToBoundingBox(points: List<CoordinatePoint>): BoundingBox {
+    fun allCoordinatePointToBoundingBox(points: MutableSet<CoordinatePoint>): BoundingBox {
         var maxLat = TileSystemWebMercator.MaxLatitude
         var maxLong = TileSystemWebMercator.MaxLongitude
         var minLat = TileSystemWebMercator.MinLatitude
         var minLong = TileSystemWebMercator.MinLongitude
 
         if (points.size == 1) {
-            with(points[0]) {
+            with(points.elementAt(0)) {
                 maxLat = latitude + OFFSET_SINGLE_POINT
                 maxLong = longitude + OFFSET_SINGLE_POINT
                 minLat = latitude - OFFSET_SINGLE_POINT
@@ -58,7 +58,7 @@ class MapEnclosingCircle {
             }
         } else {
             for (i in points.indices) {
-                with(points[i]) {
+                with(points.elementAt(i)) {
                     if (i == 0) {
                         maxLat = latitude
                         maxLong = longitude

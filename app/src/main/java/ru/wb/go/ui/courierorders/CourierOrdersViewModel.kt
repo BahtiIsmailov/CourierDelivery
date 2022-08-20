@@ -468,7 +468,7 @@ class CourierOrdersViewModel(
             item.dstOffices.forEach { dstOffices ->
                 coordinatePoints.add(CoordinatePoint(dstOffices.latitude, dstOffices.longitude))
             }
-            val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+            val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints.toMutableSet())
             val centerGroupPoint =
                 CoordinatePoint(boundingBox.centerLatitude, boundingBox.centerLongitude)
             orderCenterGroupPoints.add(centerGroupPoint)
@@ -498,7 +498,7 @@ class CourierOrdersViewModel(
         val warehouseMapMarker = mutableSetOf(orderMapMarkers.first())
         val orders = orderMapMarkers.apply { removeFirst() }
         interactor.mapState(CourierMapState.UpdateMarkers(warehouseMapMarker))
-        interactor.mapState(CourierMapState.UpdateMarkersWithIndex(orders))
+        interactor.mapState(CourierMapState.UpdateMarkersWithIndex(orders.toMutableSet()))
         zoomAllGroupMarkersFromBoundingBox(height)
     }
 
@@ -518,7 +518,7 @@ class CourierOrdersViewModel(
     private fun boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(): BoundingBox {
         orderCenterGroupPoints.add(warehouseCoordinatePoint())
         val boundingBox =
-            MapEnclosingCircle().allCoordinatePointToBoundingBox(orderCenterGroupPoints)
+            MapEnclosingCircle().allCoordinatePointToBoundingBox(orderCenterGroupPoints.toMutableSet())
         orderCenterGroupPoints.removeLast()
         return boundingBox
     }
@@ -669,7 +669,7 @@ class CourierOrdersViewModel(
     }
 
     private fun addressesBoundingBox() =
-        MapEnclosingCircle().allCoordinatePointToBoundingBox(addressCoordinatePoints)
+        MapEnclosingCircle().allCoordinatePointToBoundingBox(addressCoordinatePoints.toMutableSet())
 
     private fun initOrderDetails( // text in order details
         idView: Int,

@@ -203,7 +203,7 @@ class CourierOrdersFragment :
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
-        binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
+//        binding.closeOrders.setOnClickListener { viewModel.onCloseOrdersClick() }
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }

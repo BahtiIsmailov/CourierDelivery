@@ -81,6 +81,10 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
+    <style name="ButtonProgressBarCircularDark" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">#F2F1F4</item>
+    </style>
+
     <style name="AppProgressBarCircularLight" parent="Theme.AppCompat.Light">
         <item name="colorAccent">@color/lvl_1</item>
     </style>

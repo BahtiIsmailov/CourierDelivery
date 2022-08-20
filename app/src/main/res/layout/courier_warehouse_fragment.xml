@@ -205,38 +205,52 @@
             app:layout_constraintEnd_toEndOf="@id/go_to_order"
             app:layout_constraintStart_toStartOf="@+id/go_to_order" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <androidx.cardview.widget.CardView
             android:id="@+id/go_to_order"
-            style="@style/AppButtonStyle"
+            android:backgroundTint="@color/button_app_primary_pressed"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
-            android:layout_centerHorizontal="true"
             android:layout_marginStart="@dimen/pad16"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="20dp"
+            app:cardCornerRadius="@dimen/pad8"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="20dp"
             android:enabled="true"
-            android:text="@string/go_to_orders"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" >
+
+            <TextView
+                android:id="@+id/text_on_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/go_to_orders"
+                android:layout_gravity="center"
+                android:textSize="@dimen/button_text_size"
+                android:letterSpacing="0.02"
+                android:textColor="@color/app_button"
+                android:textAllCaps="false"
+                />
+
+            <ProgressBar
+                android:id="@+id/progress_on_button"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:indeterminate="true"
+                android:indeterminateTintMode="src_atop"
+                android:indeterminateTint="@color/colorDividerPale"
+                />
+        </androidx.cardview.widget.CardView>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:id="@+id/hold_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        android:elevation="2dp"
-        android:background="#60292929"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/no_internet_layout"
@@ -246,7 +260,6 @@
         android:layout_marginEnd="@dimen/pad8"
         android:visibility="gone"
         android:elevation="3dp"
-        tools:visibility="visible"
         android:layout_marginBottom="@dimen/pad24"
         android:background="@drawable/no_internet_background"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -319,4 +332,48 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+    <LinearLayout
+        android:id="@+id/close_orders"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/pad16"
+        android:layout_marginBottom="@dimen/pad16"
+        android:background="@drawable/scanner_loading_box_corner"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_arrow_back_from_order"
+            tools:ignore="ContentDescription" />
+
+
+        <TextView
+            android:id="@+id/total_boxes"
+            style="@style/LargePrimaryRegularText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/dash_underline"
+            android:text="@string/back_from_order"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,9 @@ package ru.wb.go.ui.courierwarehouses
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.View.*
@@ -25,10 +27,12 @@ import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.KeyboardListener
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.courierorders.CourierOrderItemState
 import ru.wb.go.ui.courierorders.CourierOrderParameters
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
 import ru.wb.go.utils.WaitLoader
+import ru.wb.go.utils.WaitLoaderForOrder
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.map.MapPoint
 import kotlin.math.log
@@ -71,11 +75,11 @@ class CourierWarehousesFragment :
         viewModel.selectedMapPointForFragment.observeEvent { mapPoint ->
             mapPointfromViewModel = mapPoint
         }
-        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToDialogInfo.observe{
             showDialogInfo(it)
         }
 
-        viewModel.warehouseState.observe(viewLifecycleOwner) {
+        viewModel.warehouseState.observe{
             when (it) {
                 is CourierWarehouseItemState.InitItems -> {
                     //binding.emptyList.visibility = GONE
@@ -110,37 +114,46 @@ class CourierWarehousesFragment :
                 }
                 CourierWarehouseItemState.Success -> {
                     binding.noInternetLayout.isGone = true
-                    binding.holdLayout.isGone = true
                 }
                 CourierWarehouseItemState.NoInternet -> {
                     binding.noInternetLayout.isVisible = true
-                    binding.holdLayout.isVisible = true
                 }
             }
         }
 
-        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
+        viewModel.waitLoader.observe{ state ->
             when (state) {
                 WaitLoader.Wait -> {
                     binding.progress.isVisible = true
-                    binding.holdLayout.isVisible = true
                 }
                 WaitLoader.Complete -> {
                     binding.progress.isGone = true
-                    binding.holdLayout.isGone = true
                 }
             }
         }
-
-        viewModel.showOrdersState.observe(viewLifecycleOwner) {
-            when (it) {
-                CourierWarehousesShowOrdersState.Disable -> {
+        viewModel.waitLoaderForOrder.observe{ state ->
+            when (state) {
+                WaitLoaderForOrder.Wait -> {
+                    binding.progressOnButton.isVisible = true
+                    binding.textOnButton.isGone = true
+                }
+                WaitLoaderForOrder.Complete -> {
+                    binding.progressOnButton.isGone = true
+                    binding.textOnButton.isVisible = true
                     binding.warehouseCard.startAnimation(
                         AnimationUtils.loadAnimation(
                             requireContext(),
                             R.anim.fade_out
                         ))
                     binding.warehouseCard.isGone = true
+                    binding.closeOrders.isVisible = true
+                }
+            }
+        }
+
+        viewModel.showOrdersState.observe{
+            when (it) {
+                CourierWarehousesShowOrdersState.Disable -> {
 
                 }
                 is CourierWarehousesShowOrdersState.Enable -> {
@@ -155,12 +168,11 @@ class CourierWarehousesFragment :
                                 requireContext(),
                                 R.anim.fade_in
                             ))
-
                 }
             }
         }
 
-        viewModel.demoState.observe(viewLifecycleOwner) {
+        viewModel.demoState.observe{
             when (it) {
                 true -> {
                     binding.navDrawerMenu.visibility = INVISIBLE
@@ -175,24 +187,61 @@ class CourierWarehousesFragment :
             }
         }
 
-        viewModel.navigationState.observe(viewLifecycleOwner) {
+        viewModel.navigationState.observe{
             when (it) {
                 CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
-                is CourierWarehousesNavigationState.NavigateToCourierOrders ->
-                    findNavController().navigate(
-                        CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierOrdersFragment(
-                            CourierOrderParameters(
-                                it.officeId,
-                                it.warehouseLatitude,
-                                it.warehouseLongitude,
-                                it.address
-                            )
-                        )
-                    )
+                is CourierWarehousesNavigationState.NavigateToCourierOrders -> {
+                    viewModel.onMapPointClick(mapPointfromViewModel!!)
+//                    binding.warehouseCard.startAnimation(
+//                        AnimationUtils.loadAnimation(
+//                            requireContext(),
+//                            R.anim.fade_out
+//                        ))
+
+                }
+//                    findNavController().navigate(
+//                        CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierOrdersFragment(
+//                            CourierOrderParameters(
+//                                it.officeId,
+//                                it.warehouseLatitude,
+//                                it.warehouseLongitude,
+//                                it.address
+//                            )
+//                        )
+//                    )
                 CourierWarehousesNavigationState.NavigateToRegistration -> {
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToAuthNavigation()
                     )
+                }
+            }
+        }
+        viewModel.orders.observe(viewLifecycleOwner) { state ->
+            //val adapter = adapter
+            when (state) {
+                is CourierOrderItemState.ShowItems -> {
+//                    binding.emptyList.visibility = GONE
+//                    binding.orderProgress.visibility = GONE
+//                    binding.orders.visibility = VISIBLE
+//                    displayItems(state.items)
+                }
+                is CourierOrderItemState.Empty -> {
+//                    binding.emptyList.visibility = VISIBLE
+//                    binding.orderProgress.visibility = GONE
+//                    binding.orders.visibility = GONE
+//                    binding.emptyTitle.text = state.info
+                }
+                is CourierOrderItemState.UpdateItem -> {
+//                    adapter.setItem(state.position, state.item)
+//                    adapter.notifyItemChanged(state.position, state.item)
+                }
+                is CourierOrderItemState.UpdateItems -> {
+//                    adapter.clear()
+//                    adapter.addItems(state.items)
+//                    adapter.notifyDataSetChanged()
+                }
+                is CourierOrderItemState.ScrollTo -> {
+                    smoothScrollToPosition(state.position)
                 }
             }
         }
@@ -201,9 +250,9 @@ class CourierWarehousesFragment :
 
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
-        binding.goToOrder.setOnClickListener { viewModel.onNextFab() }
+        binding.goToOrder.setOnClickListener { viewModel.onNextFab(getHalfHeightDisplay()) }
         //binding.refresh.setOnRefreshListener { viewModel.updateData() }
-        binding.updateWhenNoInternet.setOnClickListener { viewModel.updateData() }
+        binding.updateWhenNoInternet.setOnClickListener { viewModel.updateData(false) }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.cardWarehouseClose.setOnClickListener{
             viewModel.onMapPointClick(mapPointfromViewModel!!)
@@ -213,6 +262,11 @@ class CourierWarehousesFragment :
                 R.anim.fade_out
             ))
             binding.warehouseCard.isGone = true
+        }
+        binding.closeOrders.setOnClickListener {
+            it.isGone = true
+            viewModel.updateData(true)
+            //viewModel.onMapPointClick(mapPointfromViewModel!!)
         }
 
     }
@@ -236,7 +290,7 @@ class CourierWarehousesFragment :
     override fun onResume() {
         super.onResume()
         viewModel.resumeInit()// если убрать то показывается дэмо версию
-        viewModel.updateData()// если убрать то не отображается список складов
+        viewModel.updateData(false)// если убрать то не отображается список складов
     }
 
     private fun showDialogInfo(
@@ -256,6 +310,20 @@ class CourierWarehousesFragment :
         smoothScroller.targetPosition = position
         //val layoutManager = binding.items.layoutManager as? LinearLayoutManager
        // layoutManager?.startSmoothScroll(smoothScroller)
+    }
+
+    private fun getHalfHeightDisplay(): Int {
+        val outMetrics = DisplayMetrics()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val display = requireContext().display
+            display?.getRealMetrics(outMetrics)
+        } else {
+            @Suppress("DEPRECATION")
+            val display = requireActivity().windowManager.defaultDisplay
+            @Suppress("DEPRECATION")
+            display.getMetrics(outMetrics)
+        }
+        return outMetrics.heightPixels / 2
     }
 
     private fun createSmoothScroller(): SmoothScroller {

@@ -47,7 +47,6 @@ class CheckSmsFragment : Fragment(R.layout.auth_check_sms_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.saveDataToShared()
         initViews()
         initListener()
         initObserve()

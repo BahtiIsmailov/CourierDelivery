@@ -210,11 +210,11 @@ class CourierBillingAccountDataFragment :
 
     private fun initObservers() {
 
-        viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
+        viewModel.toolbarLabelState.observe {
             binding.toolbarLayout.toolbarTitle.text = it
         }
 
-        viewModel.initUIState.observe(viewLifecycleOwner) {
+        viewModel.initUIState.observe {
             when (it) {
                 is CourierBillingAccountDataInitUIState.Create -> {
                     binding.userName.setText(it.userName)
@@ -234,11 +234,11 @@ class CourierBillingAccountDataFragment :
             }
         }
 
-        viewModel.navigateToDialogConfirmInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToDialogConfirmInfo.observe {
             showDialogConfirmInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
 
-        viewModel.formUIState.observe(viewLifecycleOwner) { state ->
+        viewModel.formUIState.observe { state ->
 //            val changeText = changeText
             when (state) {
                 is CourierBillingAccountDataUIState.Complete -> {
@@ -264,22 +264,22 @@ class CourierBillingAccountDataFragment :
             }
         }
 
-        viewModel.bicProgressState.observe(viewLifecycleOwner) {
+        viewModel.bicProgressState.observe {
             when (it) {
                 true -> showProgressBic()
                 false -> hideProgressBic()
             }
         }
 
-        viewModel.keyboardState.observe(viewLifecycleOwner) {
+        viewModel.keyboardState.observe {
             if (!it) hideKeyboard()
         }
 
-        viewModel.bankFindState.observe(viewLifecycleOwner) {
+        viewModel.bankFindState.observe {
             binding.bank.setText(it.name)
         }
 
-        viewModel.navigationEvent.observe(viewLifecycleOwner) { state ->
+        viewModel.navigationEvent.observe { state ->
             when (state) {
                 is CourierBillingAccountDataNavAction.NavigateToAccountSelector ->
                     findNavController().navigate(
@@ -306,18 +306,18 @@ class CourierBillingAccountDataFragment :
             }
         }
 
-        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
+        viewModel.waitLoader.observe { state ->
             when (state) {
                 WaitLoader.Wait -> showProgressDialog()
                 WaitLoader.Complete -> closeProgressDialog()
             }
         }
 
-        viewModel.navigateToMessageState.observe(viewLifecycleOwner) {
+        viewModel.navigateToMessageState.observe {
             showDialogInfo(it)
         }
 
-        viewModel.loaderState.observe(viewLifecycleOwner) { state ->
+        viewModel.loaderState.observe { state ->
             when (state) {
                 CourierBillingAccountDataUILoaderState.Disable ->
                     binding.saveAccountButton.isEnabled = false
