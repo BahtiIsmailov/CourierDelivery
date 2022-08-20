@@ -186,7 +186,7 @@ class CourierWarehousesViewModel(
                 val warehousesLocalEntity = setDataForCourierWarehousesDataBase(response)
                 _warehouseState.value = CourierWarehouseItemState.Success
                 setLoader(WaitLoader.Complete)
-                getWarehousesComplete(warehousesLocalEntity)
+                getWarehousesComplete(warehousesLocalEntity,flag)
                 warehousesLocalEntity.map {
                     interactor.saveWarehouses(it)
                 }
@@ -232,10 +232,12 @@ class CourierWarehousesViewModel(
         return (loc1.distanceTo(loc2) / 1000).roundToInt()
     }
 
-    private fun getWarehousesComplete(it: Set<CourierWarehouseLocalEntity>) {
+    private fun getWarehousesComplete(it: Set<CourierWarehouseLocalEntity>,flag: Boolean) {
         sortedWarehouseEntitiesByCourierLocation(it)
         convertAndSaveItemsPointsMarkers()
-        updateMyLocation()
+        if (!flag) {
+            updateMyLocation()
+        }
         courierWarehouseComplete()
     }
 
