@@ -7,7 +7,7 @@ sealed class CourierOrderItemState {
 
     data class ShowItems(val items: List<BaseItem>) : CourierOrderItemState()
 
-    data class UpdateItems(val items: MutableList<BaseItem>) : CourierOrderItemState()
+    data class UpdateItems(val items: MutableSet<BaseItem>) : CourierOrderItemState()
 
     data class Empty(val info: String) : CourierOrderItemState()
 

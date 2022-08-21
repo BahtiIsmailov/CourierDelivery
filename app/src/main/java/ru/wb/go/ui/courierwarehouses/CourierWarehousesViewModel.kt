@@ -12,24 +12,35 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
+import retrofit2.HttpException
 import ru.wb.go.app.AppPreffsKeys.CLOSE_FRAGMENT_WHEN_ENDED_TIME
 import ru.wb.go.app.AppPreffsKeys.LOCATION_KEY
 import ru.wb.go.app.AppPreffsKeys.SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP
+import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR
+import ru.wb.go.app.COURIER_ONLY_ONE_TASK_ERROR_400
+import ru.wb.go.app.COURIER_TASK_ALREADY_RESERVED_ERROR
 import ru.wb.go.db.entity.courier.CourierWarehouseLocalEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderDstOfficeLocalEntity
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
+import ru.wb.go.db.entity.courierlocal.CourierOrderLocalEntity
 import ru.wb.go.mvvm.model.base.BaseItem
 import ru.wb.go.network.api.app.remote.courier.CourierWarehousesResponse
-import ru.wb.go.network.exceptions.NoInternetException
-import ru.wb.go.network.exceptions.TimeoutException
+import ru.wb.go.network.exceptions.*
 import ru.wb.go.ui.ServicesViewModel
 import ru.wb.go.ui.SingleLiveEvent
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.couriermap.*
 import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.MY_LOCATION_ID
 import ru.wb.go.ui.courierorders.*
+import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
 import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractor
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
+import ru.wb.go.ui.dialogs.DialogInfoFragment
+import ru.wb.go.ui.dialogs.DialogInfoStyle
+import ru.wb.go.ui.dialogs.NavigateToDialogConfirmInfo
 import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.WaitLoaderForOrder
+import ru.wb.go.utils.formatter.CarNumberUtils
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.managers.ErrorDialogManager
 import ru.wb.go.utils.map.CoordinatePoint
@@ -54,6 +65,10 @@ class CourierWarehousesViewModel(
     val orders: LiveData<CourierOrderItemState>
         get() = _orderItems
 
+    private val _orderAddresses = MutableLiveData<CourierOrderAddressesUIState>()
+    val orderAddresses: LiveData<CourierOrderAddressesUIState>
+        get() = _orderAddresses
+
     private val _warehouseState = SingleLiveEvent<CourierWarehouseItemState>()
     val warehouseState: LiveData<CourierWarehouseItemState>
         get() = _warehouseState
@@ -62,9 +77,21 @@ class CourierWarehousesViewModel(
     val navigateToDialogInfo: LiveData<ErrorDialogData>
         get() = _navigateToDialogInfo
 
+    private val _orderDetails = MutableLiveData<CourierOrderDetailsInfoUIState>()
+    val orderDetails: LiveData<CourierOrderDetailsInfoUIState>
+        get() = _orderDetails
+
+    private val _navigateToDialogConfirmScoreInfo = SingleLiveEvent<NavigateToDialogConfirmInfo>()
+    val navigateToDialogConfirmScoreInfo: LiveData<NavigateToDialogConfirmInfo>
+        get() = _navigateToDialogConfirmScoreInfo
+
     private val _navigationState = SingleLiveEvent<CourierWarehousesNavigationState>()
     val navigationState: LiveData<CourierWarehousesNavigationState>
         get() = _navigationState
+
+    private val _navigationStateOrder = SingleLiveEvent<CourierOrdersNavigationState>()
+    val navigationStateOrder: LiveData<CourierOrdersNavigationState>
+        get() = _navigationStateOrder
 
     private val _waitLoader =
         SingleLiveEvent<WaitLoader>()
@@ -106,9 +133,13 @@ class CourierWarehousesViewModel(
     private var addressCoordinatePoints = mutableListOf<CoordinatePoint>()
     private var addressMapMarkers = mutableListOf<CourierMapMarker>()
 
+    private val _showOrderState = MutableLiveData<CourierOrderShowOrdersState>()
+    val showOrderState: LiveData<CourierOrderShowOrdersState>
+        get() = _showOrderState
+
     private var myLocation: CoordinatePoint? = null //sharedWorker.load(LOCATION_KEY,CoordinatePoint::class.java)
 
-
+    private var height = 0
 
     private var whSelectedId: Int? = null
 
@@ -206,6 +237,30 @@ class CourierWarehousesViewModel(
         }
     }
 
+
+    fun onCloseOrderDetailsClick(height: Int) {
+        this.height = height
+        withSelectedRowOrder(makeOrderAddresses())
+        _showOrderState.value = CourierOrderShowOrdersState.Visible
+        _navigationStateOrder.value = CourierOrdersNavigationState.CloseAddressesDetail
+    }
+
+    fun onAddressesClick() {
+        _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToAddresses
+    }
+
+    private fun makeOrderAddresses(): (rowOrder: Int) -> Unit = {
+        _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToOrders
+//        interactor.mapState(
+//            CourierMapState.UpdateMarkersWithAnimateToPosition(
+//                pointsShow = orderMapMarkers,
+//                pointsFrom = addressMapMarkers,
+//                pointTo = orderMapMarkerWithoutWarehouse(it),
+//                animateTo = boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
+//                offsetY = offsetY(height)
+//            )
+//        )
+    }
 
     private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): Set<CourierWarehouseLocalEntity> {
         courierWarehouseResponse.data.forEach {
@@ -343,10 +398,382 @@ class CourierWarehousesViewModel(
                 val currentWarehouse =
                     interactor.loadWarehousesFromId(warehouseItems.elementAt(indexItemClick).id)
                 changeShowDetailsOrder(isMapSelected, currentWarehouse)
+            }else {
+                if (mapPoint.id.split(" ")[0].startsWith(CourierMapFragment.ADDRESS_MAP_PREFIX) && mapPoint.type == PointType.ORDER_ITEM) {
+                    addressMapClickForOrder(mapPoint)
+                } else if (mapPoint.id != CourierMapFragment.WAREHOUSE_ID) {
+                    orderMapClick(mapPoint)
+                }
             }
         }
     }
 
+    private fun orderMapClick(mapPoint: MapPoint) {
+        val itemIndex = mapPoint.id.split(" ")[0].toInt() - 1
+        saveRowOrder(itemIndex)
+        val isSelected = changeSelectedOrderItems(itemIndex)
+        changeMapMarkersForOrder(itemIndex, isSelected)
+        updateOrderAndWarehouseMarkers()
+        changeOrderItems()
+        scrollToForOrder(itemIndex)
+        onNextFabForOrder()
+        changeShowDetailsOrder(isSelected)
+    }
+
+    fun onChangeCarNumberClick() {
+        withSelectedRowOrder(navigateToEditCarNumber())
+    }
+
+    private fun navigateToEditCarNumber(): (rowOrder: Int) -> Unit = {
+        _navigationStateOrder.value =
+            CourierOrdersNavigationState.NavigateToCarNumber(
+                result = CourierCarNumberResult.Edit(it)
+
+            )
+    }
+    fun onConfirmTakeOrderClick() {
+        when {
+            interactorOrder.isDemoMode() -> navigateToRegistrationDialog()
+            interactorOrder.carNumberIsConfirm() -> {
+                withSelectedRowOrder(
+                    navigateToDialogConfirmScoreInfo()
+                )
+            }
+            else -> withSelectedRowOrder(navigateToCreateCarNumber())
+        }
+    }
+
+    private fun navigateToCreateCarNumber(): (rowOrder: Int) -> Unit = {
+        _navigationStateOrder.value =
+            CourierOrdersNavigationState.NavigateToCarNumber(
+                result = CourierCarNumberResult.Create(it)
+            )
+
+    }
+    private fun navigateToDialogConfirmScoreInfo(): (rowOrder: Int) -> Unit = {
+        var boxCountWithRouteId = 0
+        with(orderLocalDataEntities[it]) {
+            viewModelScope.launch {
+                if (courierOrderLocalEntity.ridMask != 0L) {
+                    boxCountWithRouteId =
+                        interactorOrder.getBoxCountWithRidMask(courierOrderLocalEntity).count
+                }
+                _navigateToDialogConfirmScoreInfo.value =
+                    NavigateToDialogConfirmInfo(
+                        DialogInfoStyle.INFO.ordinal,
+                        resourceProviderOrder.getConfirmTitleDialog(courierOrderLocalEntity.id),
+                        resourceProviderOrder.getConfirmMessageDialog(
+                            CarNumberUtils(interactorOrder.carNumber()).fullNumber(),
+                            resourceProviderOrder.getCargo(
+                                courierOrderLocalEntity.minVolume,
+                                courierOrderLocalEntity.minBoxesCount
+                            ),
+                            courierOrderLocalEntity.reservedDuration,
+                            if (boxCountWithRouteId == 0) courierOrderLocalEntity.minBoxesCount
+                            else boxCountWithRouteId
+                        ),
+                        resourceProviderOrder.getConfirmPositiveDialog(),
+                        resourceProviderOrder.getConfirmNegativeDialog()
+                    )
+            }
+        }
+    }
+    private fun navigateToRegistrationDialog() {
+        _navigationStateOrder.value =
+            CourierOrdersNavigationState.NavigateToRegistrationDialog
+
+    }
+
+    private fun withSelectedRowOrder(action: (rowOrder: Int) -> Unit) {
+        action(interactorOrder.selectedRowOrder())
+    }
+    fun onMapClickWithDetail() {
+        _navigationStateOrder.value = CourierOrdersNavigationState.CloseAddressesDetail
+        unselectedAddressMapMarkers()
+        updateAddressMarkers()
+        unselectedAddressItems()
+        initAddressItems(orderAddressItems)
+    }
+
+    private fun unselectedAddressItems() {
+        orderAddressItems.forEach { it.isSelected = false }
+    }
+    private fun unselectedAddressMapMarkers() {
+        addressMapMarkers.forEachIndexed { index, courierMapMarker ->
+            courierMapMarker.icon = if (orderAddressItems[index].isUnspentTimeWork)
+                resourceProviderOrder.getOfficeMapTimeIcon() else resourceProviderOrder.getOfficeMapIcon()
+        }
+    }
+
+    private fun onNextFabForOrder() {
+        _showOrderState.value = CourierOrderShowOrdersState.Invisible
+        _navigationStateOrder.value =
+        CourierOrdersNavigationState.NavigateToOrderDetails(interactorOrder.isDemoMode())
+        initOrderDetails(interactorOrder.selectedRowOrder())
+    }
+
+    private fun initOrderDetails(itemIndex: Int) {
+        with(orderLocalDataEntities[itemIndex]) {
+            initOrderDetails(itemIndex, courierOrderLocalEntity, dstOffices.size)
+            convertAndSaveOrderAddressMapMarkersAndItems(dstOffices)
+            removeWarehouseFromAddressMapMarker()
+        }
+        val hideOrderMarkers = orderMapMarkers.toMutableList()
+        //hideOrderMarkers.removeFirst()
+        interactor.mapState(
+            CourierMapState.UpdateMarkersWithAnimateToPositions(
+                pointsHide = hideOrderMarkers,
+                pointFrom = hideOrderMarkers[itemIndex],
+                pointsTo = addressMapMarkers,
+                animateTo = addressesBoundingBox(),
+                offsetY = CourierOrdersViewModel.DETAILS_HEIGHT
+            )
+        )
+
+    }
+    fun onConfirmOrderClick() {
+        setLoader(WaitLoader.Wait)
+        viewModelScope.launch {
+            try {
+                interactorOrder.anchorTask()
+                anchorTaskComplete()
+            } catch (e: Exception) {
+                anchorTaskError(e)
+            } finally {
+                val localOderEntity = interactorOrder.courierLocalOrderEntity()
+                //interactor.mapState(CourierMapState.NavigateToPointZoom(CoordinatePoint(localOderEntity.srcLatitude,localOderEntity.srcLongitude)))
+                logCourierAndOrderData(localOderEntity)
+            }
+        }
+    }
+
+    private fun anchorTaskError(it: Throwable) {
+        setLoader(WaitLoader.Complete)
+        if (it is HttpException) {
+            if (it.code() == COURIER_ONLY_ONE_TASK_ERROR_400) {
+                _navigationStateOrder.value = CourierOrdersNavigationState.CourierLoader
+            }
+        } else if (it is BadRequestException) {
+            if (it.error.code == COURIER_ONLY_ONE_TASK_ERROR) {
+                _navigationStateOrder.value = CourierOrdersNavigationState.CourierLoader
+            } else if (it.error.code == COURIER_TASK_ALREADY_RESERVED_ERROR) {
+                taskRejected()
+            }
+        } else if (it is HttpObjectNotFoundException) {
+            taskRejected()
+        } else {
+            errorDialogManager.showErrorDialog(
+                it,
+                _navigateToDialogInfo,
+                DialogInfoFragment.DIALOG_INFO2_TAG
+            )
+        }
+    }
+
+    private fun taskRejected() {
+        val ex = CustomException(resourceProviderOrder.getTaskReject())
+        errorDialogManager.showErrorDialog(ex, _navigateToDialogInfo)
+    }
+    fun onRegistrationConfirmClick() {
+        _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToRegistration
+    }
+    private fun anchorTaskComplete() {
+        setLoader(WaitLoader.Complete)
+        _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToTimer
+    }
+
+    private fun addressesBoundingBox() =
+        MapEnclosingCircle().allCoordinatePointToBoundingBox(addressCoordinatePoints.toMutableSet())
+
+    private fun removeWarehouseFromAddressMapMarker() {
+        addressMapMarkers.removeAt(CourierOrdersViewModel.WAREHOUSE_FIRST_INDEX)
+    }
+
+    private fun convertAndSaveOrderAddressMapMarkersAndItems(dstOffices: List<CourierOrderDstOfficeLocalEntity>) {
+        val addressItems = mutableListOf<CourierOrderDetailsAddressItem>()
+        val addressCoordinatePoints = mutableListOf<CoordinatePoint>()
+        val addressMapMarkers = mutableListOf<CourierMapMarker>()
+        val warehouseLatitude = oldEntity?.latitude
+        val warehouseLongitude = oldEntity?.longitude
+        val warehouseMapPoint = MapPoint(CourierMapFragment.WAREHOUSE_ID, warehouseLatitude!!, warehouseLongitude!!, null)
+        val warehouseMapMarker =
+            Empty(warehouseMapPoint, resourceProvider.getWarehouseMapSelectedIcon())
+        addressMapMarkers.add(warehouseMapMarker)
+        dstOffices.forEachIndexed { index, item ->
+            addressItems.add(
+                CourierOrderDetailsAddressItem(
+                    if (item.isUnusualTime) resourceProviderOrder.getOfficeMapTimeIcon() else resourceProviderOrder.getOfficeMapIcon(),
+                    item.name,
+                    false,
+                    item.isUnusualTime,
+                    item.workTimes.splitTimes()
+                )
+            )
+            addressCoordinatePoints.add(CoordinatePoint(item.latitude, item.longitude))
+            val mapPoint =
+                MapPoint("${CourierMapFragment.ADDRESS_MAP_PREFIX}$index", item.latitude, item.longitude, null)
+            val mapMarker = Empty(
+                mapPoint,
+                if (item.isUnusualTime) resourceProviderOrder.getOfficeMapTimeIcon() else resourceProviderOrder.getOfficeMapIcon()
+            )
+            addressMapMarkers.add(mapMarker)
+        }
+        saveAddressItems(addressItems)
+        initAddressItems(addressItems)
+        saveAddressCoordinatePoints(addressCoordinatePoints)
+        saveAddressMapMarkers(addressMapMarkers)
+    }
+
+    private fun saveAddressItems(items: List<CourierOrderDetailsAddressItem>) {
+        orderAddressItems = items.toMutableList()
+    }
+
+    private fun saveAddressCoordinatePoints(coordinatePoints: List<CoordinatePoint>) {
+        this.addressCoordinatePoints = coordinatePoints.toMutableList()
+    }
+
+    private fun saveAddressMapMarkers(mapMarkers: List<CourierMapMarker>) {
+        this.addressMapMarkers = mapMarkers.toMutableList()
+    }
+
+    private fun initAddressItems(items: MutableList<CourierOrderDetailsAddressItem>) {
+        if (items.isEmpty()) {
+            _orderAddresses.value = CourierOrderAddressesUIState.Empty
+        } else {
+            _orderAddresses.value = CourierOrderAddressesUIState.InitItems(items)
+        }
+    }
+
+    private fun String.splitTimes(): String {
+        val sb = StringBuffer()
+        this.split(CourierOrdersViewModel.TIME_DIVIDER)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .forEachIndexed { index, item ->
+                if (index > 0) sb.append("\n")
+                sb.append(item)
+            }
+        return sb.toString()
+    }
+
+    private fun initOrderDetails( // text in order details
+        idView: Int,
+        courierOrderEntity: CourierOrderLocalEntity,
+        pvz: Int
+    ) {
+        with(courierOrderEntity) {
+            val carNumber = carNumberFormat(interactorOrder.carNumber())
+            val carTypeIcon = resourceProviderOrder.getTypeIcons(interactorOrder.carType())
+            val itemId = (idView + 1).toString()
+            // val coast = DecimalFormat("#,###.##").format(minCost)
+            _orderDetails.value =
+                CourierOrderDetailsInfoUIState.InitOrderDetails(
+                    carNumber = carNumber,
+                    carTypeIcon = carTypeIcon,
+                    isChangeCarNumber = interactorOrder.carNumberIsConfirm(),
+                    itemId = itemId,
+                    orderId = resourceProviderOrder.getOrder(id),
+                    cost = resourceProviderOrder.getCost(minCost),
+                    cargo = resourceProviderOrder.getCargo(minBoxesCount),
+                    countPvz = resourceProviderOrder.getCountPvz(pvz),
+                    reserve = resourceProviderOrder.getArrive(reservedDuration),
+                    taskDistance = taskDistance
+                )
+        }
+    }
+
+    private fun carNumberFormat(it: String) =
+        it.let {
+            if (it.isEmpty()) CarNumberState.Empty
+            else CarNumberState.Indicated(resourceProviderOrder.getCarNumber(CarNumberUtils(it).fullNumber()))
+        }
+    private fun changeOrderItems() {
+        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
+    }
+
+    private fun changeMapMarkersForOrder(clickItemIndex: Int, isSelected: Boolean) {
+        orderMapMarkers.filter { it.point.id != CourierMapFragment.WAREHOUSE_ID }.forEachIndexed { index, item ->
+            item.icon = if (index == clickItemIndex) {
+                if (isSelected) {
+                    resourceProviderOrder.getOrderMapSelectedIcon()
+                } else {
+                    resourceProviderOrder.getOrderMapIcon()
+                }
+            } else {
+                resourceProviderOrder.getOrderMapIcon()
+            }
+        }
+    }
+    private fun changeSelectedOrderItems(itemIndex: Int): Boolean {
+        var isSelected = false
+        orderItems.forEachIndexed { index, item ->
+            val orderItem = (item as CourierOrderItem)
+            orderItem.isSelected = if (index == itemIndex) {
+                isSelected = !orderItem.isSelected
+                isSelected
+            } else false
+        }
+        return isSelected
+    }
+
+    private fun saveRowOrder(itemIndex: Int) {
+        interactorOrder.saveRowOrder(itemIndex)
+    }
+
+    private fun scrollToForOrder(index: Int) {
+        interactor.mapState(
+            CourierMapState.NavigateToPoint(
+                CoordinatePoint(
+                    orderMapMarkers.elementAt(index).point.lat,
+                    orderMapMarkers.elementAt(index).point.long
+                )
+            )
+        )
+    }
+
+        //_orderItems.value = CourierOrderItemState.ScrollTo(index)
+
+    private fun addressMapClickForOrder(mapPoint: MapPoint) {
+        changeSelectedAddressMapPointAndItemByMap(mapPoint.id.split(" ")[0])
+        updateAddressMarkers()
+        updateShowingAddressDetail(getIdMapWithoutPrefix(mapPoint))
+        initAddressItems(orderAddressItems)
+    }
+
+    private fun getIdMapWithoutPrefix(mapPoint: MapPoint) =
+        mapPoint.id.split(" ")[0].replace(CourierMapFragment.ADDRESS_MAP_PREFIX, "").toInt()
+
+    private fun updateShowingAddressDetail(idMapClick: Int) {
+        val address = orderAddressItems[idMapClick]
+        _navigationStateOrder.value =
+            if (address.isSelected) {
+                CourierOrdersNavigationState.ShowAddressDetail(
+                    if (address.isUnspentTimeWork) resourceProviderOrder.getOfficeMapSelectedTimeIcon() else resourceProviderOrder.getOfficeMapSelectedIcon(),
+                    address.fullAddress,
+                    address.timeWork,
+                )
+            }
+            else {
+                CourierOrdersNavigationState.CloseAddressesDetail
+            }
+    }
+
+    private fun updateAddressMarkers() {
+        //interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers.toMutableSet()))
+    }
+    private fun changeSelectedAddressMapPointAndItemByMap(mapPointId: String) {
+        addressMapMarkers.forEachIndexed { index, item ->
+            val addressItem = orderAddressItems[index]
+            item.icon =
+                if (item.point.id == mapPointId && (item.icon == resourceProviderOrder.getOfficeMapIcon() || item.icon == resourceProviderOrder.getOfficeMapTimeIcon())) {
+                    addressItem.isSelected = true
+                    if (addressItem.isUnspentTimeWork) resourceProviderOrder.getOfficeMapSelectedTimeIcon() else resourceProviderOrder.getOfficeMapSelectedIcon()
+                } else {
+                    addressItem.isSelected = false
+                    if (addressItem.isUnspentTimeWork) resourceProviderOrder.getOfficeMapTimeIcon() else resourceProviderOrder.getOfficeMapIcon()
+                }
+        }
+    }
     private fun changeSelectedMapPoint(mapPoint: MapPoint) {
         mapMarkers.forEach { item ->
             item.icon =
@@ -439,6 +866,12 @@ class CourierWarehousesViewModel(
         }
     }
 
+    private fun changeShowDetailsOrder(selected: Boolean) {
+        _showOrderState.value =
+            if (selected) CourierOrderShowOrdersState.Enable
+            else CourierOrderShowOrdersState.Disable
+    }
+
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {
         changeSelectedWarehouseItemsByMap(selectIndex, isSelected)
         if (warehouseItems.isEmpty()) {
@@ -492,13 +925,13 @@ class CourierWarehousesViewModel(
             _orderItems.value = CourierOrderItemState.Empty(resourceProviderOrder.getDialogEmpty())
         } else {
             clearMap()
-            updateOrderAndWarehouseMarkers(height)
+            updateOrderAndWarehouseMarkers()//height
             zoomAllGroupMarkersFromBoundingBox(height)
             //showAllAndOrderItems()
         }
     }
 
-    private fun updateOrderAndWarehouseMarkers(height: Int) {
+    private fun updateOrderAndWarehouseMarkers() {
         val warehouseMapMarker = mutableSetOf(orderMapMarkers.first())
         val orders = orderMapMarkers.apply { remove(first()) }
         interactor.mapState(CourierMapState.UpdateMarkers(warehouseMapMarker))

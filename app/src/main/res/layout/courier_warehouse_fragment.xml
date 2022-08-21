@@ -133,7 +133,6 @@
     <!--        tools:ignore="ContentDescription" />-->
 
 
-
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/support_app"
         style="@style/AppMapButtonStyle"
@@ -207,47 +206,44 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/go_to_order"
-            android:backgroundTint="@color/button_app_primary_pressed"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
             android:layout_marginStart="@dimen/pad16"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="20dp"
-            app:cardCornerRadius="@dimen/pad8"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="20dp"
+            android:backgroundTint="@color/button_app_primary_pressed"
             android:enabled="true"
+            app:cardCornerRadius="@dimen/pad8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" >
+            app:layout_constraintStart_toStartOf="parent">
 
             <TextView
                 android:id="@+id/text_on_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/go_to_orders"
                 android:layout_gravity="center"
-                android:textSize="@dimen/button_text_size"
                 android:letterSpacing="0.02"
-                android:textColor="@color/app_button"
+                android:text="@string/go_to_orders"
                 android:textAllCaps="false"
-                />
+                android:textColor="@color/app_button"
+                android:textSize="@dimen/button_text_size" />
 
             <ProgressBar
                 android:id="@+id/progress_on_button"
-                android:visibility="gone"
-                tools:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="10dp"
                 android:indeterminate="true"
-                android:indeterminateTintMode="src_atop"
                 android:indeterminateTint="@color/colorDividerPale"
-                />
+                android:indeterminateTintMode="src_atop"
+                android:visibility="gone"
+                tools:visibility="visible" />
         </androidx.cardview.widget.CardView>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -258,10 +254,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/pad8"
         android:layout_marginEnd="@dimen/pad8"
-        android:visibility="gone"
-        android:elevation="3dp"
         android:layout_marginBottom="@dimen/pad24"
         android:background="@drawable/no_internet_background"
+        android:elevation="3dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
@@ -298,8 +294,8 @@
             style="@style/LargePrimaryMediumText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/pad12"
             android:layout_marginStart="@dimen/pad24"
+            android:layout_marginTop="@dimen/pad12"
             android:layout_marginEnd="@dimen/pad24"
             android:text="@string/app_no_internet_warehouse_message"
             app:layout_constraintEnd_toEndOf="parent"
@@ -313,25 +309,24 @@
             android:layout_marginStart="@dimen/pad16"
             android:layout_marginTop="38dp"
             android:layout_marginEnd="@dimen/pad16"
+            android:layout_marginBottom="@dimen/pad16"
             android:text="@string/flights_empty_flight_update"
             android:textSize="16sp"
-            android:layout_marginBottom="@dimen/pad16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/some_text" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/progress"
-        android:visibility="gone"
-        tools:visibility="visible"
+        style="@style/AppProgressBarCircularDark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/AppProgressBarCircularDark"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        tools:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/close_orders"
@@ -340,7 +335,6 @@
         android:layout_marginStart="@dimen/pad16"
         android:layout_marginBottom="@dimen/pad16"
         android:background="@drawable/scanner_loading_box_corner"
-        android:visibility="gone"
         android:clickable="true"
         android:focusable="true"
         android:orientation="horizontal"
@@ -348,9 +342,9 @@
         android:paddingTop="8dp"
         android:paddingEnd="8dp"
         android:paddingBottom="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-
         >
 
         <ImageView
@@ -381,12 +375,201 @@
         android:id="@+id/hold_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#60292929"
         android:clickable="true"
+        android:elevation="2dp"
         android:focusable="true"
         android:visibility="gone"
-        android:elevation="2dp"
-        android:background="#60292929"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/order_details_layout_coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/order_details_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/reception_bottom_sheet_info"
+            tools:visibility="visible"
+            android:visibility="gone"
+            app:behavior_hideable="true"
+            app:layout_behavior="ru.wb.go.ui.courierorders.LockableBottomSheetBehavior">
+
+            <TextView
+                android:id="@+id/car_number_prefix"
+                style="@style/LargeSecondaryRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="22dp"
+                android:text="@string/courier_orders_automobile"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/close_order_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/pad16"
+                android:src="@drawable/ic_warehouse_detail_close"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/car_number"
+                style="@style/MediumPrimaryRegularText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
+                app:layout_constraintStart_toEndOf="@+id/car_number_prefix"
+                app:layout_constraintTop_toTopOf="@+id/car_number_prefix"
+                tools:text=" • А111АА197" />
+
+            <ImageView
+                android:id="@+id/car_change_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/pad8"
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toBottomOf="@+id/car_number"
+                app:layout_constraintStart_toEndOf="@+id/car_number"
+                app:layout_constraintTop_toTopOf="@+id/car_number"
+                app:srcCompat="@drawable/ic_change_car"
+                tools:ignore="ContentDescription" />
+
+            <View
+                android:id="@+id/title_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorDividerPale"
+                app:layout_constraintTop_toBottomOf="@+id/car_number_prefix" />
+
+            <include
+                android:id="@+id/selectedOrder"
+                layout="@layout/courier_order_delegate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:focusable="false"
+                app:layout_constraintBottom_toTopOf="@id/addresses_order"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/title_divider" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/lvl_1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/selectedOrder" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/take_order"
+                style="@style/AppButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/auth_button_height"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="20dp"
+                android:enabled="true"
+                android:text="@string/courier_orders_take"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/center_vertical" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/addresses_order"
+                style="@style/AppTransparentButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/auth_button_height"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="20dp"
+                android:enabled="true"
+                android:text="@string/courier_orders_addresses"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/center_vertical"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/address_detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginStart="@dimen/pad16"
+        android:layout_marginEnd="@dimen/pad16"
+        android:layout_marginBottom="@dimen/pad16"
+        android:background="@drawable/spinner_account_rounded_corner"
+        android:paddingTop="@dimen/pad16"
+        android:paddingBottom="@dimen/pad16"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/order_details_layout_coordinator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/icon_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/pad16"
+            android:src="@drawable/ic_address_point_detail"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription,MissingConstraints" />
+
+        <TextView
+            android:id="@+id/address_detail"
+            style="@style/MediumPrimaryRegularText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/pad16"
+            android:layout_marginEnd="@dimen/pad16"
+            android:gravity="start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/icon_address"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="RtlHardcoded"
+            tools:text="ул. Нижнее Мячково, Нижнее Мячково, 140123" />
+
+        <TextView
+            android:id="@+id/time_work_detail"
+            style="@style/MediumPrimaryRegularText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/pad16"
+            android:gravity="start"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/address_detail"
+            app:layout_constraintTop_toBottomOf="@+id/address_detail"
+            tools:text="11:00 - 16:00" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -317,7 +317,7 @@ class CourierOrdersViewModel(
         //val isSelected = changeSelectedOrderItems(itemIndex)
         //changeMapMarkers(itemIndex, isSelected)
         //updateOrderAndWarehouseMarkers()
-        //changeOrderItems()
+        changeOrderItems()
         scrollTo(itemIndex)
         onNextFab()
         //changeShowDetailsOrder(isSelected)
@@ -567,7 +567,7 @@ class CourierOrdersViewModel(
     }
 
     private fun changeOrderItems() {
-        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems)
+        _orderItems.value = CourierOrderItemState.UpdateItems(orderItems.toMutableSet())
     }
 
     private fun scrollTo(index: Int) {

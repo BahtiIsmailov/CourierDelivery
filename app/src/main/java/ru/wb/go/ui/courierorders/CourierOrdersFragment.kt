@@ -36,8 +36,6 @@ import ru.wb.go.ui.app.NavToolbarListener
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment.Companion.COURIER_CAR_NUMBER_ID_EDIT_KEY
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
-import ru.wb.go.ui.courierorders.CourierOrdersFragment.Companion.DIALOG_CONFIRM_SCORE_RESULT_TAG
-import ru.wb.go.ui.courierorders.CourierOrdersFragment.Companion.DIALOG_REGISTRATION_RESULT_TAG
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
@@ -259,7 +257,7 @@ class CourierOrdersFragment :
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
                 CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
                 CourierOrdersNavigationState.NavigateToWarehouse -> {
-                    findNavController().popBackStack(R.id.courierOrdersFragment,true)
+                    //findNavController().popBackStack(R.id.courierOrdersFragment,true)
                 }
                 CourierOrdersNavigationState.NavigateToOrders -> {
                     showBottomSheetOrders()
@@ -292,10 +290,10 @@ class CourierOrdersFragment :
                     if (isOrderDetailsExpanded()) {
                         viewModel.onMapClickWithDetail()
                     }
-                CourierOrdersNavigationState.CourierLoader ->
-                    findNavController().navigate(
-                        CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierLoaderFragment()
-                    )
+                CourierOrdersNavigationState.CourierLoader ->{}
+                    //findNavController().navigate(
+                        //CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierLoaderFragment()
+                    //)
             }
         }
 
@@ -508,23 +506,23 @@ class CourierOrdersFragment :
 //        bottomSheetOrderAddresses.state == BottomSheetBehavior.STATE_EXPANDED
 
     private fun navigateToTimer() {
-        findNavController().navigate(
-            CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierOrderTimerFragment()
-        )
+//        findNavController().navigate(
+//            CourierOrdersFragmentDirections.actionCourierOrdersFragmentToCourierOrderTimerFragment()
+//        )
     }
 
     private fun navigateToRegistration() {
-        findNavController().navigate(
-            CourierOrdersFragmentDirections.actionCourierOrdersFragmentToAuthNavigation()
-        )
+//        findNavController().navigate(
+//            CourierOrdersFragmentDirections.actionCourierOrdersFragmentToAuthNavigation()
+//        )
     }
 
     private fun navigateToCarNumber(it: CourierOrdersNavigationState.NavigateToCarNumber) {
-        findNavController().navigate(
-            CourierOrdersFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
-                CourierCarNumberParameters(it.result)
-            )
-        )
+//        findNavController().navigate(
+//            CourierOrdersFragmentDirections.actionCourierOrderFragmentToCourierCarNumberFragment(
+//                CourierCarNumberParameters(it.result)
+//            )
+//        )
     }
 
     private fun showBottomSheetOrders() {
