@@ -215,7 +215,6 @@ class CourierWarehousesFragment :
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderDetails -> {
                     with(binding.selectedOrder) {
-
                         when (it.carNumber) {
                             CarNumberState.Empty -> {
                                 binding.carNumber.visibility = GONE
