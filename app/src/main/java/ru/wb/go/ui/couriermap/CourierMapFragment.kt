@@ -91,18 +91,8 @@ class CourierMapFragment : BaseFragment() {
     private val mapController: IMapController
         get() = binding.map.controller as IMapController
 
-    private val clusterer by lazy {
-        RadiusMarkerClusterer(requireContext()).apply {
-            setIcon(
-                BonusPackHelper.getBitmapFromVectorDrawable(
-                    requireContext(),
-                    R.drawable.ic_courier_map_order
-                )
-            )
-            setRadius(100)
-            textPaint.color = resources.getColor(R.color.button_app_primary_pressed,requireContext().theme)
-        }
-    }
+    private var clusterer:RadiusMarkerClusterer? = null
+
     val paint by lazy {
         Paint().apply {
             //color = Color.WHITE
@@ -116,6 +106,22 @@ class CourierMapFragment : BaseFragment() {
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             textSize = TEXT_SIZE_INDEX_MARKER
         }
+    }
+
+    private fun initClusterer() : RadiusMarkerClusterer{
+        return RadiusMarkerClusterer(requireContext()).apply {
+            setIcon(
+                BonusPackHelper.getBitmapFromVectorDrawable(
+                    requireContext(),
+                    R.drawable.ic_courier_map_order
+                )
+            )
+            setRadius(100)
+            textPaint.color = resources.getColor(R.color.button_app_primary_pressed,requireContext().theme)
+        }.also {
+            binding.map.overlays.add(it)
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -581,7 +587,9 @@ class CourierMapFragment : BaseFragment() {
             binding.map.overlays.addAll(markersRestore)
 
             val markersHide = findMapMarkersByFilterId(pointsHide)
-            markersHide.forEach { it.setOnMarkerClickListener(onSkipMarkerClickListener) }
+            markersHide.forEach {
+                it.setOnMarkerClickListener(onSkipMarkerClickListener)
+            }
 
             val handler = Handler(Looper.getMainLooper())
             val start = SystemClock.uptimeMillis()
@@ -696,15 +704,19 @@ class CourierMapFragment : BaseFragment() {
     }
 
     private fun updateMapMarkersWithIndex(mapPoints: Set<CourierMapMarker>) {
+        clusterer?.let {
+            binding.map.overlays.remove(clusterer)
+        }
+        clusterer = initClusterer()
         mapPoints.forEach(updateMapMarkerWithIndex)
-        clusterer.invalidate()
+        clusterer?.invalidate()
         binding.map.invalidate()
     }
 
     private fun updateMapMarkers(mapPoints: Set<CourierMapMarker>) {
         addOverlayBackground()
         mapPoints.forEach(updateMapMarker)
-        binding.map.overlays.add(clusterer)
+//        binding.map.overlays.add(clusterer)
         binding.map.invalidate()
     }
 
@@ -728,7 +740,7 @@ class CourierMapFragment : BaseFragment() {
             } else {
                 updateMapMarker(
                     findPoint,
-                    point.id + " Warehouse",
+                    point.id,
                     point.lat,
                     point.long,
                     getIcon(item.icon)
@@ -781,7 +793,7 @@ class CourierMapFragment : BaseFragment() {
         markerMap.position = GeoPoint(lat, long)
         markerMap.setAnchor(0.5f, 0.5f)
         if (isClustering) {
-            clusterer.add(markerMap)
+            clusterer?.add(markerMap)
         } else {
             binding.map.overlays.add(markerMap)
         }

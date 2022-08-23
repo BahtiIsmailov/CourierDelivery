@@ -1,41 +1,34 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.view.View.*
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import ru.wb.go.R
 import ru.wb.go.databinding.CourierWarehouseFragmentBinding
 import ru.wb.go.ui.BaseServiceFragment
 import ru.wb.go.ui.app.KeyboardListener
 import ru.wb.go.ui.app.NavDrawerListener
 import ru.wb.go.ui.app.NavToolbarListener
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
+import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.courierorders.*
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
@@ -45,7 +38,6 @@ import ru.wb.go.utils.WaitLoader
 import ru.wb.go.utils.WaitLoaderForOrder
 import ru.wb.go.utils.managers.ErrorDialogData
 import ru.wb.go.utils.map.MapPoint
-import kotlin.math.log
 
 
 class CourierWarehousesFragment :
@@ -64,9 +56,10 @@ class CourierWarehousesFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        initRecyclerView()
+        initFromCarNumber()
         initObservable()
         initListeners()
+        initReturnDialogResult()
     }
 
     private fun initView() {
@@ -276,9 +269,7 @@ class CourierWarehousesFragment :
 
         viewModel.showOrdersState.observe{
             when (it) {
-                CourierWarehousesShowOrdersState.Disable -> {
-
-                }
+                CourierWarehousesShowOrdersState.Disable -> {}
                 is CourierWarehousesShowOrdersState.Enable -> {
                     binding.warehouseCard.isVisible = true
                     it.warehouseItem?.map {warehouseItem ->
@@ -324,10 +315,17 @@ class CourierWarehousesFragment :
                 }
             }
         }
-        viewModel.navigateToDialogConfirmScoreInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToDialogConfirmScoreInfo.observe{
             showDialogConfirmScoreInfo(it.type, it.title, it.message, it.positive, it.negative)
         }
-        viewModel.navigationStateOrder.observe(viewLifecycleOwner) {
+        viewModel.visibleButtonBackLiveData.observe{
+            if (!it){
+                binding.closeOrders.isGone = true
+            }else{
+                binding.closeOrders.isVisible = true
+            }
+        }
+        viewModel.navigationStateOrder.observe{
             when (it) {
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
                 CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
@@ -371,7 +369,7 @@ class CourierWarehousesFragment :
                     )
             }
         }
-        viewModel.orders.observe(viewLifecycleOwner) { state ->
+        viewModel.orders.observe{ state ->
             //val adapter = adapter
             when (state) {
                 is CourierOrderItemState.ShowItems -> {
@@ -441,13 +439,15 @@ class CourierWarehousesFragment :
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
-        binding.closeOrderDetails.setOnClickListener { viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay()) }
+        binding.closeOrderDetails.setOnClickListener {
+            viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+        }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
 
         binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.goToOrder.setOnClickListener { viewModel.onNextFab(getHalfHeightDisplay()) }
         //binding.refresh.setOnRefreshListener { viewModel.updateData() }
-        binding.updateWhenNoInternet.setOnClickListener { viewModel.updateData(false) }
+        binding.updateWhenNoInternet.setOnClickListener { viewModel.getWarehouses() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.cardWarehouseClose.setOnClickListener{
             viewModel.onMapPointClick(mapPointfromViewModel!!)
@@ -459,11 +459,8 @@ class CourierWarehousesFragment :
             binding.warehouseCard.isGone = true
         }
         binding.closeOrders.setOnClickListener {
-            it.isGone = true
-            viewModel.updateData(true)
-            if (isOrderDetailsExpanded()){
-                //тут надо написать чтоб скрывались заказы
-            }
+            //it.isGone = true
+            viewModel.updateData()
         }
 
     }
@@ -507,21 +504,25 @@ class CourierWarehousesFragment :
         //binding.items.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         //binding.items.addItemDecoration(getHorizontalDividerDecoration())
         //binding.items.setHasFixedSize(true)
-        initSmoothScroller()
+        //initSmoothScroller()
     }
 
-    private fun initSmoothScroller() {
-        object : LinearSmoothScroller(context) {
-            override fun getVerticalSnapPreference(): Int {
-                return SNAP_TO_START
-            }
-        }
-    }
+//    private fun initSmoothScroller() {
+//        object : LinearSmoothScroller(context) {
+//            override fun getVerticalSnapPreference(): Int {
+//                return SNAP_TO_START
+//            }
+//        }
+//    }
 
     override fun onResume() {
         super.onResume()
-        viewModel.resumeInit()// если убрать то показывается дэмо версию
-        viewModel.updateData(false)// если убрать то не отображается список складов
+        viewModel.resumeInit()
+        if (viewModel.isStateCarNumber()){
+            viewModel.updateData()
+        }else {
+            viewModel.getWarehouses()
+        }
     }
 
     private fun navigateToRegistration() {
@@ -536,6 +537,12 @@ class CourierWarehousesFragment :
                 CourierCarNumberParameters(it.result)
             )
         )
+    }
+
+    private fun initFromCarNumber(){
+        findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<CourierCarNumberResult>(CourierCarNumberFragment.COURIER_CAR_NUMBER_ID_EDIT_KEY)
+            ?.observe { viewModel.onChangeCarNumberOrders(it) }
     }
 
     private fun showDialogInfo(
