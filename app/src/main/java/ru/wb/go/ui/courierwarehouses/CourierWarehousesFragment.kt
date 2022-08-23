@@ -15,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
@@ -46,7 +47,7 @@ class CourierWarehousesFragment :
     ) {
 
     override val viewModel by viewModel<CourierWarehousesViewModel>()
-    private var mapPointfromViewModel:MapPoint? = null
+    private var mapPointFromViewModel:MapPoint? = null
 
     private val bottomSheetOrderDetails: BottomSheetBehavior<ConstraintLayout>
         get() = BottomSheetBehavior.from(binding.orderDetailsLayout)
@@ -100,10 +101,10 @@ class CourierWarehousesFragment :
     }
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-         var adapter: CourierWarehousesAdapter? = null
+         //var adapter: CourierWarehousesAdapter? = null
 
         viewModel.selectedMapPointForFragment.observeEvent { mapPoint ->
-            mapPointfromViewModel = mapPoint
+            mapPointFromViewModel = mapPoint
         }
         viewModel.navigateToDialogInfo.observe{
             showDialogInfo(it)
@@ -120,14 +121,14 @@ class CourierWarehousesFragment :
                             viewModel.onItemClick(index)
                         }
                     }
-                    adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
+                    //adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
                     //binding.items.adapter = adapter
 
                 }
                 is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
-                    adapter?.clear()
-                    adapter?.addItems(it.items)
-                    adapter?.notifyDataSetChanged()
+//                    adapter?.clear()
+//                    adapter?.addItems(it.items)
+//                    adapter?.notifyDataSetChanged()
                 }
                 is CourierWarehouseItemState.Empty -> {
 //                    binding.emptyList.visibility = VISIBLE
@@ -136,8 +137,8 @@ class CourierWarehousesFragment :
 //                    binding.items.visibility = GONE
                 }
                 is CourierWarehouseItemState.UpdateItem -> {
-                    adapter?.setItem(it.position, it.item)
-                    adapter?.notifyItemChanged(it.position, it.item)
+//                    adapter?.setItem(it.position, it.item)
+//                    adapter?.notifyItemChanged(it.position, it.item)
                 }
                 is CourierWarehouseItemState.ScrollTo -> {
                     smoothScrollToPosition(it.position)
@@ -305,7 +306,7 @@ class CourierWarehousesFragment :
             when (it) {
                 CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrders -> {
-                    viewModel.onMapPointClick(mapPointfromViewModel!!)
+                    viewModel.onMapPointClick(mapPointFromViewModel!!)
                 }
 
                 CourierWarehousesNavigationState.NavigateToRegistration -> {
@@ -433,8 +434,13 @@ class CourierWarehousesFragment :
         return spannable
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
     private fun initListeners() {
-        binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
+        binding.navDrawerMenu.setOnClickListener {
+            (activity as NavDrawerListener).showNavDrawer()
+        }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.carChangeImage.setOnClickListener { viewModel.onChangeCarNumberClick() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
@@ -444,13 +450,12 @@ class CourierWarehousesFragment :
         }
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
 
-        binding.navDrawerMenu.setOnClickListener { (activity as NavDrawerListener).showNavDrawer() }
         binding.goToOrder.setOnClickListener { viewModel.onNextFab(getHalfHeightDisplay()) }
         //binding.refresh.setOnRefreshListener { viewModel.updateData() }
         binding.updateWhenNoInternet.setOnClickListener { viewModel.getWarehouses() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.cardWarehouseClose.setOnClickListener{
-            viewModel.onMapPointClick(mapPointfromViewModel!!)
+            viewModel.onMapPointClick(mapPointFromViewModel!!)
             binding.warehouseCard.startAnimation(
                 AnimationUtils.loadAnimation(
                 requireContext(),
@@ -487,6 +492,7 @@ class CourierWarehousesFragment :
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
 //        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
     }
+
 
     private fun showBottomSheetOrderAddresses() {
 //        bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
@@ -567,6 +573,12 @@ class CourierWarehousesFragment :
             negativeButtonName = getString(R.string.demo_registration_negative_dialog)
         ).show(parentFragmentManager, DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_TAG)
     }
+
+
+
+//    fun clear() {
+//        activity!!.viewModelStore.clear();
+//    }
 
     private fun smoothScrollToPosition(position: Int) {
         val smoothScroller: SmoothScroller = createSmoothScroller()

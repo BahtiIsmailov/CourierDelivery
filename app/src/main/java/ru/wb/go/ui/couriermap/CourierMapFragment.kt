@@ -93,7 +93,7 @@ class CourierMapFragment : BaseFragment() {
 
     private var clusterer:RadiusMarkerClusterer? = null
 
-    val paint by lazy {
+    private val paint by lazy {
         Paint().apply {
             //color = Color.WHITE
             style = Paint.Style.FILL
@@ -740,7 +740,7 @@ class CourierMapFragment : BaseFragment() {
             } else {
                 updateMapMarker(
                     findPoint,
-                    point.id,
+                    point.id+ " Warehouse",
                     point.lat,
                     point.long,
                     getIcon(item.icon)
@@ -909,6 +909,11 @@ class CourierMapFragment : BaseFragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
+//    fun clear() {
+//        //activity!!.viewModelStore.clear();
+//    }
 
     @SuppressLint("MissingPermission")
     private fun updateLastLocation() {

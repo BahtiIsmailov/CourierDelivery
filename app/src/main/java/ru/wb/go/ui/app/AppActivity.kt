@@ -192,14 +192,17 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
 
         with(binding.navView) {
             findViewById<View>(R.id.billing_layout).setOnClickListener {
+                navController?.popBackStack()
                 navController?.navigate(R.id.courierBalanceFragment)
             }
 
             findViewById<View>(R.id.settings_layout).setOnClickListener {
+                navController?.popBackStack()
                 navController?.navigate(R.id.settingsFragment)
             }
 
             findViewById<View>(R.id.documents).setOnClickListener {
+                navController?.popBackStack()
                 if (CheckInternet.checkConnection(this@AppActivity)) {
                     navController?.navigate(R.id.courierAgreementFragment)
                 } else {
@@ -209,6 +212,7 @@ class AppActivity : AppCompatActivity(), NavToolbarListener,
             }
 
             findViewById<View>(R.id.support_layout).setOnClickListener {
+                navController?.popBackStack()
                 viewModel.onSupportClick()
             }
 

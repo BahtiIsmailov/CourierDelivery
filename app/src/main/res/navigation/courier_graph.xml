@@ -75,7 +75,10 @@
             app:destination="@id/courierCarNumberFragment" />
         <action
             android:id="@+id/action_courierWarehousesFragment_to_courierOrderTimerFragment"
-            app:destination="@id/courierOrderTimerFragment" />
+            app:destination="@id/courierOrderTimerFragment"
+            app:popUpTo="@+id/courierWarehousesFragment"
+            app:popUpToInclusive="true"
+            />
         <action
             android:id="@+id/action_courierWarehousesFragment_to_courierLoaderFragment"
             app:destination="@id/courierLoaderFragment" />
