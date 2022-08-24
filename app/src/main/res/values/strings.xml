@@ -123,7 +123,7 @@
     <string name="courier_orders_confirm_car_number">%1$s</string>
     <string name="courier_orders_confirm_car_number_empty">Не указано</string>
 
-    <string name="courier_orders_addresses">Адреса доставки</string>
+    <string name="courier_orders_addresses">Адреса ПВЗ</string>
     <string name="courier_orders_take">Взять заказ</string>
     <string name="courier_orders_work_time">Время работы: </string>
     <string name="auth_phone_title">Введите номер телефона</string>

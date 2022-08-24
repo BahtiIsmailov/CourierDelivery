@@ -142,6 +142,7 @@ class CourierWarehousesViewModel(
         get() = _showOrderState
 
     private var myLocation: CoordinatePoint? = null
+    private var mapPointAfterCarNumber: MapPoint? = null
 
     private var height = 0
 
@@ -167,7 +168,7 @@ class CourierWarehousesViewModel(
         if (sharedWorker.isAllExists(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)) {
             sharedWorker.delete(SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP)
         }
-        val myLocationString = sharedWorker.load(LOCATION_KEY,"")
+        val myLocationString = sharedWorker.load(LOCATION_KEY, "")
         if (myLocationString != "") {
             myLocation = CoordinatePoint(
                 myLocationString.split(":")[0].toDouble(),
@@ -214,6 +215,10 @@ class CourierWarehousesViewModel(
 
     }
 
+    fun onShowOrderDetailsClick() {
+        _navigationStateOrder.value =
+            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
+    }
     fun updateData() {
         clearMap()
         viewModelScope.launch {
@@ -221,7 +226,8 @@ class CourierWarehousesViewModel(
             when {
                 navigationStateOrder.value is CourierOrdersNavigationState.NavigateToCarNumber -> {
                     Log.e("navigationState", "${navigationStateOrder.value}")
-                    initOrdersComplete(screenHeight!!)
+                    orderMapClick(mapPointAfterCarNumber!!)
+                    //initOrdersComplete(screenHeight!!)
                     _visibleButtonBackLiveData.value = true
                     _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToWarehouse
                 }
@@ -426,7 +432,10 @@ class CourierWarehousesViewModel(
     fun onMapPointClick(mapPoint: MapPoint) {
         val id = mapPoint.id.split(" ")[0]
         viewModelScope.launch {
-            if (id != MY_LOCATION_ID && mapPoint.type == PointType.WAREHOUSE) {
+            if (id != MY_LOCATION_ID && mapPoint.type == PointType.WAREHOUSE && !mapPoint.id.split(" ")[0].startsWith(
+                    CourierMapFragment.ADDRESS_MAP_PREFIX
+                )
+            ) {
                 selectedMapPointForFragment1 = mapPoint
                 //zoomMarkersFromBoundingBox(CoordinatePoint(mapPoint.lat,mapPoint.long))
                 val indexItemClick = id.toIntOrNull() ?: return@launch
@@ -438,13 +447,13 @@ class CourierWarehousesViewModel(
                 val currentWarehouse =
                     interactor.loadWarehousesFromId(warehouseItems.elementAt(indexItemClick).id)
                 changeShowDetailsOrder(isMapSelected, currentWarehouse)
-            } else {
-                if (mapPoint.id.split(" ")[0].startsWith(CourierMapFragment.ADDRESS_MAP_PREFIX) && mapPoint.type == PointType.ORDER_ITEM) {
-                    addressMapClickForOrder(mapPoint)
-                } else if (mapPoint.id != CourierMapFragment.WAREHOUSE_ID) {
-                    orderMapClick(mapPoint)
-                }
+            } else if (mapPoint.id.split(" ")[0].startsWith(CourierMapFragment.ADDRESS_MAP_PREFIX)) {
+                addressMapClickForOrder(mapPoint)
+            } else if (mapPoint.id != CourierMapFragment.WAREHOUSE_ID) {
+                mapPointAfterCarNumber = mapPoint
+                orderMapClick(mapPoint)
             }
+
         }
     }
 
@@ -497,27 +506,32 @@ class CourierWarehousesViewModel(
         var boxCountWithRouteId = 0
         with(orderLocalDataEntities[it]) {
             viewModelScope.launch {
-                if (courierOrderLocalEntity.ridMask != 0L) {
-                    boxCountWithRouteId =
-                        interactorOrder.getBoxCountWithRidMask(courierOrderLocalEntity).count
-                }
-                _navigateToDialogConfirmScoreInfo.value =
-                    NavigateToDialogConfirmInfo(
-                        DialogInfoStyle.INFO.ordinal,
-                        resourceProviderOrder.getConfirmTitleDialog(courierOrderLocalEntity.id),
-                        resourceProviderOrder.getConfirmMessageDialog(
-                            CarNumberUtils(interactorOrder.carNumber()).fullNumber(),
-                            resourceProviderOrder.getCargo(
-                                courierOrderLocalEntity.minVolume,
-                                courierOrderLocalEntity.minBoxesCount
+                try {
+                    if (courierOrderLocalEntity.ridMask != 0L) {
+                        boxCountWithRouteId =
+                            interactorOrder.getBoxCountWithRidMask(courierOrderLocalEntity).count
+                    }
+                    _navigateToDialogConfirmScoreInfo.value =
+                        NavigateToDialogConfirmInfo(
+                            DialogInfoStyle.INFO.ordinal,
+                            resourceProviderOrder.getConfirmTitleDialog(courierOrderLocalEntity.id),
+                            resourceProviderOrder.getConfirmMessageDialog(
+                                CarNumberUtils(interactorOrder.carNumber()).fullNumber(),
+                                resourceProviderOrder.getCargo(
+                                    courierOrderLocalEntity.minVolume,
+                                    courierOrderLocalEntity.minBoxesCount
+                                ),
+                                courierOrderLocalEntity.reservedDuration,
+                                if (boxCountWithRouteId == 0) courierOrderLocalEntity.minBoxesCount
+                                else boxCountWithRouteId
                             ),
-                            courierOrderLocalEntity.reservedDuration,
-                            if (boxCountWithRouteId == 0) courierOrderLocalEntity.minBoxesCount
-                            else boxCountWithRouteId
-                        ),
-                        resourceProviderOrder.getConfirmPositiveDialog(),
-                        resourceProviderOrder.getConfirmNegativeDialog()
-                    )
+                            resourceProviderOrder.getConfirmPositiveDialog(),
+                            resourceProviderOrder.getConfirmNegativeDialog()
+                        )
+                } catch (e: Exception) {
+                    initOrdersError(e)
+                }
+
             }
         }
     }
@@ -820,7 +834,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun updateAddressMarkers() {
-        //interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers.toMutableSet()))
+        interactor.mapState(CourierMapState.UpdateMarkers(addressMapMarkers.toMutableSet()))
     }
 
     private fun changeSelectedAddressMapPointAndItemByMap(mapPointId: String) {

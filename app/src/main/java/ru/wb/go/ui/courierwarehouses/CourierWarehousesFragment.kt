@@ -1,5 +1,8 @@
 package ru.wb.go.ui.courierwarehouses
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
@@ -10,12 +13,13 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.view.View.*
 import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
@@ -51,6 +55,9 @@ class CourierWarehousesFragment :
 
     private val bottomSheetOrderDetails: BottomSheetBehavior<ConstraintLayout>
         get() = BottomSheetBehavior.from(binding.orderDetailsLayout)
+
+    private val bottomSheetListOfOrders: BottomSheetBehavior<FrameLayout>
+        get() = BottomSheetBehavior.from(binding.listOfOrdersLayout)
 
 
     @SuppressLint("InflateParams")
@@ -334,14 +341,14 @@ class CourierWarehousesFragment :
 //                    findNavController().popBackStack(R.id.courier,true)
                 }
                 CourierOrdersNavigationState.NavigateToOrders -> {
-                    showBottomSheetOrders()
+                    hideBottomSheetOrders()
                 }
                 is CourierOrdersNavigationState.NavigateToOrderDetails ->{
                     showBottomSheetOrderDetails(it.isDemo)
                 }
 
                 CourierOrdersNavigationState.NavigateToAddresses -> {
-                    showAddresses()
+                    showBottomSheetListOfOrders()
                 }
                 CourierOrdersNavigationState.NavigateToRegistrationDialog ->{
                     showRegistrationDialogConfirmInfo()
@@ -349,13 +356,13 @@ class CourierWarehousesFragment :
 
                 CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
-//                    ResourcesCompat.getDrawable(resources, it.icon, null)
-//                        ?.let { binding.iconAddress.setImageDrawable(it) }
-//                    binding.addressDetail.text = it.address
-//                    binding.timeWorkDetail.text = it.workTime
-//                    if (binding.addressDetailLayout.visibility != VISIBLE) {
-//                        fadeOut(binding.addressDetailLayout).start()
-//                    }
+                    ResourcesCompat.getDrawable(resources, it.icon, null)
+                        ?.let { binding.iconAddress.setImageDrawable(it) }
+                    binding.addressDetail.text = it.address
+                    binding.timeWorkDetail.text = it.workTime
+                    if (binding.addressDetailLayout.visibility != VISIBLE) {
+                        fadeOut(binding.addressDetailLayout).start()
+                    }
                 }
                 CourierOrdersNavigationState.CloseAddressesDetail -> {
                     //fadeIn(binding.addressDetailLayout).start()
@@ -434,8 +441,17 @@ class CourierWarehousesFragment :
         return spannable
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    private fun fadeOut(view: View): ObjectAnimator {
+        val fadeOut =
+            ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
+//        fadeOut.duration = FADE_ADDRESS_DETAILS
+        fadeOut.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                view.visibility = VISIBLE
+                view.alpha = 0f
+            }
+        })
+        return fadeOut
     }
     private fun initListeners() {
         binding.navDrawerMenu.setOnClickListener {
@@ -451,7 +467,6 @@ class CourierWarehousesFragment :
         binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
 
         binding.goToOrder.setOnClickListener { viewModel.onNextFab(getHalfHeightDisplay()) }
-        //binding.refresh.setOnRefreshListener { viewModel.updateData() }
         binding.updateWhenNoInternet.setOnClickListener { viewModel.getWarehouses() }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.cardWarehouseClose.setOnClickListener{
@@ -464,62 +479,34 @@ class CourierWarehousesFragment :
             binding.warehouseCard.isGone = true
         }
         binding.closeOrders.setOnClickListener {
-            //it.isGone = true
             viewModel.updateData()
+        }
+        binding.closeOrdersAddressList.setOnClickListener{
+            bottomSheetListOfOrders.state = BottomSheetBehavior.STATE_HIDDEN
+            bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
+            binding.listOfOrdersLayoutMain.isGone = true
         }
 
     }
 
-    private fun showAddresses() {
-        binding.navDrawerMenu.visibility = INVISIBLE
-        binding.toRegistration.visibility = INVISIBLE
-        binding.supportApp.visibility = INVISIBLE
-        showBottomSheetOrderAddresses()
-    }
 
-    private fun showBottomSheetOrders() {
-//        bottomSheetOrders.state = BottomSheetBehavior.STATE_EXPANDED
+    private fun hideBottomSheetOrders() {
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
-//        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun showBottomSheetOrderDetails(isDemo: Boolean) {
         binding.navDrawerMenu.visibility = if (isDemo) INVISIBLE else VISIBLE
         binding.toRegistration.visibility = if (isDemo) VISIBLE else INVISIBLE
         binding.supportApp.visibility = if (isDemo) INVISIBLE else VISIBLE
-//        bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
         binding.orderDetailsLayout.isVisible = true
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
-//        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
-
-    private fun showBottomSheetOrderAddresses() {
-//        bottomSheetOrders.state = BottomSheetBehavior.STATE_HIDDEN
-        binding.orderDetailsLayout.isGone = true
-        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
-//        bottomSheetOrderAddresses.state = BottomSheetBehavior.STATE_EXPANDED
-        addBottomSheetCallbackOrderAddressesListener()
+    private fun showBottomSheetListOfOrders(){
+        binding.listOfOrdersLayoutMain.isVisible = true
+        hideBottomSheetOrders()
+        bottomSheetListOfOrders.state = BottomSheetBehavior.STATE_EXPANDED
     }
-
-    private fun addBottomSheetCallbackOrderAddressesListener() {
-        // bottomSheetOrderAddresses.addBottomSheetCallback(bottomSheetOrderAddressesCallback)
-    }
-
-    private fun initRecyclerView() {
-        //binding.items.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        //binding.items.addItemDecoration(getHorizontalDividerDecoration())
-        //binding.items.setHasFixedSize(true)
-        //initSmoothScroller()
-    }
-
-//    private fun initSmoothScroller() {
-//        object : LinearSmoothScroller(context) {
-//            override fun getVerticalSnapPreference(): Int {
-//                return SNAP_TO_START
-//            }
-//        }
-//    }
 
     override fun onResume() {
         super.onResume()
@@ -583,8 +570,8 @@ class CourierWarehousesFragment :
     private fun smoothScrollToPosition(position: Int) {
         val smoothScroller: SmoothScroller = createSmoothScroller()
         smoothScroller.targetPosition = position
-        //val layoutManager = binding.items.layoutManager as? LinearLayoutManager
-       // layoutManager?.startSmoothScroll(smoothScroller)
+//        val layoutManager = binding.items.layoutManager as? LinearLayoutManager
+//        layoutManager?.startSmoothScroll(smoothScroller)
     }
 
     private fun getHalfHeightDisplay(): Int {
