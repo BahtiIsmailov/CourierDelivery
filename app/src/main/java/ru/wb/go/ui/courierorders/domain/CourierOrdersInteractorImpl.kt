@@ -156,8 +156,6 @@ class CourierOrdersInteractorImpl(
 
     override fun observeMapAction(): Flow<CourierMapAction> {
         return courierMapRepository.observeMapAction()
-
-
     }
 
     override fun carNumberIsConfirm(): Boolean {
@@ -200,11 +198,6 @@ class CourierOrdersInteractorImpl(
         val courierWarehouseLocalEntity = courierLocalRepository.readCurrentWarehouse()
         return convertToLocalOrderEntity(courierOrderLocalDataEntity, courierWarehouseLocalEntity)
     }
-
-    override fun clearedSharedFlow() {
-        courierMapRepository.clearCacheSharedFlow()
-    }
-
 
     private fun convertToLocalOrderEntity(
         orderEntity: CourierOrderLocalDataEntity,

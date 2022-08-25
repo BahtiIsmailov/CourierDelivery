@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -167,12 +168,11 @@ class CourierIntransitViewModel(
             .onEach {
                 observeMapActionComplete(it)
             }
-            .catch {
-                logException(it,"observeMapAction")
-                //onTechEventLog("observeMapAction", it)
-            }
-
+            .catch{
+                    logException(it,"observeMapAction")
+                }
             .launchIn(viewModelScope)
+
     }
 
     private fun observeMapActionComplete(it: CourierMapAction) {//!!!!!!!!!
@@ -197,7 +197,7 @@ class CourierIntransitViewModel(
 
     private fun onMapPointClick(mapPoint: MapPoint) {
         //onTechEventLog("onItemPointClick")
-        val mapPointClickId = mapPoint.id
+        val mapPointClickId = mapPoint.id.split(" ")[0]
         if (mapPointClickId != CourierMapFragment.MY_LOCATION_ID) {
             val indexItemClick = mapPointClickId.toInt()
             val isMarkerSelected = invertMarkerSelected(indexItemClick)
@@ -216,7 +216,7 @@ class CourierIntransitViewModel(
         mapMarkers.forEach { item ->
             val normalIcon = getNormalMapIcon(item.type)
             item.icon =
-                if (item.point.id == mapPointClickId)
+                if (item.point.id.split(" ")[0] == mapPointClickId)
                     if (isSelected) {
                         changeEnableNavigator(true)
                         getSelectedMapIcon(item.type)
@@ -251,7 +251,7 @@ class CourierIntransitViewModel(
     }
 
     private fun updateMarkers() {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableSet()))
     }
 
     private fun changeSelectedItemsByMarker(indexItemClick: Int, isMarkerSelected: Boolean) {
@@ -340,7 +340,7 @@ class CourierIntransitViewModel(
 //
 //                _currentItemBackgroundForBottomSheet.value = type
 
-                val mapPoint = MapPoint(index.toString(), latitude, longitude)
+                val mapPoint = MapPoint(index.toString(), latitude, longitude,null)
                 mapMarker = Intransit(mapPoint, iconMap, type)
 
                 items.add(item)
@@ -376,9 +376,9 @@ class CourierIntransitViewModel(
         if (mapMarkers.isEmpty()) {
             interactor.mapState(CourierMapState.NavigateToPoint(moscowCoordinatePoint()))
         } else {
-            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+            interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableSet()))
             val boundingBox =
-                MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+                MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints.toMutableSet())
             interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
         }
 
@@ -506,7 +506,7 @@ class CourierIntransitViewModel(
     private fun changeSelectedMarkers(isSelected: Boolean, selectIndex: Int) {
         mapMarkers.forEach { item ->
             with(item) {
-                icon = if (point.id == selectIndex.toString()) {
+                icon = if (point.id.split(" ")[0] == selectIndex.toString()) {
                     if (isSelected) getSelectedMapIcon(type) else getNormalMapIcon(type)
                 } else {
                     getNormalMapIcon(type)
@@ -516,7 +516,7 @@ class CourierIntransitViewModel(
     }
 
     private fun updateMarkers(isSelected: Boolean, selectIndex: Int) {
-        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableList()))
+        interactor.mapState(CourierMapState.UpdateMarkers(mapMarkers.toMutableSet()))
         if (isSelected)
             interactor.mapState(CourierMapState.NavigateToMarker(selectIndex.toString()))
     }
@@ -542,7 +542,7 @@ class CourierIntransitViewModel(
     }
 
     private fun zoomMarkersFromBoundingBox() {
-        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints)
+        val boundingBox = MapEnclosingCircle().allCoordinatePointToBoundingBox(coordinatePoints.toMutableSet())
         interactor.mapState(CourierMapState.ZoomToBoundingBox(boundingBox, true))
     }
 

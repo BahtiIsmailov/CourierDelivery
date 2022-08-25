@@ -13,6 +13,10 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)
 
+    suspend fun saveWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity)
+
+    suspend fun deleteWarehouses()
+
     fun loadProgress()
 
     fun observeMapAction(): Flow<CourierMapAction>
@@ -23,7 +27,9 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     fun mapAction(action: CourierMapAction)
 
-    fun clearCacheMutableSharedFlow()
+
+
+    suspend fun loadWarehousesFromId(id:Int):List<CourierWarehouseLocalEntity>
 
 }
 

@@ -3,7 +3,9 @@ package ru.wb.go.ui.courierbilling
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -79,11 +81,11 @@ class CourierBillingFragment :
 
     private fun initStateObserve() {
 
-        viewModel.toolbarLabelState.observe(viewLifecycleOwner) {
+        viewModel.toolbarLabelState.observe {
             binding.toolbarLayout.toolbarTitle.text = it
         }
 
-        viewModel.balanceInfo.observe(viewLifecycleOwner) {
+        viewModel.balanceInfo.observe {
             with(binding) {
                 coast.text = it
                 if (viewModel.canCheckout()) {
@@ -94,11 +96,11 @@ class CourierBillingFragment :
             }
         }
 
-        viewModel.navigateToDialogInfo.observe(viewLifecycleOwner) {
+        viewModel.navigateToDialogInfo.observe {
             showDialogInfo(it)
         }
 
-        viewModel.navigationState.observe(viewLifecycleOwner) {
+        viewModel.navigationState.observe {
             when (it) {
                 is CourierBillingNavigationState.NavigateToAccountSelector -> findNavController().navigate(
                     CourierBillingFragmentDirections.actionCourierBalanceFragmentToCourierBillingAccountSelectorFragment(
@@ -108,7 +110,7 @@ class CourierBillingFragment :
             }
         }
 
-        viewModel.billingItems.observe(viewLifecycleOwner) { state ->
+        viewModel.billingItems.observe { state ->
             when (state) {
                 CourierBillingState.Init -> {
                     binding.emptyList.visibility = GONE
@@ -126,7 +128,7 @@ class CourierBillingFragment :
             }
         }
 
-        viewModel.waitLoader.observe(viewLifecycleOwner) { state ->
+        viewModel.waitLoader.observe { state ->
             when (state) {
                 WaitLoader.Wait -> showProgressDialog()
                 WaitLoader.Complete -> closeProgressDialog()

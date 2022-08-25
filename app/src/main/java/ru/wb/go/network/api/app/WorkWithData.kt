@@ -285,7 +285,7 @@ fun convertCourierWarehouseEntity(courierOfficeResponse: CourierWarehouseRespons
             fullAddress = fullAddress,
             longitude = long,
             latitude = lat,
-            distanceFromUser = 0.0F
+            distanceFromUser = 0
         )
     }
 }

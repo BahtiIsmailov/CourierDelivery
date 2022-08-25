@@ -123,7 +123,7 @@
     <string name="courier_orders_confirm_car_number">%1$s</string>
     <string name="courier_orders_confirm_car_number_empty">Не указано</string>
 
-    <string name="courier_orders_addresses">Адреса доставки</string>
+    <string name="courier_orders_addresses">Адреса ПВЗ</string>
     <string name="courier_orders_take">Взять заказ</string>
     <string name="courier_orders_work_time">Время работы: </string>
     <string name="auth_phone_title">Введите номер телефона</string>
@@ -242,6 +242,7 @@
     <string name="courier_warehouse_dialog_empty_message">Все заказы взяты в работу</string>
     <string name="courier_warehouse_dialog_empty_button">Понятно</string>
     <string name="courier_orders_update">Обновить</string>
+    <string name="go_to_orders">Перейти к заказам</string>
     <string name="courier_orders_order">\u0020- %1$d</string>
     <string name="orderCost">от %1$s ₽</string>
     <string name="orderCargo">от %1$d шт.</string>
@@ -249,6 +250,8 @@
     <string name="orderCardCargo">от %2$d шт. / %1$d м\u00B3</string>
 
     <string name="itemOfficeCount">%1$d ПВЗ ~</string>
+    <string name="warehouse_distance">От вас ~ %1$s км</string>
+    <string name="warehouse_distance_for_textView">От вас ~ 43км</string>
     <string name="courier_orders_volume">от %1$s</string>
     <string name="courier_orders_count_pvz">%1$s</string>
     <string name="courier_orders_arrive">\u0020%1$s мин</string>
@@ -265,7 +268,7 @@
     <string name="courier_orders_details_coast">%1$s ₽</string>
     <string name="courier_orders_details_pvz">%1$d ПВЗ</string>
     <string name="courier_orders_empty_address">Список пуст</string>
-    <string name="courier_orders_automobile">ТС • \u0020</string>
+    <string name="courier_orders_automobile">Номер ТС • \u0020</string>
     <string name="courier_orders_address_title">Адреса доставки</string>
 
     <string name="courier_orders_confirm_order">Заказ %1$d</string>
@@ -634,6 +637,9 @@
     <string name="route">Маршрут </string>
     <string name="user_id">1231231223</string>
     <string name="inet">Интернет:</string>
+    <string name="example1">Склад Коледино</string>
+    <string name="example_text_for_address_warehouse">МО, Подольский район, деревня Коледино, улица Троицкая, дом 20</string>
+    <string name="back_from_order">Назад</string>
 
 
 </resources>

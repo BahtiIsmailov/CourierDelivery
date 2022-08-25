@@ -8,8 +8,13 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.viewbinding.ViewBinding
+import kotlinx.coroutines.flow.Flow
 import ru.wb.go.R
 import ru.wb.go.network.monitor.NetworkState
 import ru.wb.go.ui.app.SupportListener
@@ -56,10 +61,22 @@ abstract class BaseServiceFragment<VM : ServicesViewModel, VB : ViewBinding>(
             )
         }
 
-        viewModel.versionApp.observe(viewLifecycleOwner) {
-            binding.root.findViewById<TextView>(R.id.version_app).text = it
-        }
+//        viewModel.versionApp.observe(viewLifecycleOwner) {
+//            binding.root.findViewById<TextView>(R.id.version_app).text = it
+//        }
 
+    }
+
+    fun <T> Flow<T>.observeEvent(observer: (T) -> Unit) {
+        lifecycleScope.launchWhenStarted {
+            this@observeEvent.collect { event ->
+                observer.invoke(event)
+            }
+        }
+    }
+
+    fun<T> LiveData<T>.observe(observer: (T) -> Unit) {
+        this.observe(viewLifecycleOwner, observer)
     }
 
     override fun onDestroyView() {
@@ -67,4 +84,10 @@ abstract class BaseServiceFragment<VM : ServicesViewModel, VB : ViewBinding>(
         _binding = null
     }
 
+    fun Fragment.getHorizontalDividerDecoration(): DividerItemDecoration {
+        val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
+        ResourcesCompat.getDrawable(resources, R.drawable.divider_line, null)
+            ?.let { decoration.setDrawable(it) }
+        return decoration
+    }
 }

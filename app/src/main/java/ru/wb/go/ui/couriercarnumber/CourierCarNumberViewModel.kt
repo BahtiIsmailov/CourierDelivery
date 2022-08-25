@@ -196,7 +196,6 @@ class CourierCarNumberViewModel(
     }
 
     private fun fetchCarNumberComplete() {
-        //onTechEventLog("fetchCarNumberComplete", "NavigateToTimer")
         _navigationState.value = CourierCarNumberNavigationState.NavigateToOrderDetails(
             result = parameters.result
         )

@@ -33,9 +33,15 @@ class CourierWarehousesInteractorImpl(
 
     override suspend fun clearAndSaveCurrentWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
         courierLocalRepository.deleteAllWarehouse()
-        courierLocalRepository.saveCurrentWarehouse(courierWarehouseEntity)
+        courierLocalRepository.saveWarehouse(courierWarehouseEntity)
     }
 
+    override suspend fun deleteWarehouses() {
+        courierLocalRepository.deleteAllWarehouse()
+    }
+    override suspend fun saveWarehouses(courierWarehouseEntity: CourierWarehouseLocalEntity) {
+        courierLocalRepository.saveWarehouse(courierWarehouseEntity)
+    }
     override fun loadProgress() {
         CoroutineExtension.interval(DELAY_NETWORK_REQUEST_MS, TimeUnit.MILLISECONDS)
     }
@@ -52,8 +58,8 @@ class CourierWarehousesInteractorImpl(
         courierMapRepository.mapAction(action)
     }
 
-    override fun clearCacheMutableSharedFlow() {
-        courierMapRepository.clearCacheSharedFlow()
+    override suspend fun loadWarehousesFromId(id: Int): List<CourierWarehouseLocalEntity> {
+        return courierLocalRepository.loadWarehousesFromId(id)
     }
     override fun isDemoMode(): Boolean {
         return tokenManager.isDemo()

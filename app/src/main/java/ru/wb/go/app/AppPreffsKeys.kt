@@ -27,7 +27,7 @@ object AppPreffsKeys {
     const val SETTING_THEME = "SETTING_THEME"
     const val SETTING_SANNER_OFF = "SETTING_SANNER_OFF"
 
-    const val FRAGMENT_MANAGER = "fragment_manager"
+
     const val READ_ALL_BOXES_SYNC_SIZE = "count_of_load_boxes"
     const val CLOSE_FRAGMENT_WHEN_ENDED_TIME = "close_fragment_when_end_time"
     const val SAVE_LOCAL_TIME_WHEN_USER_DELETE_APP = "save_local_time_when_user_delete_app"

@@ -33,7 +33,7 @@ class CourierBillingResourceProvider(private val context: Context) :
             }).also { sign = it }
         }
 
-       return "$sign ${format.format(amount)}"
+       return "${sign.replace("$","")} ${format.format(amount).replace("$","")}"
 
     }
 

@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import ru.wb.go.app.AppPreffsKeys.FRAGMENT_MANAGER
 import ru.wb.go.network.exceptions.BadRequestException
 import ru.wb.go.network.exceptions.NoInternetException
 import ru.wb.go.network.monitor.NetworkState
@@ -21,7 +20,6 @@ import java.net.UnknownHostException
 class CheckSmsViewModel(
     private val parameters: CheckSmsParameters,
     private val interactor: CheckSmsInteractor,
-    private val sharedWorker: SharedWorker,
     private val resourceProvider: AuthResourceProvider,
 ) : TimerStateHandler, NetworkViewModel() {
 
@@ -76,10 +74,6 @@ class CheckSmsViewModel(
         _stateTitleUI.value =
             InitTitle(resourceProvider.getTitleCheckSms(parameters.phone), parameters.phone)
 
-    }
-
-    fun saveDataToShared(){
-        sharedWorker.saveMediate(FRAGMENT_MANAGER,"fromSms")
     }
 
     private fun subscribeTimer() {

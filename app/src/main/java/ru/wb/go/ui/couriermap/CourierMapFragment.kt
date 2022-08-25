@@ -2,7 +2,6 @@ package ru.wb.go.ui.couriermap
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
@@ -28,16 +27,15 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.google.android.gms.location.Priority
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.osmdroid.api.IMapController
+import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer
+import org.osmdroid.bonuspack.utils.BonusPackHelper
 import org.osmdroid.config.Configuration
 import org.osmdroid.config.IConfigurationProvider
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -49,13 +47,15 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Overlay
 import ru.wb.go.R
 import ru.wb.go.databinding.MapFragmentBinding
+import ru.wb.go.utils.base.BaseFragment
 import ru.wb.go.utils.hasPermissions
 import ru.wb.go.utils.map.CoordinatePoint
 import ru.wb.go.utils.map.MapPoint
+import ru.wb.go.utils.map.PointType
 import java.io.File
 
 
-class CourierMapFragment : Fragment()  {
+class CourierMapFragment : BaseFragment() {
 
     private val viewModel by viewModel<CourierMapViewModel>()
 
@@ -91,11 +91,57 @@ class CourierMapFragment : Fragment()  {
     private val mapController: IMapController
         get() = binding.map.controller as IMapController
 
+    private var clusterer:RadiusMarkerClusterer? = null
+
+    private val paint by lazy {
+        Paint().apply {
+            //color = Color.WHITE
+            style = Paint.Style.FILL
+
+            textAlign = Paint.Align.CENTER
+            color = ResourcesCompat.getColor(
+                resources,
+                R.color.lvl_1, null
+            )
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textSize = TEXT_SIZE_INDEX_MARKER
+        }
+    }
+
+    private fun initClusterer() : RadiusMarkerClusterer{
+        return RadiusMarkerClusterer(requireContext()).apply {
+            setIcon(
+                BonusPackHelper.getBitmapFromVectorDrawable(
+                    requireContext(),
+                    R.drawable.ic_courier_map_order
+                )
+            )
+            setRadius(100)
+            textPaint.color = resources.getColor(R.color.button_app_primary_pressed,requireContext().theme)
+        }.also {
+            binding.map.overlays.add(it)
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        updateLocation()
         createLocationRequest()
         buildGoogleApiClient()
+    }
+
+    private fun getBitmapIndexMarker(index: String, @DrawableRes res: Int): Bitmap? {
+        val bitmap = convertDrawableToBitmap(res)
+        bitmap?.let {
+            val canvas = Canvas(bitmap)
+
+            val xPos = (canvas.width / 2).toFloat()
+            val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2 - 20)
+            canvas.drawText(index, xPos, yPos, paint)
+            return bitmap
+        }
+        return null
     }
 
     override fun onCreateView(
@@ -111,21 +157,21 @@ class CourierMapFragment : Fragment()  {
         initObservable()
         initListeners()
         initMapView()
-        viewModel.subscribeMapState()
     }
 
     private fun createLocationRequest() {
-        locationRequest = LocationRequest.create()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.numUpdates = 1
-        locationRequest.interval = 0
+        locationRequest = LocationRequest.create().apply {
+            interval = 0
+            numUpdates = 1
+            priority = Priority.PRIORITY_HIGH_ACCURACY
+        }
     }
 
     private fun buildGoogleApiClient() {
         googleApiClient =
             GoogleApiClient.Builder(requireActivity())
                 .addApi(LocationServices.API)
-                .addConnectionCallbacks(object: GoogleApiClient.ConnectionCallbacks{
+                .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
                     override fun onConnected(p0: Bundle?) {
                         if (isLocationPermissionGranted()) {
                             updateLastLocation()
@@ -148,8 +194,10 @@ class CourierMapFragment : Fragment()  {
     }
 
     private fun startGoogleApiClient() {
-        googleApiClient?.let { googleApiClient->
-            if (!googleApiClient.isConnected) googleApiClient.connect()
+        googleApiClient?.let { googleApiClient ->
+            if (!googleApiClient.isConnected){
+                googleApiClient.connect()
+            }
         }
     }
 
@@ -167,8 +215,11 @@ class CourierMapFragment : Fragment()  {
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
             ) || isRequestAccessLocation
-        ) updateLocation()
-        else launchPermissionsRequest()
+        )
+            updateLocation()
+        else
+            launchPermissionsRequest()
+
     }
 
     private fun launchPermissionsRequest() {
@@ -208,7 +259,6 @@ class CourierMapFragment : Fragment()  {
         val config: IConfigurationProvider = Configuration.getInstance()
         config.osmdroidBasePath = createOsmdroidBasePath()
         config.osmdroidTileCache = createOsmdroidTilePath(config.osmdroidBasePath)
-        // FIXME: ???
         config.userAgentValue = context?.packageName
         config.load(
             requireActivity(),
@@ -254,7 +304,20 @@ class CourierMapFragment : Fragment()  {
     }
 
     private val onMarkerClickListener = { marker: Marker, _: MapView ->
-        viewModel.onItemClick(with(marker) { MapPoint(id, position.latitude, position.longitude) })
+
+        viewModel.onItemClick(with(marker) {
+            MapPoint(
+                id, position.latitude, position.longitude,
+                when (id.split(" ")[1]) {
+                    "Warehouse" -> PointType.WAREHOUSE
+                    "Order" -> PointType.ORDER
+                    "Cluster" -> PointType.CLUSTER
+                    "OrderItem" -> PointType.ORDER_ITEM
+                    else -> throw Exception("Unknown point type")
+                }
+            )
+        }
+        )
         true
     }
 
@@ -271,72 +334,72 @@ class CourierMapFragment : Fragment()  {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-        viewModel.clearMap.observe(viewLifecycleOwner) {
-            Log.e("courierMap","clearMap")
-            clearMap()//2
+        viewModel.clearMap.observe {
+            Log.e("courierMap", "clearMap")
+            clearMap()
         }
 
-        viewModel.zoomToBoundingBoxOffsetY.observe(viewLifecycleOwner) {
-            Log.e("courierMap","zoomToBoundingBoxOffsetY")//2
+        viewModel.zoomToBoundingBoxOffsetY.observe {
+            Log.e("courierMap", "zoomToBoundingBoxOffsetY")
             checkMapViewAndZoomToBoundingBoxOffsetY(it)
         }
 
-        viewModel.updateMarkersWithAnimateToPositions.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMarkersWithAnimateToPositions")
+        viewModel.updateMarkersWithAnimateToPositions.observe {
+            Log.e("courierMap", "updateMarkersWithAnimateToPositions")
             updateMarkersWithAnimateToPositions(it)
         }
 
-        viewModel.updateMarkersWithAnimateToPosition.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMarkersWithAnimateToPosition")
+        viewModel.updateMarkersWithAnimateToPosition.observe {
+            Log.e("courierMap", "updateMarkersWithAnimateToPosition")
             updateMarkersWithAnimateToPosition(it)
         }
 
-        viewModel.navigateToPoint.observe(viewLifecycleOwner) {
-            Log.e("courierMap","navigateToPoint")
+        viewModel.navigateToPoint.observe {
+            Log.e("courierMap", "navigateToPoint")
             navigateToPoint(it.point)
         }
 
-        viewModel.updateMarkers.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMarkers")//1,2,2,2
+        viewModel.updateMarkers.observe {
+            Log.e("courierMap", "updateMarkers")
             updateMarkers(it.points)
         }
 
-        viewModel.updateMarkersWithIndex.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMarkersWithIndex")//2
+        viewModel.updateMarkersWithIndex.observe {
+            Log.e("courierMap", "updateMarkersWithIndex")
             updateMarkersWithIndex(it.points)
         }
-        viewModel.navigateToMarker.observe(viewLifecycleOwner) {
-            Log.e("courierMap","navigateToMarker")
+        viewModel.navigateToMarker.observe {
+            Log.e("courierMap", "navigateToMarker")
             navigateToMarker(it.id)
         }
 
-        viewModel.navigateToPointZoom.observe(viewLifecycleOwner) {
-            Log.e("courierMap","navigateToPointZoom")
+        viewModel.navigateToPointZoom.observe {
+            Log.e("courierMap", "navigateToPointZoom")
             navigateToPointZoom(it.point)
         }
 
-        viewModel.navigateToMyLocation.observe(viewLifecycleOwner) {
-            Log.e("courierMap","navigateToMyLocation")//1
+        viewModel.navigateToMyLocation.observe {
+            Log.e("courierMap", "navigateToMyLocation")
             navigateToMyLocation()
         }
 
-        viewModel.updateMyLocationPoint.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMyLocationPoint")//1,2,2,2
+        viewModel.updateMyLocationPoint.observe {
+            Log.e("courierMap", "updateMyLocationPoint")
             updateMyLocationPoint(it.point)
         }
 
-        viewModel.zoomToBoundingBox.observe(viewLifecycleOwner) {
-            Log.e("courierMap","zoomToBoundingBox")//2,2
+        viewModel.zoomToBoundingBox.observe {
+            Log.e("courierMap", "zoomToBoundingBox")
             zoomToCenterBoundingBox(it.boundingBox, it.animate)
         }
 
-        viewModel.updateMyLocation.observe(viewLifecycleOwner) {
-            Log.e("courierMap","updateMyLocation")//1
+        viewModel.updateMyLocation.observe {
+            Log.e("courierMap", "updateMyLocation")
             updateMyLocation()
         }
 
-        viewModel.visibleManagerBar.observe(viewLifecycleOwner) {
-            Log.e("courierMap","visibleManagerBar")//1,2,2
+        viewModel.visibleManagerBar.observe {
+            Log.e("courierMap", "visibleManagerBar")
             visibleManagerBar(it)
         }
 
@@ -407,7 +470,9 @@ class CourierMapFragment : Fragment()  {
         )
 
         val showMarkers = findMapMarkersByFilterId(withAnimateToPosition.pointsShow)
-        showMarkers.forEach { it.setOnMarkerClickListener(onMarkerClickListener) }
+        showMarkers.forEach {
+            it.setOnMarkerClickListener(onMarkerClickListener)
+        }
         val animateMarkersTo = findMapMarkersByFilterId(withAnimateToPosition.pointsFrom)
 
         val fromGeoPoints = mutableListOf<GeoPoint>()
@@ -471,11 +536,7 @@ class CourierMapFragment : Fragment()  {
     }
 
     private fun clearMap() {
-        binding.map.overlay.clear()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+        binding.map.overlays.clear()
     }
 
     private fun checkMapViewAndZoomToBoundingBoxOffsetY(zoomToBoundingBoxOffsetY: CourierMapViewModel.ZoomToBoundingBoxOffsetY) {
@@ -520,13 +581,15 @@ class CourierMapFragment : Fragment()  {
                 .filterIsInstance<Marker>()
                 .apply { markersRestore.addAll(this) }
 
-            binding.map.overlays.clear()
+            //binding.map.overlays.clear()
             pointsTo.forEach(updateMapMarker)
             val markersTo = findMapMarkersByFilterId(pointsTo)
             binding.map.overlays.addAll(markersRestore)
 
             val markersHide = findMapMarkersByFilterId(pointsHide)
-            markersHide.forEach { it.setOnMarkerClickListener(onSkipMarkerClickListener) }
+            markersHide.forEach {
+                it.setOnMarkerClickListener(onSkipMarkerClickListener)
+            }
 
             val handler = Handler(Looper.getMainLooper())
             val start = SystemClock.uptimeMillis()
@@ -569,7 +632,7 @@ class CourierMapFragment : Fragment()  {
                     if (interpolation < INTERPOLATOR_ANIMATION_MAX) {
                         handler.postDelayed(this, DELAY_ANIMATION_MS)
                     } else {
-                        binding.map.overlays.clear()
+                        //binding.map.overlays.clear()
                         addOverlayBackground()
                         binding.map.overlays.addAll(markersRestore)
                         binding.map.overlays.addAll(markersTo)
@@ -615,7 +678,7 @@ class CourierMapFragment : Fragment()  {
         zoomToCenterBoundingBox(offsetBoundingBox, animate)
     }
 
-    private fun updateMarkers(mapPoints: List<CourierMapMarker>) {
+    private fun updateMarkers(mapPoints: Set<CourierMapMarker>) {
         updateMapMarkers(mapPoints)
     }
 
@@ -636,18 +699,24 @@ class CourierMapFragment : Fragment()  {
         }
     }
 
-    private fun updateMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
+    private fun updateMarkersWithIndex(mapPoints: Set<CourierMapMarker>) {
         updateMapMarkersWithIndex(mapPoints)
     }
 
-    private fun updateMapMarkersWithIndex(mapPoints: List<CourierMapMarker>) {
+    private fun updateMapMarkersWithIndex(mapPoints: Set<CourierMapMarker>) {
+        clusterer?.let {
+            binding.map.overlays.remove(clusterer)
+        }
+        clusterer = initClusterer()
         mapPoints.forEach(updateMapMarkerWithIndex)
+        clusterer?.invalidate()
         binding.map.invalidate()
     }
 
-    private fun updateMapMarkers(mapPoints: List<CourierMapMarker>) {
+    private fun updateMapMarkers(mapPoints: Set<CourierMapMarker>) {
         addOverlayBackground()
         mapPoints.forEach(updateMapMarker)
+//        binding.map.overlays.add(clusterer)
         binding.map.invalidate()
     }
 
@@ -666,20 +735,28 @@ class CourierMapFragment : Fragment()  {
     private val updateMapMarker = { item: CourierMapMarker ->
         with(item) {
             val findPoint = findMapPointById(point.id)
-            if (findPoint == null)
-                addMapMarker(point.id, point.lat, point.long, getIcon(item.icon))
-            else updateMapMarker(findPoint, point.id, point.lat, point.long, getIcon(item.icon))
+            if (findPoint == null) {
+                addMapMarker(point.id + " Warehouse", point.lat, point.long, getIcon(item.icon))
+            } else {
+                updateMapMarker(
+                    findPoint,
+                    point.id+ " Warehouse",
+                    point.lat,
+                    point.long,
+                    getIcon(item.icon)
+                )
+            }
         }
     }
 
-    private val updateMapMarkerWithIndex = {item: CourierMapMarker ->
-
+    private val updateMapMarkerWithIndex = { item: CourierMapMarker ->
         with(item) {
-            addMapMarker( // если поставить дебаг он отображает и склады и местоположение
-                point.id,
+            addMapMarker(
+                point.id + " Order",
                 point.lat,
                 point.long,
-                BitmapDrawable(resources, getBitmapIndexMarker(point.id, icon))
+                BitmapDrawable(resources, getBitmapIndexMarker(point.id, icon)),
+                true
             )
         }
     }
@@ -691,6 +768,7 @@ class CourierMapFragment : Fragment()  {
         long: Double,
         icon: Drawable?
     ) {
+
         mapMarker.apply {
             this.id = id
             this.icon = icon
@@ -704,23 +782,28 @@ class CourierMapFragment : Fragment()  {
         id: String,
         lat: Double,
         long: Double,
-        icon: Drawable?
+        icon: Drawable?,
+        isClustering: Boolean = false
     ) {
         val markerMap = Marker(binding.map)
         markerMap.setOnMarkerClickListener(onMarkerClickListener)
-
         markerMap.id = id
         markerMap.icon = icon
 //        markerMap.isDraggable = true позволяет перетаскивать флажок местоположения
         markerMap.position = GeoPoint(lat, long)
         markerMap.setAnchor(0.5f, 0.5f)
-        binding.map.overlays.add(markerMap)
+        if (isClustering) {
+            clusterer?.add(markerMap)
+        } else {
+            binding.map.overlays.add(markerMap)
+        }
     }
 
-     private fun findMapPointById(id: String) =
+    private fun findMapPointById(id: String) =
         binding.map.overlays
             .filterIsInstance<Marker>()
-            .find { it.id == id }
+            .find { it.id.split(" ")[0] == id }
+
 
     private fun visibleManagerBar(courierVisibilityManagerBar: CourierVisibilityManagerBar) {
         when (courierVisibilityManagerBar) {
@@ -744,7 +827,10 @@ class CourierMapFragment : Fragment()  {
             is CourierVisibilityManagerBar.Visible -> {
                 if (binding.managerLayout.visibility == View.VISIBLE) return
                 binding.managerLayout.visibility = View.VISIBLE
-                val animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_right) // анимация с скрыванием кнопок боковых
+                val animation = AnimationUtils.loadAnimation(
+                    context,
+                    R.anim.slide_in_right
+                ) // анимация с скрыванием кнопок боковых
                 binding.managerLayout.startAnimation(animation)
 
             }
@@ -799,7 +885,7 @@ class CourierMapFragment : Fragment()  {
     }
 
     private fun addMyLocationPoint(latitude: Double, longitude: Double) {
-        val point = MapPoint(MY_LOCATION_ID, latitude, longitude)
+        val point = MapPoint(MY_LOCATION_ID, latitude, longitude, null)
         val mapMarker = Empty(point, R.drawable.ic_warehouse_my_location)
         updateMapMarker(mapMarker)
         binding.map.invalidate()
@@ -824,6 +910,11 @@ class CourierMapFragment : Fragment()  {
         _binding = null
     }
 
+
+//    fun clear() {
+//        //activity!!.viewModelStore.clear();
+//    }
+
     @SuppressLint("MissingPermission")
     private fun updateLastLocation() {
         googleApiClient?.let {
@@ -834,7 +925,7 @@ class CourierMapFragment : Fragment()  {
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
-        googleApiClient?.let {googleApiClient->
+        googleApiClient?.let { googleApiClient ->
             if (isLocationPermissionGranted()) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(
                     googleApiClient, locationRequest, locationListener()
@@ -854,29 +945,6 @@ class CourierMapFragment : Fragment()  {
     private fun locationListener(): (Location) -> Unit =
         { viewModel.onForcedLocationUpdate(CoordinatePoint(it.latitude, it.longitude)) }
 
-
-
-    private fun getBitmapIndexMarker(index: String, @DrawableRes res: Int): Bitmap? {
-        val bitmap = convertDrawableToBitmap(res)
-        bitmap?.let {
-            val canvas = Canvas(bitmap)
-            val paint = Paint()
-            paint.color = Color.WHITE
-            paint.style = Paint.Style.FILL
-
-            paint.textAlign = Paint.Align.CENTER
-            paint.color = ResourcesCompat.getColor(resources,
-                R.color.button_app_primary_pressed, null)
-            paint.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            paint.textSize = TEXT_SIZE_INDEX_MARKER
-
-            val xPos = (canvas.width / 2).toFloat()
-            val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2)
-            canvas.drawText(index, xPos, yPos, paint)
-            return bitmap
-        }
-        return null
-    }
 
     private fun convertDrawableToBitmap(@DrawableRes res: Int): Bitmap? {
         val d = ContextCompat.getDrawable(requireContext(), res)
@@ -921,7 +989,8 @@ class CourierMapFragment : Fragment()  {
         val width = mapView.width
         val height = mapView.height
         val pScreenWidth = width - (leftPx + rightPx)
-        val pScreenHeight = (height - (topPx + bottomPx)).coerceAtLeast(1) // не даст значению стать меньше 2
+        val pScreenHeight =
+            (height - (topPx + bottomPx)).coerceAtLeast(1) // не даст значению стать меньше 2
         val nextZoom = MapView.getTileSystem()
             .getBoundingBoxZoom(this, pScreenWidth, pScreenHeight)
 
@@ -943,14 +1012,14 @@ class CourierMapFragment : Fragment()  {
         val lonPerPx = (southEast.longitude - northWest.longitude) / width
         val latPerPx = (southEast.latitude - northWest.latitude) / height
 
-        val boundingBox =  try{
+        val boundingBox = try {
             BoundingBox(
                 latNorth - topPx * latPerPx,
                 lonEast + rightPx * lonPerPx,
                 latSouth + bottomPx * latPerPx,
                 lonWest - leftPx * lonPerPx
             )
-        }catch (e:Exception){
+        } catch (e: Exception) {
             BoundingBox(
                 0.0,
                 0.0,
@@ -961,6 +1030,5 @@ class CourierMapFragment : Fragment()  {
         return boundingBox
 
     }
-
 
 }

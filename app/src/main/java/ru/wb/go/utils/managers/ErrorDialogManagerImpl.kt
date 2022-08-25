@@ -77,17 +77,9 @@ class ErrorDialogManagerImpl(val context: Context) : ErrorDialogManager {
 
             }
         }
-        //if (!isIgnoreException(error)) {
         errorData.postValue(data)
-        //}
     }
-
-
 }
-
-//private fun isIgnoreException(exception: Throwable):Boolean{
-//    return ((exception is HttpException) && (exception.code() == 409 || exception.code() >= 500))
-//}
 
 
 data class ErrorDialogData(

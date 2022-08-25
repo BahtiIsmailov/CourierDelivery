@@ -66,13 +66,22 @@
         android:label="@string/courier_warehouse_title"
         tools:layout="@layout/courier_warehouse_fragment">
         <action
-            android:id="@+id/action_courierWarehousesFragment_to_courierOrdersFragment"
-            app:destination="@id/courierOrdersFragment" />
-        <action
             android:id="@+id/action_courierWarehousesFragment_to_auth_navigation"
             app:destination="@id/auth_navigation"
             app:popUpTo="@+id/courierWarehousesFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_courierWarehousesFragment_to_courierCarNumberFragment"
+            app:destination="@id/courierCarNumberFragment" />
+        <action
+            android:id="@+id/action_courierWarehousesFragment_to_courierOrderTimerFragment"
+            app:destination="@id/courierOrderTimerFragment"
+            app:popUpTo="@+id/courierWarehousesFragment"
+            app:popUpToInclusive="true"
+            />
+        <action
+            android:id="@+id/action_courierWarehousesFragment_to_courierLoaderFragment"
+            app:destination="@id/courierLoaderFragment" />
     </fragment>
 
     <fragment
@@ -110,44 +119,6 @@
         <action
             android:id="@+id/action_couriersCompleteRegistrationFragment_to_courierDataTypeFragment"
             app:destination="@id/courierDataTypeFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/courierOrdersFragment"
-        android:name="ru.wb.go.ui.courierorders.CourierOrdersFragment"
-        android:label=""
-        tools:layout="@layout/courier_orders_fragment">
-
-        <argument
-            android:name="courier_order_id_key"
-            app:argType="ru.wb.go.ui.courierorders.CourierOrderParameters"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_courierOrderFragment_to_courierCarNumberFragment"
-            app:destination="@id/courierCarNumberFragment" />
-
-        <action
-            android:id="@+id/action_courierOrdersFragment_to_auth_navigation"
-            app:destination="@id/auth_navigation"
-            app:popUpTo="@+id/courierOrdersFragment"
-            app:popUpToInclusive="true" />
-
-        <action
-            android:id="@+id/action_courierOrdersFragment_to_courierOrderTimerFragment"
-            app:destination="@id/courierOrderTimerFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/courierOrdersFragment" />
-
-        <action
-            android:id="@+id/action_courierOrdersFragment_to_courierLoaderFragment"
-            app:destination="@id/courierLoaderFragment"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/courierLoaderFragment"
-            app:popUpToInclusive="true" />
-
     </fragment>
 
     <fragment
