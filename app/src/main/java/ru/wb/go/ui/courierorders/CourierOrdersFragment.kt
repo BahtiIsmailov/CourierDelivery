@@ -390,7 +390,10 @@ class CourierOrdersFragment :
 //                        binding.iconCarTypeSelected.visibility =
 //                            if (it.isChangeCarNumber) VISIBLE else GONE
 
-//                        binding.carChangeImage.visibility =
+//
+            //
+            //
+            //                        binding.carChangeImage.visibility =
 //                            if (it.isChangeCarNumber) VISIBLE else GONE
 //                        linerNumber.text = it.itemId
 //                        taskDistance.text = it.taskDistance + " км"
