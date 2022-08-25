@@ -10,6 +10,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.view.View.*
 import android.view.animation.AnimationUtils
@@ -18,6 +19,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
@@ -35,6 +37,7 @@ import ru.wb.go.ui.couriercarnumber.CourierCarNumberFragment
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberParameters
 import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.courierorders.*
+import ru.wb.go.ui.courierwarehouses.adapter.CourierListAddressesItemAdapter
 import ru.wb.go.ui.dialogs.DialogConfirmInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoFragment.Companion.DIALOG_INFO_TAG
@@ -58,6 +61,7 @@ class CourierWarehousesFragment :
 
     private val bottomSheetListOfOrders: BottomSheetBehavior<FrameLayout>
         get() = BottomSheetBehavior.from(binding.listOfOrdersLayout)
+
 
 
     @SuppressLint("InflateParams")
@@ -103,9 +107,8 @@ class CourierWarehousesFragment :
                 //viewModel.onRegistrationCancelClick()
             }
         }
-
-
     }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
          //var adapter: CourierWarehousesAdapter? = null
@@ -212,7 +215,7 @@ class CourierWarehousesFragment :
             }
         }
 
-        viewModel.orderDetails.observe(viewLifecycleOwner) {
+        viewModel.orderDetails.observe{
             when (it) {
                 is CourierOrderDetailsInfoUIState.InitOrderDetails -> {
                     with(binding.selectedOrder) {
@@ -356,12 +359,15 @@ class CourierWarehousesFragment :
 
                 CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
+                    if (bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_HIDDEN) {
+                        bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
+                    }
                     ResourcesCompat.getDrawable(resources, it.icon, null)
-                        ?.let { binding.iconAddress.setImageDrawable(it) }
-                    binding.addressDetail.text = it.address
-                    binding.timeWorkDetail.text = it.workTime
-                    if (binding.addressDetailLayout.visibility != VISIBLE) {
-                        fadeOut(binding.addressDetailLayout).start()
+                        ?.let { binding.addressDetailLayoutItem.iconAddress.setImageDrawable(it) }
+                    binding.addressDetailLayoutItem.addressDetail.text = it.address
+                    binding.addressDetailLayoutItem.timeWorkDetail.text = it.workTime
+                    if (binding.addressDetailLayoutItem.root.visibility != VISIBLE) {
+                        fadeOut(binding.addressDetailLayoutItem.root).start()
                     }
                 }
                 CourierOrdersNavigationState.CloseAddressesDetail -> {
@@ -384,7 +390,6 @@ class CourierWarehousesFragment :
 //                    binding.emptyList.visibility = GONE
 //                    binding.orderProgress.visibility = GONE
 //                    binding.orders.visibility = VISIBLE
-//                    displayItems(state.items)
                 }
                 is CourierOrderItemState.Empty -> {
 //                    binding.emptyList.visibility = VISIBLE
@@ -462,9 +467,14 @@ class CourierWarehousesFragment :
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener {
+            binding.addressDetailLayoutItem.root.isGone = true
             viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
         }
-        binding.addressesOrder.setOnClickListener { viewModel.onAddressesClick() }
+        binding.addressesOrder.setOnClickListener {
+            displayItems(viewModel.getOrderAddressItems())
+            Log.e("stateItemsBaseItem","${viewModel.getOrderAddressItems()}")
+            viewModel.onAddressesClick()
+        }
 
         binding.goToOrder.setOnClickListener { viewModel.onNextFab(getHalfHeightDisplay()) }
         binding.updateWhenNoInternet.setOnClickListener { viewModel.getWarehouses() }
@@ -484,6 +494,8 @@ class CourierWarehousesFragment :
         binding.closeOrdersAddressList.setOnClickListener{
             bottomSheetListOfOrders.state = BottomSheetBehavior.STATE_HIDDEN
             bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
+            binding.navDrawerMenu.isInvisible = false
+            binding.supportApp.isInvisible = false
             binding.listOfOrdersLayoutMain.isGone = true
         }
 
@@ -503,6 +515,8 @@ class CourierWarehousesFragment :
     }
 
     private fun showBottomSheetListOfOrders(){
+        binding.navDrawerMenu.isInvisible = true
+        binding.supportApp.isInvisible = true
         binding.listOfOrdersLayoutMain.isVisible = true
         hideBottomSheetOrders()
         bottomSheetListOfOrders.state = BottomSheetBehavior.STATE_EXPANDED
@@ -566,6 +580,15 @@ class CourierWarehousesFragment :
 //    fun clear() {
 //        activity!!.viewModelStore.clear();
 //    }
+
+
+    private fun displayItems(items: MutableSet<CourierOrderDetailsAddressItem>) {
+        val adapter = CourierListAddressesItemAdapter()
+        binding.listOfOrdersRecycle.adapter = adapter
+        adapter.clear()
+        adapter.addItems(items)
+        adapter.notifyDataSetChanged()
+    }
 
     private fun smoothScrollToPosition(position: Int) {
         val smoothScroller: SmoothScroller = createSmoothScroller()

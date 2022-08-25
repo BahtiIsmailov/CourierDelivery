@@ -5,7 +5,7 @@ import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
 
 sealed class CourierOrderItemState {
 
-    data class ShowItems(val items: List<BaseItem>) : CourierOrderItemState()
+    data class ShowItems(val items: Set<BaseItem>) : CourierOrderItemState()
 
     data class UpdateItems(val items: MutableSet<BaseItem>) : CourierOrderItemState()
 

@@ -48,7 +48,7 @@ class CourierOrdersResourceProvider(private val context: Context) :
 
     fun getOfficeMapSelectedIcon() = R.drawable.ic_address_point_select
 
-    fun getOfficeMapTimeIcon() = R.drawable.ic_address_point_time_normal
+    fun getOfficeMapTimeIcon() = R.drawable.ic_order_item_point
 
     fun getOfficeMapSelectedTimeIcon() = R.drawable.ic_address_point_time_select
 

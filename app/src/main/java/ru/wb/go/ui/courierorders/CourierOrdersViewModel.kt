@@ -532,7 +532,7 @@ class CourierOrdersViewModel(
     }
 
     private fun showAllAndOrderItems() {
-        //_orderItems.value = CourierOrderItemState.ShowItems(orderItems)
+        _orderItems.value = CourierOrderItemState.ShowItems(orderItems.toSet())
     }
 
     fun onChangeCarNumberOrders(result: CourierCarNumberResult) {
@@ -713,7 +713,7 @@ class CourierOrdersViewModel(
         if (items.isEmpty()) {
             _orderAddresses.value = CourierOrderAddressesUIState.Empty
         } else {
-            _orderAddresses.value = CourierOrderAddressesUIState.InitItems(items)
+            _orderAddresses.value = CourierOrderAddressesUIState.InitItems(items.toMutableSet())
         }
     }
 
