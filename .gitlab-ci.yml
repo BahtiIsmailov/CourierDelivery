@@ -34,11 +34,12 @@ before_script:
   - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
   - chmod +x ./gradlew
 
+
+
 stages:
   - debugApk
   - releaseApk
   - releaseBundle
-  - releaseApp
   - deploy
   - notify
 
@@ -55,21 +56,16 @@ assembleDebug:
   only:
     - dev
 
-assembleReleaseApp:
+assembleRelease:
   interruptible: true
-  stage: releaseApp
+  stage: releaseApk
   script:
     - echo $KEYSTORE_FILE | base64 -d > keystore.jks
-    - ./gradlew clean assembleRelease bundleRelease
-  after_script:
-    - apt-get --quiet --yes install jq
-    - VER=$(awk -F= '$1=="VERSION_MAJOR"{a=$2}$1=="VERSION_MINOR"{b=$2}$1=="VERSION_BUILD"{c=$2}$1=="VERSION_CODE"{v=$2}END{print a"."b"."c"_"v}' app/version.properties)
-    - TVER=$(awk -F= '$1=="VERSION_MAJOR"{a=$2}$1=="VERSION_MINOR"{b=$2}$1=="VERSION_BUILD"{c=$2}$1=="VERSION_CODE"{v=$2}END{print a"."b"."c"\_"v}' app/version.properties)
-    - sh ci-notify.sh $CI_JOB_ID $TVER ${OUTPUT_DIR}apk/release/release_${VER}.apk ${OUTPUT_DIR}bundle/release/app-release.aab
+    - ./gradlew clean assembleRelease
+  retry: 2
   artifacts:
-    name: pipeline_${CI_PIPELINE_ID}
     paths:
-      - ${OUTPUT_DIR}*/release/*.a*
+      - $OUTPUT_DIR
   only:
     - master
 
@@ -81,19 +77,18 @@ bundleRelease:
     - ./gradlew clean bundleRelease
   artifacts:
     paths:
-      - ${OUTPUT_DIR}bundle/release
+      - $OUTPUT_DIR
   only:
-    - masterX
+    - master
 
 deploy:
   stage: deploy
   interruptible: true
   script:
     #deploy success
-    - apt-get --quiet --yes install jq
-    - sh ci-notify.sh $DJ_ID
+    - sh ci-notify.sh "bundleRelease is ready to download✅"
   only:
-    - masterX
+    - master
 
 notify_error:
   stage: notify
