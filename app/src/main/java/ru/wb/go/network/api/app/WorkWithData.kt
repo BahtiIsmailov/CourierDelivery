@@ -24,6 +24,7 @@ fun toCourierDocumentsDocumentsRequest(courierDocumentsEntity: CourierDocumentsE
             firstName = firstName,
             surName = surName,
             middleName = middleName,
+
             inn = inn,
             passportSeries = passportSeries,
             passportNumber = passportNumber,
