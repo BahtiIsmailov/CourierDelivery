@@ -591,8 +591,8 @@ class CourierWarehousesFragment :
     }
 
     private fun smoothScrollToPosition(position: Int) {
-        val smoothScroller: SmoothScroller = createSmoothScroller()
-        smoothScroller.targetPosition = position
+//        val smoothScroller: SmoothScroller = createSmoothScroller()
+//        smoothScroller.targetPosition = position
 //        val layoutManager = binding.items.layoutManager as? LinearLayoutManager
 //        layoutManager?.startSmoothScroll(smoothScroller)
     }

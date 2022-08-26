@@ -452,13 +452,12 @@ class CourierWarehousesViewModel(
                 )
             ) {
                 selectedMapPointForFragment1 = mapPoint
-                //zoomMarkersFromBoundingBox(CoordinatePoint(mapPoint.lat,mapPoint.long))
                 val indexItemClick = id.toIntOrNull() ?: return@launch
                 changeSelectedMapPoint(mapPoint)
                 updateMarkers()
                 val isMapSelected = isMapSelected(indexItemClick)
                 changeSelectedWarehouseItemsByMap(indexItemClick, isMapSelected)
-                updateAndScrollToItems(indexItemClick)
+                //updateAndScrollToItems(indexItemClick)
                 val currentWarehouse =
                     interactor.loadWarehousesFromId(warehouseItems.elementAt(indexItemClick).id)
                 changeShowDetailsOrder(isMapSelected, currentWarehouse)
@@ -468,7 +467,6 @@ class CourierWarehousesViewModel(
                 mapPointAfterCarNumber = mapPoint
                 orderMapClick(mapPoint)
             }
-
         }
     }
 
@@ -901,10 +899,10 @@ class CourierWarehousesViewModel(
         whSelectedId = if (isMapSelected) indexItemClick else null
     }
 
-    private fun updateAndScrollToItems(indexItemClick: Int) {
-        updateItems()
-        _warehouseState.value = CourierWarehouseItemState.ScrollTo(indexItemClick)
-    }
+//    private fun updateAndScrollToItems(indexItemClick: Int) {
+//        //updateItems()
+//        _warehouseState.value = CourierWarehouseItemState.ScrollTo(indexItemClick)
+//    }
 
     private fun isMapSelected(indexItemClick: Int) =
         mapMarkers.elementAt(indexItemClick).icon == resourceProvider.getWarehouseMapSelectedIcon()

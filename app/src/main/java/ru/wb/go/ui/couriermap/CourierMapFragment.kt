@@ -888,7 +888,7 @@ class CourierMapFragment : BaseFragment() {
         val point = MapPoint(MY_LOCATION_ID, latitude, longitude, null)
         val mapMarker = Empty(point, R.drawable.ic_warehouse_my_location)
         updateMapMarker(mapMarker)
-        binding.map.invalidate()
+       // binding.map.invalidate()
     }
 
     private fun updateMyLocation() {

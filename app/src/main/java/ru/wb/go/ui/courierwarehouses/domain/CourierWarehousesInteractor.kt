@@ -27,8 +27,6 @@ interface CourierWarehousesInteractor : BaseServiceInteractor {
 
     fun mapAction(action: CourierMapAction)
 
-
-
     suspend fun loadWarehousesFromId(id:Int):List<CourierWarehouseLocalEntity>
 
 }
