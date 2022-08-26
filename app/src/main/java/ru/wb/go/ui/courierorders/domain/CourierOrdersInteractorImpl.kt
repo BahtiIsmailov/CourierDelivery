@@ -50,7 +50,12 @@ class CourierOrdersInteractorImpl(
     }
 
     override suspend fun freeOrdersLocalClearAndSave(srcOfficeID: Int): List<CourierOrderLocalDataEntity> {
-        val response = appTasksRepository.getFreeOrders(srcOfficeID).sortedBy { it.id }
+        val response =  if (isDemoMode()){
+            appTasksRepository.getFreeOrders(srcOfficeID,true).sortedBy { it.id }
+        }else{
+            appTasksRepository.getFreeOrders(srcOfficeID,false).sortedBy { it.id }
+        }
+
 
         response.forEach { freeOrders ->
             freeOrders.dstOffices = freeOrders.dstOffices.sortByUnusualTimeAndAddress()

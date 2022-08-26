@@ -182,8 +182,10 @@ class CourierWarehousesViewModel(
             .onEach {
                 when (it) {
                     is CourierMapAction.ItemClick -> {
-                        onMapPointClick(it.point)
-                        _selectedMapPointForFragment.trySend(it.point)
+                        if (!it.point.id.contains(MY_LOCATION_ID)) {
+                            onMapPointClick(it.point)
+                            _selectedMapPointForFragment.trySend(it.point)
+                        }
                     }
                     is CourierMapAction.LocationUpdate -> {
                         initMapByLocation(it.point)
@@ -225,20 +227,16 @@ class CourierWarehousesViewModel(
             delay(50)
             when {
                 navigationStateOrder.value is CourierOrdersNavigationState.NavigateToCarNumber -> {
-                    Log.e("navigationState", "${navigationStateOrder.value}")
-                    //orderMapClick(mapPointAfterCarNumber!!)
-                    initOrdersComplete(screenHeight!!)
+                     initOrdersComplete(screenHeight!!)
                     _visibleButtonBackLiveData.value = true
                     _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToWarehouse
                 }
                 navigationStateOrder.value is CourierOrdersNavigationState.CloseAddressesDetail -> {
-                    Log.e("navigationState", "${navigationStateOrder.value}")
-                    initOrdersComplete(screenHeight!!)
+                     initOrdersComplete(screenHeight!!)
                     _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToWarehouse
                 }
                 navigationState.value is CourierWarehousesNavigationState.NavigateToCourierOrders -> {
-                    Log.e("navigationState", "${navigationState.value}")
-                    getWarehouses()
+                     getWarehouses()
                     _visibleButtonBackLiveData.value = false
                 }
             }
