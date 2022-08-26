@@ -22,11 +22,17 @@ class AppTasksRepositoryImpl(
     }
 
 
-    override suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity> {
-        return withContext(Dispatchers.IO){
+    override suspend fun getFreeOrders(srcOfficeID: Int,isDemo:Boolean): List<CourierOrderEntity> {
+        return withContext(Dispatchers.IO) {
             autentificatorIntercept.initNameOfMethod("courierOrders")
-            remoteRepo.freeTasks(tokenManager.apiVersion3(), srcOfficeID).map {
-                convertCourierOrderEntity(it)
+            if (isDemo) {
+                remoteRepo.freeTaskForDemo(tokenManager.apiDemoVersion(), srcOfficeID).data.map {
+                    convertCourierOrderEntityForDemo(it)
+                }
+            } else {
+                remoteRepo.freeTasks(tokenManager.apiVersion3(), srcOfficeID).map {
+                    convertCourierOrderEntity(it)
+                }
             }
         }
     }

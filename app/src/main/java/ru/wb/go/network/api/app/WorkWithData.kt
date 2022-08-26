@@ -218,6 +218,18 @@ fun toCourierOrderDstOfficeEntity(courierOrderDstOfficeResponse: CourierOrderDst
     )
 }
 
+fun toCourierOrderDstOfficeEntityForDemo(courierOrderDstOfficeResponse: DstOffice): CourierOrderDstOfficeEntity{
+    return CourierOrderDstOfficeEntity(
+        id = courierOrderDstOfficeResponse.id,
+        name = courierOrderDstOfficeResponse.name,
+        fullAddress = courierOrderDstOfficeResponse.fullAddress,
+        long = courierOrderDstOfficeResponse.long,
+        lat = courierOrderDstOfficeResponse.lat,
+        workTimes = courierOrderDstOfficeResponse.wrkTime,
+        isUnusualTime = courierOrderDstOfficeResponse.unusualTime
+    )
+}
+
 fun toCourierOrderEntity(courierOrderResponse: CourierOrderResponse,dstOffices:MutableList<CourierOrderDstOfficeEntity>): CourierOrderEntity{
     return CourierOrderEntity (
         id = courierOrderResponse.id,
@@ -232,6 +244,23 @@ fun toCourierOrderEntity(courierOrderResponse: CourierOrderResponse,dstOffices:M
         reservedDuration = courierOrderResponse.reservedDuration,
         route = courierOrderResponse.route ?: "не указан",
         taskDistance = courierOrderResponse.taskDistance
+    )
+}
+
+fun toCourierOrderEntityForDemo(courierOrderResponse: Data,dstOffices:MutableList<CourierOrderDstOfficeEntity>): CourierOrderEntity{
+    return CourierOrderEntity (
+        id = courierOrderResponse.id,
+        routeID = courierOrderResponse.routeID,
+        ridMask = courierOrderResponse.ridMask?:0,
+        gate = courierOrderResponse.gate ?: "",
+        minCost = courierOrderResponse.minPrice.toString(),
+        minVolume = courierOrderResponse.minVolume,
+        minBoxesCount = courierOrderResponse.minBoxesCount,
+        dstOffices =  dstOffices,
+        reservedAt = "",
+        reservedDuration = courierOrderResponse.reservedDuration.toString(),
+        route = courierOrderResponse.route,
+        taskDistance = courierOrderResponse.taskDistance.toString()
     )
 }
 
@@ -299,6 +328,18 @@ fun convertCourierOrderEntity(courierOrderResponse: CourierOrderResponse): Couri
     return toCourierOrderEntity(courierOrderResponse, dstOffices)
 
 }
+
+fun convertCourierOrderEntityForDemo(courierOrderResponse: Data): CourierOrderEntity {
+    val dstOffices = mutableListOf<CourierOrderDstOfficeEntity>()
+    courierOrderResponse.dstOffices.forEach { dstOffice ->
+        if (dstOffice.id != -1) {
+            dstOffices.add(toCourierOrderDstOfficeEntityForDemo(dstOffice))
+        }
+    }
+    return toCourierOrderEntityForDemo(courierOrderResponse, dstOffices)
+
+}
+
 
 
 fun List<AccountResponse>.convertToEntity(): List<AccountEntity> {

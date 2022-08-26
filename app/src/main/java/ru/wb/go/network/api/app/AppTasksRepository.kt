@@ -8,7 +8,7 @@ interface AppTasksRepository {
 
     suspend fun courierWarehouses(): CourierWarehousesResponse
 
-    suspend fun getFreeOrders(srcOfficeID: Int): List<CourierOrderEntity>
+    suspend fun getFreeOrders(srcOfficeID: Int,isDemo:Boolean): List<CourierOrderEntity>
 
     suspend fun getBoxCountWithRidMask(ridMask:Long):TaskBoxCountResponse
 
