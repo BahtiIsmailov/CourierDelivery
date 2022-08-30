@@ -81,136 +81,40 @@ class CourierWarehousesFragment :
     }
 
     private fun initReturnDialogResult() {
-        setFragmentResultListener(CourierOrdersFragment.DIALOG_TASK_NOT_EXIST_RESULT_TAG) { _, bundle ->
-            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
-                //viewModel.onTaskNotExistConfirmClick()
-            }
-        }
 
-        setFragmentResultListener(CourierOrdersFragment.DIALOG_CONFIRM_SCORE_RESULT_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_CONFIRM_SCORE_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
                 viewModel.onConfirmOrderClick()
             }
         }
 
-        setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
-            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
-                //viewModel.goBack()
-            }
-        }
-
-        setFragmentResultListener(CourierOrdersFragment.DIALOG_REGISTRATION_RESULT_TAG) { _, bundle ->
+        setFragmentResultListener(DIALOG_REGISTRATION_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
                 viewModel.onRegistrationConfirmClick()
             }
             if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
-                //viewModel.onRegistrationCancelClick()
+
             }
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-         //var adapter: CourierWarehousesAdapter? = null
-
         viewModel.selectedMapPointForFragment.observeEvent { mapPoint ->
             mapPointFromViewModel = mapPoint
         }
+
         viewModel.navigateToDialogInfo.observe{
             showDialogInfo(it)
         }
 
         viewModel.warehouseState.observe{
             when (it) {
-                is CourierWarehouseItemState.InitItems -> {
-                    //binding.emptyList.visibility = GONE
-                    //binding.refresh.isRefreshing = false
-                    //binding.items.visibility = VISIBLE
-                    val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {
-                        override fun onItemClick(index: Int) {
-                            viewModel.onItemClick(index)
-                        }
-                    }
-                    //adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
-                    //binding.items.adapter = adapter
-
-                }
-                is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
-//                    adapter?.clear()
-//                    adapter?.addItems(it.items)
-//                    adapter?.notifyDataSetChanged()
-                }
-                is CourierWarehouseItemState.Empty -> {
-//                    binding.emptyList.visibility = VISIBLE
-//                    binding.emptyTitle.text = it.info
-                    //binding.refresh.isRefreshing = false
-//                    binding.items.visibility = GONE
-                }
-                is CourierWarehouseItemState.UpdateItem -> {
-//                    adapter?.setItem(it.position, it.item)
-//                    adapter?.notifyItemChanged(it.position, it.item)
-                }
-                is CourierWarehouseItemState.ScrollTo -> {
-                    smoothScrollToPosition(it.position)
-                }
                 CourierWarehouseItemState.Success -> {
                     binding.noInternetLayout.isGone = true
                 }
                 CourierWarehouseItemState.NoInternet -> {
                     binding.noInternetLayout.isVisible = true
-                }
-            }
-        }
-
-        viewModel.showOrderState.observe(viewLifecycleOwner) {
-            when (it) {
-                CourierOrderShowOrdersState.Disable -> {
-//                    with(binding.showOrderFab){
-//                         isEnabled = false
-//                         //isClickable = false
-//                         backgroundTintList = colorFab(R.color.tertiary)
-//                    }
-
-                }
-                CourierOrderShowOrdersState.Enable -> {
-//                    with(binding.showOrderFab) {
-//                         isEnabled = true
-//                         //isClickable = true
-//                         backgroundTintList = colorFab(R.color.colorPrimary)
-//                    }
-                }
-                CourierOrderShowOrdersState.Invisible ->{
-//                      binding.showOrderFab.visibility = INVISIBLE
-                }
-                CourierOrderShowOrdersState.Visible -> {
-                    //binding.showOrderFab.visibility = VISIBLE
-                }
-            }
-        }
-        viewModel.orderAddresses.observe(viewLifecycleOwner) {
-            when (it) {
-                is CourierOrderAddressesUIState.InitItems -> {
-//                    binding.emptyList.visibility = GONE
-//                    binding.addresses.visibility = VISIBLE
-//                    binding.takeOrder.isEnabled = true
-//                    val callback = object : CourierOrderDetailsAddressAdapter.OnItemClickCallBack {
-//                        override fun onItemClick(index: Int) {
-//                            viewModel.onAddressItemClick(index)
-//                        }
-//                    }
-//                    binding.addresses.adapter =
-//                        CourierOrderDetailsAddressAdapter(requireContext(), it.items, callback)
-                }
-                CourierOrderAddressesUIState.Empty -> {
-//                    binding.emptyList.visibility = VISIBLE
-//                    binding.addresses.visibility = GONE
-//                    binding.takeOrder.isEnabled = false
-                }
-                is CourierOrderAddressesUIState.UpdateItems -> {
-//                    val addressAdapter = addressAdapter
-//                    addressAdapter.clear()
-//                    addressAdapter.addItems(it.items)
-//                    addressAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -222,11 +126,9 @@ class CourierWarehousesFragment :
                         when (it.carNumber) {
                             CarNumberState.Empty -> {
                                 binding.carNumber.visibility = GONE
-//                                binding.carNumberEmpty.visibility = VISIBLE
                             }
                             is CarNumberState.Indicated -> {
                                 binding.carNumber.visibility = VISIBLE
-//                                binding.carNumberEmpty.visibility = GONE
                                 binding.carNumber.setText(
                                     carNumberSpannable(it.carNumber.carNumber),
                                     TextView.BufferType.SPANNABLE
@@ -340,9 +242,7 @@ class CourierWarehousesFragment :
             when (it) {
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
                 CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
-                CourierOrdersNavigationState.NavigateToWarehouse -> {
-//                    findNavController().popBackStack(R.id.courier,true)
-                }
+
                 CourierOrdersNavigationState.NavigateToOrders -> {
                     hideBottomSheetOrders()
                 }
@@ -383,34 +283,6 @@ class CourierWarehousesFragment :
                     )
             }
         }
-        viewModel.orders.observe{ state ->
-            //val adapter = adapter
-            when (state) {
-                is CourierOrderItemState.ShowItems -> {
-//                    binding.emptyList.visibility = GONE
-//                    binding.orderProgress.visibility = GONE
-//                    binding.orders.visibility = VISIBLE
-                }
-                is CourierOrderItemState.Empty -> {
-//                    binding.emptyList.visibility = VISIBLE
-//                    binding.orderProgress.visibility = GONE
-//                    binding.orders.visibility = GONE
-//                    binding.emptyTitle.text = state.info
-                }
-                is CourierOrderItemState.UpdateItem -> {
-//                    adapter.setItem(state.position, state.item)
-//                    adapter.notifyItemChanged(state.position, state.item)
-                }
-                is CourierOrderItemState.UpdateItems -> {
-//                    adapter.clear()
-//                    adapter.addItems(state.items)
-//                    adapter.notifyDataSetChanged()
-                }
-                is CourierOrderItemState.ScrollTo -> {
-                    smoothScrollToPosition(state.position)
-                }
-            }
-        }
 
     }
     private fun showDialogConfirmScoreInfo(
@@ -421,7 +293,7 @@ class CourierWarehousesFragment :
         negativeButtonName: String
     ) {
         DialogConfirmInfoFragment.newInstance(
-            CourierOrdersFragment.DIALOG_CONFIRM_SCORE_RESULT_TAG,
+            DIALOG_CONFIRM_SCORE_RESULT_TAG,
             type,
             title,
             message,
@@ -468,7 +340,8 @@ class CourierWarehousesFragment :
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener {
             binding.addressDetailLayoutItem.root.isGone = true
-            viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+            hideBottomSheetOrders()
+            viewModel.initOrdersComplete(getHalfHeightDisplay())
         }
         binding.addressesOrder.setOnClickListener {
             displayItems(viewModel.getOrderAddressItems())
@@ -566,7 +439,7 @@ class CourierWarehousesFragment :
 
     private fun showRegistrationDialogConfirmInfo() {
         DialogConfirmInfoFragment.newInstance(
-            resultTag = CourierOrdersFragment.DIALOG_REGISTRATION_RESULT_TAG,
+            resultTag = DIALOG_REGISTRATION_RESULT_TAG,
             type = DialogInfoStyle.INFO.ordinal,
             title = getString(R.string.demo_registration_title_dialog),
             message = getString(R.string.demo_registration_message_dialog),
@@ -590,12 +463,7 @@ class CourierWarehousesFragment :
         adapter.notifyDataSetChanged()
     }
 
-    private fun smoothScrollToPosition(position: Int) {
-        val smoothScroller: SmoothScroller = createSmoothScroller()
-        smoothScroller.targetPosition = position
-//        val layoutManager = binding.items.layoutManager as? LinearLayoutManager
-//        layoutManager?.startSmoothScroll(smoothScroller)
-    }
+
 
     private fun getHalfHeightDisplay(): Int {
         val outMetrics = DisplayMetrics()
@@ -611,14 +479,13 @@ class CourierWarehousesFragment :
         return outMetrics.heightPixels / 2
     }
 
-    private fun createSmoothScroller(): SmoothScroller {
-        return object : LinearSmoothScroller(context) {
-            override fun getVerticalSnapPreference(): Int {
-                return SNAP_TO_START
-            }
-        }
-    }
 
+
+    companion object {
+        const val DIALOG_CONFIRM_SCORE_RESULT_TAG = "DIALOG_CONFIRM_SCORE_RESULT_TAG"
+        const val DIALOG_REGISTRATION_RESULT_TAG = "DIALOG_REGISTRATION_RESULT_TAG"
+        const val FADE_ADDRESS_DETAILS = 50L
+    }
 }
 
 

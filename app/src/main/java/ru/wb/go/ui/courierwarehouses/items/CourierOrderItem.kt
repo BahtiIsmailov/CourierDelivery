@@ -1,4 +1,4 @@
-package ru.wb.go.ui.courierorders.delegates.items
+package ru.wb.go.ui.courierwarehouses.items
 
 import ru.wb.go.mvvm.model.base.BaseItem
 

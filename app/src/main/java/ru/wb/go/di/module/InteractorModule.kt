@@ -43,8 +43,6 @@ import ru.wb.go.ui.courierloading.domain.CourierLoadingInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractor
 import ru.wb.go.ui.couriermap.domain.CourierMapInteractorImpl
 import ru.wb.go.ui.couriermap.domain.CourierMapRepository
-import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractor
-import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractorImpl
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractor
 import ru.wb.go.ui.courierordertimer.domain.CourierOrderTimerInteractorImpl
 import ru.wb.go.ui.courierstartdelivery.domain.CourierStartDeliveryInteractor
@@ -163,44 +161,25 @@ val interactorModule = module {
     fun provideCourierWarehousesInteractor(
         networkMonitorRepository: NetworkMonitorRepository,
         deviceManager: DeviceManager,
-        appRemoteRepository: AppTasksRepository,
+        appRemoteRepository: AppRemoteRepository,
+        appTasksRepository: AppTasksRepository,
         courierLocalRepository: CourierLocalRepository,
+        userManager: UserManager,
         courierMapRepository: CourierMapRepository,
-        tokenManager: TokenManager
+        timeManager: TimeManager,
+        tokenManager: TokenManager,
+        sharedWorker: SharedWorker
     ): CourierWarehousesInteractor {
         return CourierWarehousesInteractorImpl(
             networkMonitorRepository,
             deviceManager,
             appRemoteRepository,
-            courierLocalRepository,
-            courierMapRepository,
-            tokenManager
-        )
-    }
-
-    fun provideCourierOrdersInteractor(
-        networkMonitorRepository: NetworkMonitorRepository,
-        deviceManager: DeviceManager,
-        appTasksRepository: AppTasksRepository,
-        appRemoteRepository: AppRemoteRepository,
-        courierLocalRepository: CourierLocalRepository,
-        courierMapRepository: CourierMapRepository,
-        userManager: UserManager,
-        tokenManager: TokenManager,
-        timeManager: TimeManager,
-        sharedWorker: SharedWorker
-    ): CourierOrdersInteractor {
-        return CourierOrdersInteractorImpl(
-
-            networkMonitorRepository,
-            deviceManager,
             appTasksRepository,
-            appRemoteRepository,
             courierLocalRepository,
-            courierMapRepository,
             userManager,
-            tokenManager,
+            courierMapRepository,
             timeManager,
+            tokenManager,
             sharedWorker
         )
     }
@@ -385,9 +364,8 @@ val interactorModule = module {
             )
     }
 
-    factory { provideCourierWarehousesInteractor(get(), get(), get(), get(), get(), get()) }
     factory {
-        provideCourierOrdersInteractor(
+        provideCourierWarehousesInteractor(
             get(),
             get(),
             get(),
@@ -397,10 +375,10 @@ val interactorModule = module {
             get(),
             get(),
             get(),
-            get(),
-
-            )
+            get()
+        )
     }
+
     single { provideCourierCarNumberInteractor(get()) }
     single { provideCourierOrderTimerInteractor(get(), get(), get(), get()) }
     factory {
@@ -423,8 +401,8 @@ val interactorModule = module {
             get(),
             get(),
             get(),
-get()
-            )
+            get()
+        )
     }
     factory {
         provideCourierIntransitInteractor(

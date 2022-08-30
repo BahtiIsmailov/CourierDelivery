@@ -30,8 +30,6 @@ import ru.wb.go.ui.courierintransitofficescanner.CourierIntransitOfficeScannerVi
 import ru.wb.go.ui.courierloader.CourierLoaderViewModel
 import ru.wb.go.ui.courierloading.CourierLoadingScanViewModel
 import ru.wb.go.ui.couriermap.CourierMapViewModel
-import ru.wb.go.ui.courierorders.CourierOrderParameters
-import ru.wb.go.ui.courierorders.CourierOrdersViewModel
 import ru.wb.go.ui.courierordertimer.CourierOrderTimerViewModel
 import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryParameters
 import ru.wb.go.ui.courierstartdelivery.CourierStartDeliveryViewModel
@@ -71,12 +69,7 @@ val viewModelModule = module {
     viewModel { CourierVersionControlViewModel(get(), get()) }
     viewModel { CourierAgreementViewModel(get()) }
 
-    viewModel { CourierWarehousesViewModel(get(), get(), get(),get(), get(), get(),get()) }
-
-    viewModel { (parameters: CourierOrderParameters) ->
-        CourierOrdersViewModel(parameters, get(), get(), get(), get(), get())
-    }
-
+    viewModel { CourierWarehousesViewModel(get(), get(), get(),get(), get()) }
 
 
     viewModel { (parameters: CourierDataParameters) ->

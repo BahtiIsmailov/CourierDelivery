@@ -2,11 +2,11 @@ package ru.wb.go.ui.courierorders
 
 import ru.wb.go.db.entity.courierlocal.CourierOrderLocalDataEntity
 import ru.wb.go.mvvm.model.base.BaseItem
-import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
-import java.text.DecimalFormat
+import ru.wb.go.ui.courierwarehouses.items.CourierOrderItem
+import ru.wb.go.ui.courierwarehouses.CourierWarehousesResourceProvider
 
 class CourierOrdersDataBuilderImpl(
-    private val resourceProvider: CourierOrdersResourceProvider,
+    private val resourceProvider: CourierWarehousesResourceProvider,
 ) : CourierOrdersDataBuilder {
 
     override fun buildOrderItem(

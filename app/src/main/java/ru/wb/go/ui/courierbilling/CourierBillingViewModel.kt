@@ -75,7 +75,6 @@ class CourierBillingViewModel(
                 billingComplete(interactor.getBillingInfo())
             }catch (e:Exception){
                 logException(e,"initBalanceAndTransactions")
-                //onTechEventLog("billingError", e)
                 setLoader(WaitLoader.Complete)
                 _billingItems.value = CourierBillingState.Empty("Ошибка получения данных")
                 errorDialogManager.showErrorDialog(e, _navigateToDialogInfo)
