@@ -111,11 +111,10 @@ class CourierWarehousesFragment :
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-
-
         viewModel.selectedMapPointForFragment.observeEvent { mapPoint ->
             mapPointFromViewModel = mapPoint
         }
+
         viewModel.navigateToDialogInfo.observe{
             showDialogInfo(it)
         }
@@ -127,34 +126,6 @@ class CourierWarehousesFragment :
                 }
                 CourierWarehouseItemState.NoInternet -> {
                     binding.noInternetLayout.isVisible = true
-                }
-            }
-        }
-
-        viewModel.orderAddresses.observe(viewLifecycleOwner) {
-            when (it) {
-                is CourierOrderAddressesUIState.InitItems -> {
-//                    binding.emptyList.visibility = GONE
-//                    binding.addresses.visibility = VISIBLE
-//                    binding.takeOrder.isEnabled = true
-//                    val callback = object : CourierOrderDetailsAddressAdapter.OnItemClickCallBack {
-//                        override fun onItemClick(index: Int) {
-//                            viewModel.onAddressItemClick(index)
-//                        }
-//                    }
-//                    binding.addresses.adapter =
-//                        CourierOrderDetailsAddressAdapter(requireContext(), it.items, callback)
-                }
-                CourierOrderAddressesUIState.Empty -> {
-//                    binding.emptyList.visibility = VISIBLE
-//                    binding.addresses.visibility = GONE
-//                    binding.takeOrder.isEnabled = false
-                }
-                is CourierOrderAddressesUIState.UpdateItems -> {
-//                    val addressAdapter = addressAdapter
-//                    addressAdapter.clear()
-//                    addressAdapter.addItems(it.items)
-//                    addressAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -284,9 +255,7 @@ class CourierWarehousesFragment :
             when (it) {
                 is CourierOrdersNavigationState.NavigateToCarNumber -> navigateToCarNumber(it)
                 CourierOrdersNavigationState.NavigateToRegistration -> navigateToRegistration()
-                CourierOrdersNavigationState.NavigateToWarehouse -> {
-//                    findNavController().popBackStack(R.id.courier,true)
-                }
+
                 CourierOrdersNavigationState.NavigateToOrders -> {
                     hideBottomSheetOrders()
                 }
@@ -325,32 +294,6 @@ class CourierWarehousesFragment :
                     findNavController().navigate(
                         CourierWarehousesFragmentDirections.actionCourierWarehousesFragmentToCourierLoaderFragment()
                     )
-            }
-        }
-        viewModel.orders.observe{ state ->
-            //val adapter = adapter
-            when (state) {
-                is CourierOrderItemState.ShowItems -> {
-//                    binding.emptyList.visibility = GONE
-//                    binding.orderProgress.visibility = GONE
-//                    binding.orders.visibility = VISIBLE
-                }
-                is CourierOrderItemState.Empty -> {
-//                    binding.emptyList.visibility = VISIBLE
-//                    binding.orderProgress.visibility = GONE
-//                    binding.orders.visibility = GONE
-//                    binding.emptyTitle.text = state.info
-                }
-                is CourierOrderItemState.UpdateItem -> {
-//                    adapter.setItem(state.position, state.item)
-//                    adapter.notifyItemChanged(state.position, state.item)
-                }
-                is CourierOrderItemState.UpdateItems -> {
-//                    adapter.clear()
-//                    adapter.addItems(state.items)
-//                    adapter.notifyDataSetChanged()
-                }
-
             }
         }
 
@@ -548,13 +491,7 @@ class CourierWarehousesFragment :
         return outMetrics.heightPixels / 2
     }
 
-    private fun createSmoothScroller(): SmoothScroller {
-        return object : LinearSmoothScroller(context) {
-            override fun getVerticalSnapPreference(): Int {
-                return SNAP_TO_START
-            }
-        }
-    }
+
 
     companion object {
         const val COURIER_ORDER_ID_KEY = "courier_order_id_key"
