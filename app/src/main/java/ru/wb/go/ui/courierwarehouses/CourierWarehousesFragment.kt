@@ -126,11 +126,9 @@ class CourierWarehousesFragment :
                         when (it.carNumber) {
                             CarNumberState.Empty -> {
                                 binding.carNumber.visibility = GONE
-//                                binding.carNumberEmpty.visibility = VISIBLE
                             }
                             is CarNumberState.Indicated -> {
                                 binding.carNumber.visibility = VISIBLE
-//                                binding.carNumberEmpty.visibility = GONE
                                 binding.carNumber.setText(
                                     carNumberSpannable(it.carNumber.carNumber),
                                     TextView.BufferType.SPANNABLE

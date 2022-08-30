@@ -370,7 +370,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun initMapByLocation(location: CoordinatePoint) {
-//        myLocation = location
+        myLocation = location
         if (coordinatePoints.isEmpty()) {
             interactor.mapState(CourierMapState.NavigateToMyLocation)
         } else {
