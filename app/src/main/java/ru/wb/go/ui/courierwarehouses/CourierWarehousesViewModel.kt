@@ -1,7 +1,6 @@
 package ru.wb.go.ui.courierwarehouses
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -34,7 +33,6 @@ import ru.wb.go.ui.couriermap.*
 import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.MY_LOCATION_ID
 import ru.wb.go.ui.courierorders.*
 import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
-import ru.wb.go.ui.courierorders.domain.CourierOrdersInteractor
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle
@@ -53,8 +51,7 @@ import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
 class CourierWarehousesViewModel(
-    private val interactor: CourierWarehousesInteractor,
-    private val interactorOrder: CourierOrdersInteractor,
+    private val interactor: CourierWarehousesInteractor, 
     private val resourceProvider: CourierWarehousesResourceProvider,
     private val dataBuilder: CourierOrdersDataBuilder, 
     private val errorDialogManager: ErrorDialogManager,
@@ -207,7 +204,7 @@ class CourierWarehousesViewModel(
     fun onChangeCarNumberOrders(result: CourierCarNumberResult) {
         when (result) {
             is CourierCarNumberResult.Create -> {
-                if (interactorOrder.carNumberIsConfirm()) {
+                if (interactor.carNumberIsConfirm()) {
                     withSelectedRowOrder(navigateToDialogConfirmScoreInfo())
                 }
             }
@@ -496,8 +493,8 @@ class CourierWarehousesViewModel(
 
     fun onConfirmTakeOrderClick() {
         when {
-            interactorOrder.isDemoMode() -> navigateToRegistrationDialog()
-            interactorOrder.carNumberIsConfirm() -> {
+            interactor.isDemoMode() -> navigateToRegistrationDialog()
+            interactor.carNumberIsConfirm() -> {
                 withSelectedRowOrder(
                     navigateToDialogConfirmScoreInfo()
                 )
@@ -521,14 +518,14 @@ class CourierWarehousesViewModel(
                 try {
                     if (courierOrderLocalEntity.ridMask != 0L) {
                         boxCountWithRouteId =
-                            interactorOrder.getBoxCountWithRidMask(courierOrderLocalEntity).count
+                            interactor.getBoxCountWithRidMask(courierOrderLocalEntity).count
                     }
                     _navigateToDialogConfirmScoreInfo.value =
                         NavigateToDialogConfirmInfo(
                             DialogInfoStyle.INFO.ordinal,
                             resourceProvider.getConfirmTitleDialog(courierOrderLocalEntity.id),
                             resourceProvider.getConfirmMessageDialog(
-                                CarNumberUtils(interactorOrder.carNumber()).fullNumber(),
+                                CarNumberUtils(interactor.carNumber()).fullNumber(),
                                 resourceProvider.getCargo(
                                     courierOrderLocalEntity.minVolume,
                                     courierOrderLocalEntity.minBoxesCount
@@ -555,7 +552,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun withSelectedRowOrder(action: (rowOrder: Int) -> Unit) {
-        action(interactorOrder.selectedRowOrder())
+        action(interactor.selectedRowOrder())
     }
 
     fun onMapClickWithDetail() {
@@ -580,8 +577,8 @@ class CourierWarehousesViewModel(
     private fun onNextFabForOrder() {
         _showOrderState.value = CourierOrderShowOrdersState.Invisible
         _navigationStateOrder.value =
-            CourierOrdersNavigationState.NavigateToOrderDetails(interactorOrder.isDemoMode())
-        initOrderDetails(interactorOrder.selectedRowOrder())
+            CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
+        initOrderDetails(interactor.selectedRowOrder())
     }
 
     private fun initOrderDetails(itemIndex: Int) {
@@ -608,12 +605,12 @@ class CourierWarehousesViewModel(
         setLoader(WaitLoader.Wait)
         viewModelScope.launch {
             try {
-                interactorOrder.anchorTask()
+                interactor.anchorTask()
                 anchorTaskComplete()
             } catch (e: Exception) {
                 anchorTaskError(e)
             } finally {
-                val localOderEntity = interactorOrder.courierLocalOrderEntity()
+                val localOderEntity = interactor.courierLocalOrderEntity()
                 //interactor.mapState(CourierMapState.NavigateToPointZoom(CoordinatePoint(localOderEntity.srcLatitude,localOderEntity.srcLongitude)))
                 logCourierAndOrderData(localOderEntity)
             }
@@ -747,15 +744,15 @@ class CourierWarehousesViewModel(
         pvz: Int
     ) {
         with(courierOrderEntity) {
-            val carNumber = carNumberFormat(interactorOrder.carNumber())
-            val carTypeIcon = resourceProvider.getTypeIcons(interactorOrder.carType())
+            val carNumber = carNumberFormat(interactor.carNumber())
+            val carTypeIcon = resourceProvider.getTypeIcons(interactor.carType())
             val itemId = (idView + 1).toString()
             // val coast = DecimalFormat("#,###.##").format(minCost)
             _orderDetails.value =
                 CourierOrderDetailsInfoUIState.InitOrderDetails(
                     carNumber = carNumber,
                     carTypeIcon = carTypeIcon,
-                    isChangeCarNumber = interactorOrder.carNumberIsConfirm(),
+                    isChangeCarNumber = interactor.carNumberIsConfirm(),
                     itemId = itemId,
                     orderId = resourceProvider.getOrder(id),
                     cost = resourceProvider.getCost(minCost),
@@ -805,7 +802,7 @@ class CourierWarehousesViewModel(
     }
 
     private fun saveRowOrder(itemIndex: Int) {
-        interactorOrder.saveRowOrder(itemIndex)
+        interactor.saveRowOrder(itemIndex)
     }
 
     private fun scrollToForOrder(index: Int) {
@@ -995,7 +992,7 @@ class CourierWarehousesViewModel(
                 interactor.clearAndSaveCurrentWarehouses(oldEntity)
                 navigateToCourierOrders(oldEntity)
                 orderLocalDataEntities =
-                    interactorOrder.freeOrdersLocalClearAndSave(oldEntity.id)
+                    interactor.freeOrdersLocalClearAndSave(oldEntity.id)
                 initOrdersComplete(height)
                 delay(1000)
                 setLoaderForOrder(WaitLoaderForOrder.Complete)
