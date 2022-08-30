@@ -340,7 +340,8 @@ class CourierWarehousesFragment :
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener {
             binding.addressDetailLayoutItem.root.isGone = true
-            viewModel.onCloseOrderDetailsClick(getHalfHeightDisplay())
+            hideBottomSheetOrders()
+            viewModel.initOrdersComplete(getHalfHeightDisplay())
         }
         binding.addressesOrder.setOnClickListener {
             displayItems(viewModel.getOrderAddressItems())

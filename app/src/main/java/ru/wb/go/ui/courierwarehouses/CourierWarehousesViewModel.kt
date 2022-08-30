@@ -913,8 +913,7 @@ class CourierWarehousesViewModel(
         }
     }
 
-    private fun initOrdersComplete(height: Int) {
-
+    fun initOrdersComplete(height: Int) {
         convertAndSaveOrderPointMarkers(orderLocalDataEntities) //
         setLoader(WaitLoader.Complete)
         ordersComplete(height)
