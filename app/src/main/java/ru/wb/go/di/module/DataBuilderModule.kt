@@ -6,13 +6,13 @@ import ru.wb.go.ui.courierbilling.CourierBillingDataBuilderImpl
 import ru.wb.go.ui.courierbilling.CourierBillingResourceProvider
 import ru.wb.go.ui.courierorders.CourierOrdersDataBuilder
 import ru.wb.go.ui.courierorders.CourierOrdersDataBuilderImpl
-import ru.wb.go.ui.courierorders.CourierOrdersResourceProvider
+import ru.wb.go.ui.courierwarehouses.CourierWarehousesResourceProvider
 import ru.wb.go.utils.time.TimeFormatter
 
 val dataBuilderModule = module {
 
     fun provideCourierOrderDataBuilder(
-        resourceProvider: CourierOrdersResourceProvider,
+        resourceProvider: CourierWarehousesResourceProvider,
     ): CourierOrdersDataBuilder {
         return CourierOrdersDataBuilderImpl(resourceProvider)
     }
