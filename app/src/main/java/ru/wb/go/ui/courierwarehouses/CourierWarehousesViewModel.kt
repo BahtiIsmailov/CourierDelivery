@@ -133,10 +133,6 @@ class CourierWarehousesViewModel(
     private var addressCoordinatePoints = mutableListOf<CoordinatePoint>()
     private var addressMapMarkers = mutableListOf<CourierMapMarker>()
 
-    private val _showOrderState = MutableLiveData<CourierOrderShowOrdersState>()
-    val showOrderState: LiveData<CourierOrderShowOrdersState>
-        get() = _showOrderState
-
     private var myLocation: CoordinatePoint? = null
     private var mapPointAfterCarNumber: MapPoint? = null
 
@@ -281,7 +277,6 @@ class CourierWarehousesViewModel(
     fun onCloseOrderDetailsClick(height: Int) {
         this.height = height
         withSelectedRowOrder(makeOrderAddresses())
-        _showOrderState.value = CourierOrderShowOrdersState.Visible
         _navigationStateOrder.value = CourierOrdersNavigationState.CloseAddressesDetail
     }
 
@@ -303,7 +298,7 @@ class CourierWarehousesViewModel(
         changeMapMarkers(itemIndex, isSelected)
         updateOrderAndWarehouseMarkers()
         changeOrderItems()
-        changeShowDetailsOrder(isSelected)
+
     }
 
     private fun makeOrderAddresses(): (rowOrder: Int) -> Unit = {
@@ -353,7 +348,6 @@ class CourierWarehousesViewModel(
 
         updateMyLocation()
 
-        courierWarehouseComplete()
     }
 
 
@@ -363,7 +357,6 @@ class CourierWarehousesViewModel(
             _warehouseState.value = CourierWarehouseItemState.NoInternet
         } else {
             errorDialogManager.showErrorDialog(it, _navigateToDialogInfo)
-            _warehouseState.value = CourierWarehouseItemState.Empty("Ошибка получения данных")
         }
     }
 
@@ -394,13 +387,6 @@ class CourierWarehousesViewModel(
         }
     }
 
-    private fun courierWarehouseComplete() {
-        _warehouseState.value =
-            if (warehouseItems.isEmpty()) CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-            else CourierWarehouseItemState.InitItems(
-                warehouseItems
-            )
-    }
 
     private fun showManagerBar() {
         interactor.mapState(CourierMapState.ShowManagerBar)
@@ -453,7 +439,6 @@ class CourierWarehousesViewModel(
                 updateMarkers()
                 val isMapSelected = isMapSelected(indexItemClick)
                 changeSelectedWarehouseItemsByMap(indexItemClick, isMapSelected)
-                //updateAndScrollToItems(indexItemClick)
                 val currentWarehouse =
                     interactor.loadWarehousesFromId(warehouseItems.elementAt(indexItemClick).id)
                 changeShowDetailsOrder(isMapSelected, currentWarehouse)
@@ -476,7 +461,6 @@ class CourierWarehousesViewModel(
         clearMap()
         scrollToForOrder(itemIndex)
         onNextFabForOrder()
-        changeShowDetailsOrder(isSelected)
     }
 
     fun onChangeCarNumberClick() {
@@ -575,7 +559,6 @@ class CourierWarehousesViewModel(
     }
 
     private fun onNextFabForOrder() {
-        _showOrderState.value = CourierOrderShowOrdersState.Invisible
         _navigationStateOrder.value =
             CourierOrdersNavigationState.NavigateToOrderDetails(interactor.isDemoMode())
         initOrderDetails(interactor.selectedRowOrder())
@@ -816,7 +799,6 @@ class CourierWarehousesViewModel(
         )
     }
 
-    //_orderItems.value = CourierOrderItemState.ScrollTo(index)
 
     private fun addressMapClickForOrder(mapPoint: MapPoint) {
         changeSelectedAddressMapPointAndItemByMap(mapPoint.id.split(" ")[0])
@@ -954,27 +936,12 @@ class CourierWarehousesViewModel(
         }
     }
 
-    private fun changeShowDetailsOrder(selected: Boolean) {
-        _showOrderState.value =
-            if (selected) CourierOrderShowOrdersState.Enable
-            else CourierOrderShowOrdersState.Disable
-    }
 
     private fun changeWarehouseItems(selectIndex: Int, isSelected: Boolean) {
         changeSelectedWarehouseItemsByMap(selectIndex, isSelected)
-        if (warehouseItems.isEmpty()) {
-            _warehouseState.value =
-                CourierWarehouseItemState.Empty(resourceProvider.getEmptyList())
-        } else {
-            _warehouseState.value =
-                CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
-        }
     }
 
-    private fun updateItems() {
-        _warehouseState.value =
-            CourierWarehouseItemState.UpdateItems(warehouseItems.toMutableList())
-    }
+
 
 
     fun onNextFab(height: Int) {

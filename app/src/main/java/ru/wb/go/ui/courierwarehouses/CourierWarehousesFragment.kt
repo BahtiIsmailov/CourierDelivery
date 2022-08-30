@@ -104,14 +104,14 @@ class CourierWarehousesFragment :
                 viewModel.onRegistrationConfirmClick()
             }
             if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_NEGATIVE_KEY)) {
-                //viewModel.onRegistrationCancelClick()
+
             }
         }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun initObservable() {
-         //var adapter: CourierWarehousesAdapter? = null
+
 
         viewModel.selectedMapPointForFragment.observeEvent { mapPoint ->
             mapPointFromViewModel = mapPoint
@@ -122,37 +122,6 @@ class CourierWarehousesFragment :
 
         viewModel.warehouseState.observe{
             when (it) {
-                is CourierWarehouseItemState.InitItems -> {
-                    //binding.emptyList.visibility = GONE
-                    //binding.refresh.isRefreshing = false
-                    //binding.items.visibility = VISIBLE
-                    val callback = object : CourierWarehousesAdapter.OnItemClickCallBack {
-                        override fun onItemClick(index: Int) {
-                            viewModel.onItemClick(index)
-                        }
-                    }
-                    //adapter = CourierWarehousesAdapter(requireContext(), it.items, callback)
-                    //binding.items.adapter = adapter
-
-                }
-                is CourierWarehouseItemState.UpdateItems -> { // когда нажимаешь
-//                    adapter?.clear()
-//                    adapter?.addItems(it.items)
-//                    adapter?.notifyDataSetChanged()
-                }
-                is CourierWarehouseItemState.Empty -> {
-//                    binding.emptyList.visibility = VISIBLE
-//                    binding.emptyTitle.text = it.info
-                    //binding.refresh.isRefreshing = false
-//                    binding.items.visibility = GONE
-                }
-                is CourierWarehouseItemState.UpdateItem -> {
-//                    adapter?.setItem(it.position, it.item)
-//                    adapter?.notifyItemChanged(it.position, it.item)
-                }
-                is CourierWarehouseItemState.ScrollTo -> {
-                    smoothScrollToPosition(it.position)
-                }
                 CourierWarehouseItemState.Success -> {
                     binding.noInternetLayout.isGone = true
                 }
@@ -162,31 +131,6 @@ class CourierWarehousesFragment :
             }
         }
 
-        viewModel.showOrderState.observe(viewLifecycleOwner) {
-            when (it) {
-                CourierOrderShowOrdersState.Disable -> {
-//                    with(binding.showOrderFab){
-//                         isEnabled = false
-//                         //isClickable = false
-//                         backgroundTintList = colorFab(R.color.tertiary)
-//                    }
-
-                }
-                CourierOrderShowOrdersState.Enable -> {
-//                    with(binding.showOrderFab) {
-//                         isEnabled = true
-//                         //isClickable = true
-//                         backgroundTintList = colorFab(R.color.colorPrimary)
-//                    }
-                }
-                CourierOrderShowOrdersState.Invisible ->{
-//                      binding.showOrderFab.visibility = INVISIBLE
-                }
-                CourierOrderShowOrdersState.Visible -> {
-                    //binding.showOrderFab.visibility = VISIBLE
-                }
-            }
-        }
         viewModel.orderAddresses.observe(viewLifecycleOwner) {
             when (it) {
                 is CourierOrderAddressesUIState.InitItems -> {
@@ -406,9 +350,7 @@ class CourierWarehousesFragment :
 //                    adapter.addItems(state.items)
 //                    adapter.notifyDataSetChanged()
                 }
-                is CourierOrderItemState.ScrollTo -> {
-                    smoothScrollToPosition(state.position)
-                }
+
             }
         }
 
@@ -590,12 +532,7 @@ class CourierWarehousesFragment :
         adapter.notifyDataSetChanged()
     }
 
-    private fun smoothScrollToPosition(position: Int) {
-//        val smoothScroller: SmoothScroller = createSmoothScroller()
-//        smoothScroller.targetPosition = position
-//        val layoutManager = binding.items.layoutManager as? LinearLayoutManager
-//        layoutManager?.startSmoothScroll(smoothScroller)
-    }
+
 
     private fun getHalfHeightDisplay(): Int {
         val outMetrics = DisplayMetrics()
