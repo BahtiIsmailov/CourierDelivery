@@ -32,7 +32,7 @@ import ru.wb.go.ui.couriercarnumber.CourierCarNumberResult
 import ru.wb.go.ui.couriermap.*
 import ru.wb.go.ui.couriermap.CourierMapFragment.Companion.MY_LOCATION_ID
 import ru.wb.go.ui.courierorders.*
-import ru.wb.go.ui.courierorders.delegates.items.CourierOrderItem
+import ru.wb.go.ui.courierwarehouses.items.CourierOrderItem
 import ru.wb.go.ui.courierwarehouses.domain.CourierWarehousesInteractor
 import ru.wb.go.ui.dialogs.DialogInfoFragment
 import ru.wb.go.ui.dialogs.DialogInfoStyle

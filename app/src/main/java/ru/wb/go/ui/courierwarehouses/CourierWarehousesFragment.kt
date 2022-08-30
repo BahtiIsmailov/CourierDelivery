@@ -81,21 +81,10 @@ class CourierWarehousesFragment :
     }
 
     private fun initReturnDialogResult() {
-        setFragmentResultListener(DIALOG_TASK_NOT_EXIST_RESULT_TAG) { _, bundle ->
-            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
-                //viewModel.onTaskNotExistConfirmClick()
-            }
-        }
 
         setFragmentResultListener(DIALOG_CONFIRM_SCORE_RESULT_TAG) { _, bundle ->
             if (bundle.containsKey(DialogConfirmInfoFragment.DIALOG_CONFIRM_INFO_POSITIVE_KEY)) {
                 viewModel.onConfirmOrderClick()
-            }
-        }
-
-        setFragmentResultListener(DIALOG_INFO_TAG) { _, bundle ->
-            if (bundle.containsKey(DialogInfoFragment.DIALOG_INFO_BACK_KEY)) {
-                //viewModel.goBack()
             }
         }
 
@@ -494,8 +483,6 @@ class CourierWarehousesFragment :
 
 
     companion object {
-        const val COURIER_ORDER_ID_KEY = "courier_order_id_key"
-        const val DIALOG_TASK_NOT_EXIST_RESULT_TAG = "DIALOG_TASK_NOT_EXIST_RESULT_TAG"
         const val DIALOG_CONFIRM_SCORE_RESULT_TAG = "DIALOG_CONFIRM_SCORE_RESULT_TAG"
         const val DIALOG_REGISTRATION_RESULT_TAG = "DIALOG_REGISTRATION_RESULT_TAG"
         const val FADE_ADDRESS_DETAILS = 50L
