@@ -182,7 +182,9 @@ class CourierWarehousesFragment :
 
         viewModel.showOrdersState.observe{
             when (it) {
-                CourierWarehousesShowOrdersState.Disable -> {}
+                CourierWarehousesShowOrdersState.Disable -> {
+                    binding.warehouseCard.isGone = true
+                }
                 is CourierWarehousesShowOrdersState.Enable -> {
                     binding.warehouseCard.isVisible = true
                     it.warehouseItem?.map {warehouseItem ->
