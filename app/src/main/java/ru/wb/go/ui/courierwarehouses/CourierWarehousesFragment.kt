@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
@@ -18,6 +19,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -191,7 +193,7 @@ class CourierWarehousesFragment :
                         binding.nameWarehouse.text = warehouseItem.name
                         binding.warehouseAddress.text = warehouseItem.fullAddress
                     }
-                    binding.km.text = it.distance
+                    binding.km.text = Html.fromHtml(it.distance, HtmlCompat.FROM_HTML_OPTION_USE_CSS_COLORS)
                     binding.warehouseCard.startAnimation(
                             AnimationUtils.loadAnimation(
                                 requireContext(),

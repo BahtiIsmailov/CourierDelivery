@@ -250,7 +250,10 @@
     <string name="orderCardCargo">от %2$d шт. / %1$d м\u00B3</string>
 
     <string name="itemOfficeCount">%1$d ПВЗ ~</string>
-    <string name="warehouse_distance">От вас ~ %1$s км</string>
+
+    <string name="warehouse_distance">От вас<Data><![CDATA[<b><font color=#0E0606> ~ %1$s км</font></b>]]></Data> </string>
+
+
     <string name="warehouse_distance_for_textView">От вас ~ 43км</string>
     <string name="courier_orders_volume">от %1$s</string>
     <string name="courier_orders_count_pvz">%1$s</string>
