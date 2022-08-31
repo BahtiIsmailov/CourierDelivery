@@ -198,7 +198,9 @@ class CourierWarehousesViewModel(
                     withSelectedRowOrder(navigateToDialogConfirmScoreInfo())
                 }
             }
-            is CourierCarNumberResult.Edit -> {}
+            is CourierCarNumberResult.Edit -> {
+                _showOrdersState.value = CourierWarehousesShowOrdersState.Disable
+            }
         }
 
     }
@@ -264,30 +266,10 @@ class CourierWarehousesViewModel(
     }
 
 
-    fun onCloseOrderDetailsClick(height: Int) {
-        this.height = height
-        withSelectedRowOrder(makeOrderAddresses())
-        _navigationStateOrder.value = CourierOrdersNavigationState.CloseAddressesDetail
-    }
-
     fun onAddressesClick() {
         _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToAddresses
     }
 
-
-
-    private fun makeOrderAddresses(): (rowOrder: Int) -> Unit = {
-        _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToOrders
-//        interactor.mapState(
-//            CourierMapState.UpdateMarkersWithAnimateToPosition(
-//                pointsShow = orderMapMarkers,
-//                pointsFrom = addressMapMarkers,
-//                pointTo = orderMapMarkerWithoutWarehouse(it),
-//                animateTo = boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
-//                offsetY = offsetY(height)
-//            )
-//        )
-    }
 
     private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): Set<CourierWarehouseLocalEntity> {
         courierWarehouseResponse.data.forEach {
@@ -433,7 +415,7 @@ class CourierWarehousesViewModel(
         changeMapMarkersForOrder(itemIndex, isSelected)
         updateOrderAndWarehouseMarkers()
         clearMap()
-        scrollToForOrder(itemIndex)
+
         onNextFabForOrder()
     }
 
@@ -713,8 +695,12 @@ class CourierWarehousesViewModel(
 
     private fun carNumberFormat(it: String) =
         it.let {
-            if (it.isEmpty()) CarNumberState.Empty
-            else CarNumberState.Indicated(resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber()))
+            if (it.isEmpty()){
+                CarNumberState.Empty
+            }
+            else {
+                CarNumberState.Indicated(resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber()))
+            }
         }
 
 
@@ -748,17 +734,6 @@ class CourierWarehousesViewModel(
 
     private fun saveRowOrder(itemIndex: Int) {
         interactor.saveRowOrder(itemIndex)
-    }
-
-    private fun scrollToForOrder(index: Int) {
-        interactor.mapState(
-            CourierMapState.NavigateToPoint(
-                CoordinatePoint(
-                    orderMapMarkers.elementAt(index).point.lat,
-                    orderMapMarkers.elementAt(index).point.long
-                )
-            )
-        )
     }
 
 
@@ -995,8 +970,6 @@ class CourierWarehousesViewModel(
 
     private fun clearFabAndWhList() {
         whSelectedId = null
-        //changeShowDetailsOrder(false, null)
-
     }
 
     override fun getScreenTag(): String {
