@@ -220,7 +220,7 @@ class CourierWarehousesFragment :
             when (it) {
                 CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrders -> {
-                    viewModel.onMapPointClick(mapPointFromViewModel!!)
+                    //viewModel.onMapPointClick(mapPointFromViewModel!!)
                 }
 
                 CourierWarehousesNavigationState.NavigateToRegistration -> {
@@ -347,12 +347,15 @@ class CourierWarehousesFragment :
         }
         binding.addressesOrder.setOnClickListener {
             displayItems(viewModel.getOrderAddressItems())
-            Log.e("stateItemsBaseItem","${viewModel.getOrderAddressItems()}")
             viewModel.onAddressesClick()
         }
 
-        binding.goToOrder.setOnClickListener { viewModel.onNextFab(getHalfHeightDisplay()) }
-        binding.updateWhenNoInternet.setOnClickListener { viewModel.getWarehouses() }
+        binding.goToOrder.setOnClickListener {
+            viewModel.onNextFab(getHalfHeightDisplay())
+        }
+        binding.updateWhenNoInternet.setOnClickListener {
+            viewModel.getWarehouses()
+        }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.cardWarehouseClose.setOnClickListener{
             viewModel.onMapPointClick(mapPointFromViewModel!!)

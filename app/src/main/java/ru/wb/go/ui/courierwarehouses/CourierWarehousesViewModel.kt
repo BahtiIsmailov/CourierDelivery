@@ -882,10 +882,6 @@ class CourierWarehousesViewModel(
 
 
 
-
-
-
-
     fun onNextFab(height: Int) {
         setLoaderForOrder(WaitLoaderForOrder.Wait)
         viewModelScope.launch {
@@ -1017,7 +1013,7 @@ class CourierWarehousesViewModel(
 
     private fun clearFabAndWhList() {
         whSelectedId = null
-        changeShowDetailsOrder(false, null)
+        //changeShowDetailsOrder(false, null)
 
     }
 
