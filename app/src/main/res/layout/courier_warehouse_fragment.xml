@@ -110,6 +110,7 @@
             android:layout_marginBottom="@dimen/pad24"
             android:text="@string/example_text_for_address_warehouse"
             android:textSize="14sp"
+            android:letterSpacing="0.02"
             app:layout_constraintBottom_toTopOf="@+id/go_to_order"
             app:layout_constraintEnd_toEndOf="@id/go_to_order"
             app:layout_constraintStart_toStartOf="@+id/go_to_order" />
