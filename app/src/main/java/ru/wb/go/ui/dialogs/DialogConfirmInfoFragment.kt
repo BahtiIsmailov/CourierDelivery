@@ -3,12 +3,14 @@ package ru.wb.go.ui.dialogs
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.text.Html
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import ru.wb.go.R
@@ -64,7 +66,7 @@ class DialogConfirmInfoFragment : DialogFragment() {
         titleLayout.setImageResource(imageTitle)
 
         title.text = this.title
-        message.text = this.message
+        message.text = Html.fromHtml(this.message,HtmlCompat.FROM_HTML_MODE_LEGACY)
         positive.text = this.positive
         negative.text = this.negative
 
