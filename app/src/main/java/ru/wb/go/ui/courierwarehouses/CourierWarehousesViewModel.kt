@@ -175,7 +175,9 @@ class CourierWarehousesViewModel(
                         initMapByLocation(it.point)
                     }
                     CourierMapAction.MapClick -> {
+                        _navigationStateOrder.value = CourierOrdersNavigationState.HideOrderDetailsByClickMap
                         showManagerBar()
+
                     }
                     CourierMapAction.ShowAll -> {
                         onShowAllClick()
@@ -196,7 +198,9 @@ class CourierWarehousesViewModel(
                     withSelectedRowOrder(navigateToDialogConfirmScoreInfo())
                 }
             }
-            is CourierCarNumberResult.Edit -> {}
+            is CourierCarNumberResult.Edit -> {
+                _showOrdersState.value = CourierWarehousesShowOrdersState.Disable
+            }
         }
 
     }
@@ -262,30 +266,10 @@ class CourierWarehousesViewModel(
     }
 
 
-    fun onCloseOrderDetailsClick(height: Int) {
-        this.height = height
-        withSelectedRowOrder(makeOrderAddresses())
-        _navigationStateOrder.value = CourierOrdersNavigationState.CloseAddressesDetail
-    }
-
     fun onAddressesClick() {
         _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToAddresses
     }
 
-
-
-    private fun makeOrderAddresses(): (rowOrder: Int) -> Unit = {
-        _navigationStateOrder.value = CourierOrdersNavigationState.NavigateToOrders
-//        interactor.mapState(
-//            CourierMapState.UpdateMarkersWithAnimateToPosition(
-//                pointsShow = orderMapMarkers,
-//                pointsFrom = addressMapMarkers,
-//                pointTo = orderMapMarkerWithoutWarehouse(it),
-//                animateTo = boundingBoxWithOrderCenterGroupWarehouseCoordinatePoint(),
-//                offsetY = offsetY(height)
-//            )
-//        )
-    }
 
     private fun setDataForCourierWarehousesDataBase(courierWarehouseResponse: CourierWarehousesResponse): Set<CourierWarehouseLocalEntity> {
         courierWarehouseResponse.data.forEach {
@@ -431,7 +415,7 @@ class CourierWarehousesViewModel(
         changeMapMarkersForOrder(itemIndex, isSelected)
         updateOrderAndWarehouseMarkers()
         clearMap()
-        scrollToForOrder(itemIndex)
+
         onNextFabForOrder()
     }
 
@@ -683,7 +667,7 @@ class CourierWarehousesViewModel(
         return sb.toString()
     }
 
-    private fun initOrderDetails( // text in order details
+    private fun initOrderDetails(
         idView: Int,
         courierOrderEntity: CourierOrderLocalEntity,
         pvz: Int
@@ -711,8 +695,12 @@ class CourierWarehousesViewModel(
 
     private fun carNumberFormat(it: String) =
         it.let {
-            if (it.isEmpty()) CarNumberState.Empty
-            else CarNumberState.Indicated(resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber()))
+            if (it.isEmpty()){
+                CarNumberState.Empty
+            }
+            else {
+                CarNumberState.Indicated(resourceProvider.getCarNumber(CarNumberUtils(it).fullNumber()))
+            }
         }
 
 
@@ -746,17 +734,6 @@ class CourierWarehousesViewModel(
 
     private fun saveRowOrder(itemIndex: Int) {
         interactor.saveRowOrder(itemIndex)
-    }
-
-    private fun scrollToForOrder(index: Int) {
-        interactor.mapState(
-            CourierMapState.NavigateToPoint(
-                CoordinatePoint(
-                    orderMapMarkers.elementAt(index).point.lat,
-                    orderMapMarkers.elementAt(index).point.long
-                )
-            )
-        )
     }
 
 
@@ -845,26 +822,6 @@ class CourierWarehousesViewModel(
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation!!))
     }
 
-    private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
-        mapMarkers.forEachIndexed { index, item ->
-            item.icon = if (index == clickItemIndex) {
-                if (isSelected) {
-                    resourceProvider.getWarehouseMapSelectedIcon()
-                } else {
-                    resourceProvider.getWarehouseMapIcon()
-                }
-            } else {
-                resourceProvider.getWarehouseMapIcon()
-            }
-        }
-        updateMarkersWithMyLocation(myLocation!!)
-        if (isSelected) {
-            with(mapMarkers.elementAt(clickItemIndex).point) {
-                val coordinatePoint = CoordinatePoint(lat, long)
-                interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
-            }
-        }
-    }
 
     private fun changeShowDetailsOrder(
         selected: Boolean,
@@ -879,10 +836,6 @@ class CourierWarehousesViewModel(
             _showOrdersState.value = CourierWarehousesShowOrdersState.Disable
         }
     }
-
-
-
-
 
 
 
@@ -1017,8 +970,6 @@ class CourierWarehousesViewModel(
 
     private fun clearFabAndWhList() {
         whSelectedId = null
-        changeShowDetailsOrder(false, null)
-
     }
 
     override fun getScreenTag(): String {

@@ -78,6 +78,7 @@
     <!-- pin -->
     <dimen name="dp_0d2">2dp</dimen>
     <dimen name="code_keyboard_font_size">40sp</dimen>
+    <dimen name="pad4">4dp</dimen>
     <dimen name="pad8">8dp</dimen>
     <dimen name="pad12">12dp</dimen>
     <dimen name="pad16">16dp</dimen>

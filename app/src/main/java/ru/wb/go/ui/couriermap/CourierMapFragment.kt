@@ -137,7 +137,7 @@ class CourierMapFragment : BaseFragment() {
             val canvas = Canvas(bitmap)
 
             val xPos = (canvas.width / 2).toFloat()
-            val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2 - 20)
+            val yPos = (canvas.height / 2 - (paint.descent() + paint.ascent()) / 2 - 17)
             canvas.drawText(index, xPos, yPos, paint)
             return bitmap
         }

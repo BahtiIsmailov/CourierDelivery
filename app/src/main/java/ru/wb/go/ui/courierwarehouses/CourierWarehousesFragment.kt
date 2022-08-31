@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.RelativeSizeSpan
@@ -18,6 +19,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -182,14 +184,16 @@ class CourierWarehousesFragment :
 
         viewModel.showOrdersState.observe{
             when (it) {
-                CourierWarehousesShowOrdersState.Disable -> {}
+                CourierWarehousesShowOrdersState.Disable -> {
+                    binding.warehouseCard.isGone = true
+                }
                 is CourierWarehousesShowOrdersState.Enable -> {
                     binding.warehouseCard.isVisible = true
                     it.warehouseItem?.map {warehouseItem ->
                         binding.nameWarehouse.text = warehouseItem.name
                         binding.warehouseAddress.text = warehouseItem.fullAddress
                     }
-                    binding.km.text = it.distance
+                    binding.km.text = Html.fromHtml(it.distance, HtmlCompat.FROM_HTML_OPTION_USE_CSS_COLORS)
                     binding.warehouseCard.startAnimation(
                             AnimationUtils.loadAnimation(
                                 requireContext(),
@@ -218,7 +222,7 @@ class CourierWarehousesFragment :
             when (it) {
                 CourierWarehousesNavigationState.NavigateToBack -> findNavController().popBackStack()
                 is CourierWarehousesNavigationState.NavigateToCourierOrders -> {
-                    viewModel.onMapPointClick(mapPointFromViewModel!!)
+                    //viewModel.onMapPointClick(mapPointFromViewModel!!)
                 }
 
                 CourierWarehousesNavigationState.NavigateToRegistration -> {
@@ -250,6 +254,12 @@ class CourierWarehousesFragment :
                     showBottomSheetOrderDetails(it.isDemo)
                 }
 
+                CourierOrdersNavigationState.HideOrderDetailsByClickMap ->{
+                    if (isBottomSheetExpanded()){
+                        binding.addressDetailLayoutItem.root.isGone = true
+                    }
+                }
+
                 CourierOrdersNavigationState.NavigateToAddresses -> {
                     showBottomSheetListOfOrders()
                 }
@@ -259,7 +269,7 @@ class CourierWarehousesFragment :
 
                 CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
-                    if (bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_HIDDEN) {
+                    if (!isBottomSheetExpanded()) {
                         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
                     }
                     ResourcesCompat.getDrawable(resources, it.icon, null)
@@ -339,18 +349,20 @@ class CourierWarehousesFragment :
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener {
-            binding.addressDetailLayoutItem.root.isGone = true
-            hideBottomSheetOrders()
+            closeOrderDetails()
             viewModel.initOrdersComplete(getHalfHeightDisplay())
         }
         binding.addressesOrder.setOnClickListener {
             displayItems(viewModel.getOrderAddressItems())
-            Log.e("stateItemsBaseItem","${viewModel.getOrderAddressItems()}")
             viewModel.onAddressesClick()
         }
 
-        binding.goToOrder.setOnClickListener { viewModel.onNextFab(getHalfHeightDisplay()) }
-        binding.updateWhenNoInternet.setOnClickListener { viewModel.getWarehouses() }
+        binding.goToOrder.setOnClickListener {
+            viewModel.onNextFab(getHalfHeightDisplay())
+        }
+        binding.updateWhenNoInternet.setOnClickListener {
+            viewModel.getWarehouses()
+        }
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.cardWarehouseClose.setOnClickListener{
             viewModel.onMapPointClick(mapPointFromViewModel!!)
@@ -374,10 +386,17 @@ class CourierWarehousesFragment :
 
     }
 
+    private fun closeOrderDetails(){
+        binding.addressDetailLayoutItem.root.isGone = true
+        hideBottomSheetOrders()
+    }
 
     private fun hideBottomSheetOrders() {
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
     }
+
+    private fun isBottomSheetExpanded() =
+        bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED
 
     private fun showBottomSheetOrderDetails(isDemo: Boolean) {
         binding.navDrawerMenu.visibility = if (isDemo) INVISIBLE else VISIBLE
