@@ -249,10 +249,12 @@
         android:clickable="true"
         android:focusable="true"
         android:orientation="horizontal"
-        android:paddingStart="8dp"
-        android:paddingTop="8dp"
+        android:paddingStart="4dp"
+        android:paddingTop="4dp"
         android:paddingEnd="8dp"
-        android:paddingBottom="8dp"
+        tools:visibility="visible"
+        tools:elevation="2dp"
+        android:paddingBottom="4dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -262,7 +264,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="3dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:src="@drawable/ic_arrow_back_from_order"
             tools:ignore="ContentDescription" />
 
@@ -273,7 +275,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/dash_underline"
             android:text="@string/back_from_order"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold" />
@@ -339,7 +340,7 @@
 
             <TextView
                 android:id="@+id/car_number"
-                style="@style/MediumPrimaryRegularText"
+                style="@style/LargeSecondaryRegularText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="@+id/car_number_prefix"
