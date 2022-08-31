@@ -175,7 +175,9 @@ class CourierWarehousesViewModel(
                         initMapByLocation(it.point)
                     }
                     CourierMapAction.MapClick -> {
+                        _navigationStateOrder.value = CourierOrdersNavigationState.HideOrderDetailsByClickMap
                         showManagerBar()
+
                     }
                     CourierMapAction.ShowAll -> {
                         onShowAllClick()
@@ -683,7 +685,7 @@ class CourierWarehousesViewModel(
         return sb.toString()
     }
 
-    private fun initOrderDetails( // text in order details
+    private fun initOrderDetails(
         idView: Int,
         courierOrderEntity: CourierOrderLocalEntity,
         pvz: Int
@@ -845,26 +847,6 @@ class CourierWarehousesViewModel(
         interactor.mapState(CourierMapState.UpdateMyLocationPoint(myLocation!!))
     }
 
-    private fun changeMapMarkers(clickItemIndex: Int, isSelected: Boolean) {
-        mapMarkers.forEachIndexed { index, item ->
-            item.icon = if (index == clickItemIndex) {
-                if (isSelected) {
-                    resourceProvider.getWarehouseMapSelectedIcon()
-                } else {
-                    resourceProvider.getWarehouseMapIcon()
-                }
-            } else {
-                resourceProvider.getWarehouseMapIcon()
-            }
-        }
-        updateMarkersWithMyLocation(myLocation!!)
-        if (isSelected) {
-            with(mapMarkers.elementAt(clickItemIndex).point) {
-                val coordinatePoint = CoordinatePoint(lat, long)
-                interactor.mapState(CourierMapState.NavigateToPoint(coordinatePoint))
-            }
-        }
-    }
 
     private fun changeShowDetailsOrder(
         selected: Boolean,

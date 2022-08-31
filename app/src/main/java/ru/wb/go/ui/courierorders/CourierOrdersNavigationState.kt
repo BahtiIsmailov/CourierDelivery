@@ -35,4 +35,6 @@ sealed class CourierOrdersNavigationState {
 
     object OnMapClick : CourierOrdersNavigationState()
 
+    object HideOrderDetailsByClickMap : CourierOrdersNavigationState()
+
 }

@@ -434,6 +434,7 @@
         android:layout_marginStart="@dimen/pad16"
         android:layout_marginEnd="@dimen/pad16"
         android:layout_marginBottom="@dimen/pad16"
+        tools:visibility="visible"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

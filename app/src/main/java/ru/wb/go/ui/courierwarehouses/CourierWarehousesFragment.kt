@@ -252,6 +252,12 @@ class CourierWarehousesFragment :
                     showBottomSheetOrderDetails(it.isDemo)
                 }
 
+                CourierOrdersNavigationState.HideOrderDetailsByClickMap ->{
+                    if (isBottomSheetExpanded()){
+                        binding.addressDetailLayoutItem.root.isGone = true
+                    }
+                }
+
                 CourierOrdersNavigationState.NavigateToAddresses -> {
                     showBottomSheetListOfOrders()
                 }
@@ -261,7 +267,7 @@ class CourierWarehousesFragment :
 
                 CourierOrdersNavigationState.NavigateToTimer -> navigateToTimer()
                 is CourierOrdersNavigationState.ShowAddressDetail -> {
-                    if (bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_HIDDEN) {
+                    if (!isBottomSheetExpanded()) {
                         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_EXPANDED
                     }
                     ResourcesCompat.getDrawable(resources, it.icon, null)
@@ -341,8 +347,7 @@ class CourierWarehousesFragment :
         binding.toRegistration.setOnClickListener { viewModel.toRegistrationClick() }
         binding.takeOrder.setOnClickListener { viewModel.onConfirmTakeOrderClick() }
         binding.closeOrderDetails.setOnClickListener {
-            binding.addressDetailLayoutItem.root.isGone = true
-            hideBottomSheetOrders()
+            closeOrderDetails()
             viewModel.initOrdersComplete(getHalfHeightDisplay())
         }
         binding.addressesOrder.setOnClickListener {
@@ -379,10 +384,17 @@ class CourierWarehousesFragment :
 
     }
 
+    private fun closeOrderDetails(){
+        binding.addressDetailLayoutItem.root.isGone = true
+        hideBottomSheetOrders()
+    }
 
     private fun hideBottomSheetOrders() {
         bottomSheetOrderDetails.state = BottomSheetBehavior.STATE_HIDDEN
     }
+
+    private fun isBottomSheetExpanded() =
+        bottomSheetOrderDetails.state == BottomSheetBehavior.STATE_EXPANDED
 
     private fun showBottomSheetOrderDetails(isDemo: Boolean) {
         binding.navDrawerMenu.visibility = if (isDemo) INVISIBLE else VISIBLE
