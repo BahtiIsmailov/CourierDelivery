@@ -9,25 +9,25 @@ import ru.wb.go.network.api.auth.response.StatisticsResponse
 
 interface AuthApi {
 
-    @POST("{version}/auth")
+    @POST(" ")
     suspend fun auth(
         @Path(value = "version", encoded = true) version: String,
         @Body authByPhoneOrPasswordQuery: AuthBySmsOrPasswordQuery,
     ): AuthResponse
 
-    @GET("{version}/couriers-auth/{phone}/password")
+    @GET(" ")
     suspend fun couriersAuth(
         @Path(value = "version", encoded = true) version: String,
         @Path("phone") phone: String,
     ):  CheckCouriersPhoneResponse
 
-    @POST("{version}/auth/refresh")
+    @POST(" ")
     suspend fun refreshToken(
         @Path(value = "version", encoded = true) version: String,
         @Body refreshTokenQuery: RefreshTokenQuery
     ):  AuthResponse
 
-    @GET("{version}/statistics")
+    @GET("")
     suspend fun statistics(
         @Path(value = "version", encoded = true) version: String,
     ):  StatisticsResponse

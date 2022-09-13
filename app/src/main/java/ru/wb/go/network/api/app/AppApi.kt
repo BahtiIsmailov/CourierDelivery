@@ -14,13 +14,13 @@ import ru.wb.go.ui.courierunloading.data.FakeBeep
 
 interface AppApi {
 
-    @POST("{version}/me/courier-documents")
+    @POST(" ")
     suspend fun saveCourierDocuments(
         @Path(value = "version", encoded = true) version: String,
         @Body courierDocuments: CourierDocumentsRequest,
     )
 
-    @GET("{version}/me/courier-documents")
+    @GET(" ")
     suspend fun getCourierDocuments(
         @Path(value = "version", encoded = true) version: String,
     ):  CourierDocumentsResponse
@@ -29,12 +29,12 @@ interface AppApi {
     //tasks
     //==============================================================================================
 
-    @GET("{version}/tasks/my")
+    @GET(" ")
     suspend fun tasksMy(
         @Path(value = "version", encoded = true) version: String,
     ): MyTaskResponse
 
-    @POST("{version}/tasks/{taskID}/courier")
+    @POST(" ")
     suspend fun reserveTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
@@ -42,19 +42,19 @@ interface AppApi {
     )
 
     //@HTTP(method = "DELETE", path = "{version}/tasks/{taskID}/courier", hasBody = true)
-    @POST("{version}/tasks/{taskID}/courier/delete")
+    @POST(" ")
     suspend fun deleteTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
     )
 
-    @GET("{version}/tasks/{taskID}/boxes")
+    @GET(" ")
     suspend fun taskBoxes(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
     ):  CourierTaskBoxesResponse
 
-    @POST("{version}/tasks/{taskID}/statuses/start")
+    @POST(" ")
     suspend fun setStartTask(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
@@ -62,7 +62,7 @@ interface AppApi {
     ):  StartTaskResponse
 
 
-    @POST("{version}/tasks/{taskID}/statuses/start/sync")
+    @POST(" ")
     suspend fun sendBoxOnDatabaseEveryFiveMinutes(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
@@ -70,14 +70,14 @@ interface AppApi {
         @Body boxes: List<ApiBoxRequest>
     )
 
-    @POST("{version}/tasks/{taskID}/statuses/ready")
+    @POST("{version}/{taskID}/ ")
     suspend fun taskStatusesReady(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
         @Body boxes: List<ApiBoxRequest>
     ):  TaskCostResponse
 
-    @POST("{version}/tasks/{taskID}/statuses/intransit")
+    @POST(" ")
     suspend fun taskStatusesIntransit(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
@@ -85,7 +85,7 @@ interface AppApi {
         @Body boxes: List<ApiBoxRequest>
     )
 
-    @POST("{version}/tasks/{taskID}/statuses/end")
+    @POST(" ")
     suspend fun taskStatusesEnd(
         @Path(value = "version", encoded = true) version: String,
         @Path("taskID") orderId: String,
@@ -95,36 +95,36 @@ interface AppApi {
     //billing
     //==============================================================================================
 
-    @GET("{version}/billing/account")
+    @GET(" ")
     suspend fun getBilling(
         @Path(value = "version", encoded = true) version: String,
         @Query("showTransactions") isShowTransactions: Boolean
     ): BillingCommonResponse
 
-    @POST("{version}/payments")
+    @POST(" ")
     suspend fun doTransaction(
         @Path(value = "version", encoded = true) version: String,
         @Body paymentsRequest: PaymentsRequest
     )
 
-    @GET("{version}/banks")
+    @GET(" ")
     suspend fun getBank(
         @Path(value = "version", encoded = true) version: String,
         @Query("bic") bic: String
     ): BankResponse
 
-    @GET("{version}/me/bank-accounts")
+    @GET(" ")
     suspend fun getBankAccounts(
         @Path(value = "version", encoded = true) version: String
     ): AccountsResponse
 
-    @POST("{version}/me/bank-accounts")
+    @POST(" ")
     suspend fun setBankAccounts(
         @Path(value = "version", encoded = true) version: String,
         @Body accountRequest: List<AccountRequest>
     )
 
-    @GET("{version}/settings/mobile-version")
+    @GET(" ")
     suspend fun getAppActualVersion(
         @Path(value = "version", encoded = true) version: String
     ):  VersionAppResponse
